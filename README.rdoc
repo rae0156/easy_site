@@ -1,4 +1,5 @@
 == Welcome to Easy Site
 
 Easy site is a web-application CMS based on Bootstrap 2.
+
 Development is in progress.
