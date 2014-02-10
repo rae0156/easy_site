@@ -1,4 +1,4 @@
-installer GIT windows    (rae0156 zazazaza01 passphrase=rae0156)
+installer GIT windows    ()
 
 Méthode de caching comme active-record
 
