@@ -1,0 +1,3 @@
+class EsTemplatesController < DynamicController
+  
+end

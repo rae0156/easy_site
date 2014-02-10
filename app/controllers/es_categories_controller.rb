@@ -1,0 +1,3 @@
+class EsCategoriesController < DynamicController
+  
+end

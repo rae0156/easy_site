@@ -1,0 +1,15 @@
+    <div class="navbar navbar-fluid-top">
+        <div class="container-fluid pull-right">
+			<% if es_user_signed_in? %>
+			  <strong><%= current_es_user.email %></strong> est connecté.
+			  <%= link_to 'Modifier son profile', edit_es_user_registration_path, :class => 'navbar-link' %> |
+			  <%= link_to "Se déconnecter", destroy_es_user_session_path, method: :delete, :class => 'navbar-link'  %>
+			<% else %>
+			  <%= link_to "S'incrire", new_es_user_registration_path, :class => 'navbar-link'  %> |
+			  <%= link_to "Se connecter", new_es_user_session_path, :class => 'navbar-link'  %>
+			<% end %>
+        </div>
+    </div>
+
+
+

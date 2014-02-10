@@ -1,0 +1,50 @@
+
+
+.navbar-inverse .brand {
+color: #99c64e;
+font-size: 250%;
+}
+
+.navbar-inner {
+padding: 10px 0 10px 0;
+}
+
+.yourco-form {
+margin-top: 30px;
+}
+
+.yourco-form label, input, button, select, textarea {
+font-size: 150%;
+font-weight: normal;
+line-height: 30px;
+}
+
+.slogans {
+text-align: center;
+}
+
+.slogans-light{
+text-align: center;
+color: silver;
+}
+
+.feature-desc {
+background-color: #f2f7fa;
+margin-top: 30px;
+}
+
+li {
+list-style: none;
+margin-bottom: 12px;
+}
+
+.feature-list {
+text-align: center;
+color:#449dd0;
+padding-bottom: 30px
+}
+
+.footer {
+background: #000;
+color: #fff;
+}

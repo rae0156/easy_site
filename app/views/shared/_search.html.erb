@@ -1,0 +1,7 @@
+<%= form_tag({:action => 'list'}, :id => 'search_form', :remote => true) do %>
+  <%= label_tag('global_search', 'Recherche globale : ') %>
+  <%= text_field_tag("global_search", params[:global_search], :size => 20) %>
+  <%= submit_tag "Trouver"%>
+
+<% end %>
+

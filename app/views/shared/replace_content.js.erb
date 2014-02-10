@@ -1,0 +1,22 @@
+$(document).ready(function() {
+	<%if @element_id.class.to_s == 'String' && @partial.class.to_s == 'String' %>
+		<%if @format.blank?%>
+			$('#<%=@element_id%>').html("<%= escape_javascript(render :partial => @partial) %>");
+		<%elsif @format.to_s == 'text'%>
+			$('#<%=@element_id%>').html("<%=@partial.html_safe%>");
+		<%end%>
+	<%
+	  elsif @element_id.class.to_s == 'Array' && @partial.class.to_s == 'Array' && @element_id.count == @partial.count
+		@element_id.each_with_index do |elem,index|
+			elem_partial = @partial[index]
+	%>					
+   		    $('#<%= elem %>').html("<%= escape_javascript(render :partial => elem_partial) %>");
+	<%		
+		end 
+	  end
+	%>
+});
+
+$(document).ready(function() {
+	$(".pagination").find("a").attr("data-remote", true);
+});

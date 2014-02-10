@@ -1,0 +1,66 @@
+<% @title = @controller_setup[:model_name] %>
+
+<div>
+    <h2><%= @title %></h2>
+	
+	<ul>
+		<li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Rapport",:image => "appli/pdf_32.png", :action => "export_pdf", :form => "list_form"}%></li>
+		<li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Exporter",:image => "appli/excel_32.png", :action => "export_csv", :form => "list_form"}%></li>
+		<%unless @controller_setup[:table_field_active]%>
+		<li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Effacer",:image => "appli/delete_32.png", :action => "destroy", :form => "list_form", :checkbox => "true", :check => "true"}%></li>
+		<%end%>
+		<li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Modifier",:image => "appli/edit_32.png", :action => "edit", :form => "list_form",  :checkbox => "true"} %></li>
+		<li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Nouveau",:image => "appli/new_32.png", :action => "new", :param_goto => {:parent_id => (@parent.blank? ? 0 : @parent.id)}} %></li>
+	</ul>
+	
+
+    <ul class="nav nav-tabs">
+	    <li class='active'><a href="#tab_search" data-toggle="tab">Recherche globale</a></li>
+	    <%if @controller_setup[:dynamic_search_exists] %>
+	    <li><a href="#tab_dynamic_search" data-toggle="tab">Recherche détaillée</a></li>
+	    <%end%>
+	    <%if @controller_setup[:parent_exists] %>
+	    <li><a href="#tab_parent_search" data-toggle="tab">Recherche par parent</a></li>
+	    <%end%>
+
+    </ul>
+    <div class="tab-content">
+		<div class="tab-pane active" id="tab_search">
+			<%= render :partial => 'shared/search' %>				
+		</div>
+	    <%if @controller_setup[:dynamic_search_exists] %>
+		<div class="tab-pane" id="tab_dynamic_search">
+	  	    <%= render :partial => 'shared/dynamic/dynamic_search' %>			
+		</div>
+	    <%end%>
+	    <%if @controller_setup[:parent_exists] %>
+		<div class="tab-pane" id="tab_parent_search">
+			<%= form_tag({ :action => 'list' }, { :name => 'list_form'}) do%>
+			    <button type="button" id="view_hide" >Choisir un '<%=@controller_setup[:model_name]%>'</button>
+				<div id="fileTree_element"></div>
+			<% end %>
+		    <%= render :partial => 'shared/dynamic/script_category_search' %>
+		</div>
+	    <%end%>
+	</div>
+	
+	<div class="clearer"></div>	
+</div>
+
+<!-- Error messages -->	
+<%= errors_for(flash[:errors_destroy], "delete").html_safe if flash[:errors_destroy] %>
+
+
+
+
+<%= form_tag({ :action => 'list' }, { :name => 'list_form',:id => 'list_form'}) do%>
+<!-- Data table -->
+
+<div id="dynamic_list_div">
+  <%= render :partial => 'shared/dynamic/list' %>
+</div>
+
+
+
+<% end %>
+

@@ -1,0 +1,49 @@
+<%
+	back = false if back.nil?  
+	image = "" if image.nil?  
+	text = "back" if text.nil?
+	text = "<br />" + text unless text.blank?
+	controller = "" if controller.nil?  
+	action = "index" if action.nil?
+	id = "" if id.nil?
+	check = "false" if check.nil?
+	checkbox = "false" if check.nil?
+	class_btn = "goto_btn" if class_btn.nil?
+	id_btn = "" if id_btn.nil?
+	form = "" if form.nil?   
+	param_goto = {} if param_goto.nil?
+
+	if back
+		controller 	= session[:back_controller] 
+		action 		= session[:back_action] 	
+		id 			= session[:back_id] 		
+		param_goto 	= session[:back_params] 	
+	end
+
+	
+	url_hash = {}
+	url_hash[:controller] = controller unless controller.blank?  
+	url_hash[:action] = action unless action.blank?  
+	url_hash[:id] = id unless id.blank?  
+	url_hash = url_hash.merge(param_goto) unless param_goto.blank?
+	
+	url_hash = "#" if action == "#"
+	
+	option_hash = {}
+	option_hash = option_hash.merge({:confirm => "Voulez vous vraiment réaliser cette action ?"}) if check == 'true' && form.blank?	
+	
+	link = image_tag(image, {:alt => text}) + "#{text}".html_safe
+	
+	unless form.blank?
+		if checkbox == 'true'
+		    javascript = "checkAndSubmitForm('#{form}', '#{url_for(url_hash)}', #{check})"
+		else
+		    javascript = "questionAndSubmitForm('#{form}', '#{url_for(url_hash)}', #{check})" 
+		end
+	end 
+	
+%>
+
+<div class="<%=class_btn%>" <%=id_btn.blank? ? "" : "id='#{id_btn}'"%>>
+	<%= !form.blank? ? link_to_function(link, javascript ) : link_to(link, url_hash, option_hash) %>
+</div>

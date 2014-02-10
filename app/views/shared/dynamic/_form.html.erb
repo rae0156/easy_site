@@ -1,0 +1,65 @@
+  <%if @controller_setup[:mandatory_exists]%>
+	  <h4><%= field_description "Données obligatoires", true %></h4>
+  <%end%>
+  
+	<%@columns_screen.each do |column|
+		if column["display_#{params[:action]}".to_sym] && column[:name].split('.').count==1%>
+		  <div class="control-group">
+		
+		    <label for=<%="instance_#{column[:name]}"%> class="control-label">
+	    		<%=column[:column_name]%> :
+		    </label>
+  		    <div class="controls">
+			<%if column[:name] == 'sequence'%>
+				<%= text_field(:instance, column[:name],{:disabled => true})%>
+			<%elsif column[:name] == 'parent_id'%>
+				<%=hidden_field(:instance, column[:name],:value => (@parent.blank? ? "" : @parent.id))%>
+				<%= text_field(:dummy, :parent,{:disabled => true, :value => (@parent.blank? ? "Origine" : @parent.name)})%>
+    		<%else%>
+			  <% case column[:type]
+		      	 when "integer" %>
+			        <% if column[:foreign] 
+			             column_class = column[:model_linked] 			             
+			             if Object.const_defined?(column_class)%>
+			            <%= collection_select(:instance, column[:name], column_class.constantize.all, :id, :name, :prompt => "") %>
+			          <% else %>
+						<%= text_field :instance, column[:name],:class=>"input-small inputmask","data-inputmask"=>"'alias': 'integer'"%>
+			          <% end %>
+			        <% else %>
+						<%= text_field :instance, column[:name],:class=>"input-small inputmask","data-inputmask"=>"'alias': 'integer'"%>
+			        <% end %>
+		      <% when "float", "decimal" %>
+				<%= text_field :instance, column[:name],:class=>"input-small inputmask","data-inputmask"=>"'alias': 'decimal', 'groupSeparator': ',', 'autoGroup': true"%>
+			  <% when "string" 
+			  		if column[:value_list].blank?%>
+						<%= text_field :instance, column[:name],:class=>"input-small",:size=>column[:length_field], :maxlength=>column[:length_value], :style=> "width:inherit;"%>
+					<%else%>	  
+					    <%=select(:instance, column[:name], column[:value_list].split(','), { include_blank: true},{:style=> "width:inherit;" })%>
+					<%end%>	  
+			  <% when "text" %>
+		        <%= text_area :instance, column[:name]  %>
+		      <% when "datetime","date","time" 
+		        value = @instance.send(column[:name])
+		        value = value.strftime("%d/%m/%Y %H:%M:%S") unless value.blank?%>
+			    <div class="input-append date" data-behaviour='datetimepicker' data-date="<%=value%>">
+				    <input id="instance_<%=column[:name]%>" name="instance[<%=column[:name]%>]" class="span2" type="text" value="<%=value%>" readonly>
+				    <span class="add-on"><i class="icon-th"></i></span>
+				</div>
+		      <% when "boolean" %>
+		        <%= check_box :instance, column[:name],{}, column[:checked_value]||"1", column[:unchecked_value]||"0" %>
+		      <% else %>
+				<span class="uneditable-input"><%=@instance.send(column[:name])%></span>		      	
+		      <% end %>		
+			  <%if column[:mandatory]%>
+	  			  <%= field_description "", true %>
+	    	  <%end%>
+    		<%end%>
+		    </div>
+  		  </div>
+	  <%end
+     end%>
+  
+<script>
+	init_datepicker();	
+	init_inputmask();		
+</script>  

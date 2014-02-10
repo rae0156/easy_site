@@ -1,0 +1,28 @@
+
+development:
+  adapter: mysql2
+  database: mngtools_easysite
+  username: mngtools_root
+  password: zazazaza01
+  host: 127.0.0.1
+  port: 3306
+  pool: 5
+#  encoding: utf8
+#  reconnect: false
+#  socket: /tmp/mysql.sock  
+  
+  
+#  username: root
+#  password: zazazaza01
+#  host: 127.0.0.1
+
+#mngtools
+production:
+  adapter: mysql2
+  database: mngtools_easysite
+  username: mngtools_root
+  password: Zazazaza01
+  host: localhost
+  port: 3306
+  pool: 5
+

@@ -1,0 +1,3 @@
+class EsMediaFilesController < DynamicController
+ 
+end

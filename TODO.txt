@@ -1,0 +1,17 @@
+installer GIT windows   (rae0156 zazazaza01 passphrase=rae0156)
+
+Méthode de caching comme active-record
+
+partie creation tinycme :
+	div -> contenu setup
+	creation dans un écran à part
+	autres propriétés (image, class, etc..)
+	(partie setup + application)
+
+Mettre en forme / trier toutes les données et les tests
+	Toutes les exemples d'essais dans une partie test avec le html_safe dans la partie code
+	Mettre les données et les medias dans un ficher csv
+
+Commencer une partie user et une admin avec connexion
+	3 parties en tout : visiteur (sans cnx), user (cnx + roles) et admin (cnx admin)
+

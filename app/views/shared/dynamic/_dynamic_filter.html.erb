@@ -1,0 +1,87 @@
+
+	<tr>  
+		<th>&nbsp;</th>  
+	    <%if @controller_setup[:parent_exists] %>
+			<th>&nbsp;</th>  
+	    <%end%>
+
+	    <%@columns_screen.each do |column|
+	    	if column[:display_list]%>
+				<%unless column[:name] == 'sequence' && @parent.blank?
+					if column[:dynamic_filter]%>
+	                  <th> 
+						<%
+						value = params[:dynamic_filter].blank? ? "" : params[:dynamic_filter][column[:name].to_sym]
+						case column[:type]
+						when "datetime","date","time"%>
+						    <div class="input-append date" data-behaviour='datetimepicker' data-date="<%=value%>">
+							    <input id="dynamic_filter_<%=column[:name]%>" name="dynamic_filter[<%=column[:name]%>]" class="span2 dynamic_filter_submit" type="text" value="<%=value%>">
+							    <span class="add-on"><i class="icon-th"></i></span>
+							</div>
+  				      <%when "integer" %>
+				        <% if column[:foreign] 
+				             column_class = column[:model_linked] 
+				             if Object.const_defined?(column_class)%>
+					            <%= collection_select(:dynamic_filter, column[:name], column_class.constantize.all, :id, :name, {:prompt => "",:selected => value.to_i},:class=>"dynamic_filter_submit") %>
+				          <% else %>
+								<%= text_field_tag "dynamic_filter[#{column[:name]}]",value,:class=>"input-small dynamic_filter_submit inputmask","data-inputmask"=>"'alias': 'integer'"%>
+				          <% end %>
+				        <% else %>
+							<%= text_field_tag "dynamic_filter[#{column[:name]}]",value,:class=>"input-small dynamic_filter_submit inputmask","data-inputmask"=>"'alias': 'integer'"%>
+				        <% end %>
+
+				      <%when "float", "decimal" %>
+						<%= text_field_tag "dynamic_filter[#{column[:name]}]",value,:class=>"input-small dynamic_filter_submit inputmask","data-inputmask"=>"'alias': 'decimal', 'groupSeparator': ',', 'autoGroup': true"%>
+					  <%when "string", "text" 
+				  		if column[:value_list].blank?%>
+							<%= text_field_tag "dynamic_filter[#{column[:name]}]",value,:class=>"input-small dynamic_filter_submit",:size=>column[:length_field_filter], :maxlength=>column[:length_value], :style=> "width:inherit;"%>
+						<%else%>	  
+						    <%= select_tag("dynamic_filter[#{column[:name]}]", options_for_select(column[:value_list].split(','), value), { include_blank: true, :class=>"input-small dynamic_filter_submit",:style=> "width:inherit;" })%>
+						<%end%>	  
+				      <%when "boolean" %>
+				        <%= check_box :dynamic_filter, column[:name],{:class=>"dynamic_filter_check", :checked => (value==(column[:checked_value]||"1"))}, column[:checked_value]||"1", nil %>
+					  <%else%>
+		                    <%= text_field_tag "dynamic_filter[#{column[:name]}]", value,:class=>"input-small dynamic_filter_submit"%>                         
+					  <%end%>
+	                  </th> 
+			       <%else%>		
+	                  <th>&nbsp;</th> 
+			    <%  end 
+			      end%>		
+	    <%	end
+	     end%>
+	
+	
+	</tr> 
+
+
+
+
+<script>
+	$(document).ready(function() {
+		$('.dynamic_filter_submit').keyup(function(e) {  
+		    var valuesToSubmit = $('#list_form').serialize();
+		    if (e.keyCode == 13)
+		    {	
+				$.ajax({
+		        url: $('#list_form').attr('action'), //sumbits it to the given url of the form
+		        data: valuesToSubmit,
+		        dataType: 'script' // you want a difference between normal and ajax-calls, and json is standard
+			    });	    
+		    }	
+		    return false; // prevents normal behaviour
+		});	
+		$('.dynamic_filter_check').click(function(e) {  
+		    var valuesToSubmit = $('#list_form').serialize();
+			$.ajax({
+	        url: $('#list_form').attr('action'), //sumbits it to the given url of the form
+	        data: valuesToSubmit,
+	        dataType: 'script' // you want a difference between normal and ajax-calls, and json is standard
+		    });	    
+		    return false; // prevents normal behaviour
+		});	
+	});
+
+	init_datepicker();	
+	init_inputmask();
+</script>

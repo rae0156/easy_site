@@ -1,0 +1,22 @@
+.dropdown li {position: relative;}
+
+/*positionnement des sous menu*/
+.dropdown .dropdown ul {
+  display: none;
+  position: absolute;
+  width: 100%;
+  top: 0%;
+  left: 100%;
+}
+
+
+/**************************************/
+/* sous menu autres niveaux verticals */
+/**************************************/
+
+/* affichage des niveau >= 2 */
+.dropdown .dropdown:hover > ul {display: block;}
+
+
+ul.nav > li.dropdown:hover > ul.dropdown-menu{ display: block; }
+.nav .dropdown-toggle .caret { display:none; }

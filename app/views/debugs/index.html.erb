@@ -1,0 +1,91 @@
+<!DOCTYPE html>                                                                        
+<html lang='en'>                                                                                                                                               
+  <HEAD>                                                                                                                                                      
+    <title>Tactilog & CrossTable</title>                                                                                                                    
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'> 
+    <link href='/stylesheets/bootstrap_debug.css' media="screen" rel="stylesheet" type="text/css">                                                                   
+    <link href='/stylesheets/bootstrap-responsive_debug.css' media="screen" rel="stylesheet" type="text/css">                                                                   
+    <script src="http://code.jquery.com/jquery-1.10.1.js"></script>
+  </HEAD>                                                                                                                                                     
+  <BODY>                  
+	<div class='container'>    
+	    <div class='row'>
+			<div class='span12 alert alert-info'>                                                                                                                             
+		        <H2>Debug - <%=Rails.root.to_s.split('/').last%></H2>                                                                                                               
+				<form action='i' method='post' name='debug_form'>                                                                                                     		
+				  <fieldset>                                                                                                                              
+				    <table width='100%'>	
+						<tr>
+							<td width='50%'  rowspan=3>
+								<div id="selection_div">
+								  <%= render :partial => 'debug_selection' %>
+								</div>
+							</td>
+							<td>
+								<%= link_to_function("Help" , "submitForm('debug_form', '#{url_for(:controller => "debugs", :action => "index", :format_debug => "help")}')",{:class => "btn btn-primary"}) %>
+								<%= link_to_function("Exemple" , "submitForm('debug_form', '#{url_for(:controller => "debugs", :action => "index", :format_debug => "exemple")}')",{:class => "btn btn-primary"}) %>
+								<%= link_to_function("Relations" , "submitForm('debug_form', '#{url_for(:controller => "debugs", :action => "index", :format_debug => "relation")}')",{:class => "btn btn-primary"}) %>
+								<%= link_to_function("Setup" , "submitForm('debug_form', '#{url_for(:controller => "debugs", :action => "index", :format_debug => "setup")}')",{:class => "btn btn-primary"}) %>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<%= link_to_function("Create the setup file" , "submitForm('debug_form', '#{url_for(:controller => "debugs", :action => "index", :format_debug => "setupfile")}')",{:class => "btn btn-primary"}) %>
+								<label><small>Only if the setup does not exist for the model selected.</small><BR>								
+								<small>Otherwise, you may delete the section into the file 'config/cross_table.yml'.</small>	</label>							
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<%= link_to_function("HTML" , "submitForm('debug_form', '#{url_for(:controller => "debugs", :action => "index", :format_debug => "debug")}')",{:class => "btn btn-primary"}) %>
+								<%= link_to_function("YAML" , "submitForm('debug_form', '#{url_for(:controller => "debugs", :action => "index", :format_debug => "yaml")}')",{:class => "btn btn-primary"}) %>
+								<%= link_to_function("Fixture" , "submitForm('debug_form', '#{url_for(:controller => "debugs", :action => "index", :format_debug => "fixture")}')",{:class => "btn btn-primary"}) %>
+							</td>
+						</tr>
+				    </table>
+			      </fieldset>        
+			                                                                                                                       
+			    </form>                                                                                                                                     
+			</div>                                                                                                                                          
+	    </div>                                                                                                                                   
+	    <div class='row'>
+			<div class='span12 alert alert-info'>                                                                                                                             
+				<div id="debug_comment">
+				  <%= render :partial => 'debug_comment' %>
+				</div>
+			</div>                                                                                                                                          
+	    </div>                                                                                                                                   
+	</div>    
+
+   </BODY>                                                                                                                                                   
+
+	<SCRIPT>
+
+		function submitForm(form_name, url) {
+		  var f = document.forms[form_name];
+		
+		  if (url != '') {
+		    f.action = url;
+		
+		    if (typeof f.onsubmit == 'function') {
+		      f.onsubmit = function() { new Ajax.Request(url, {asynchronous:true, evalScripts:true, parameters:Form.serialize(this)}); return false; };
+		    }
+		  }
+		
+		  try {
+		    f.onsubmit();
+		  }
+		  catch (e) {
+		    f.submit();
+		  }
+		}
+		
+	</SCRIPT>
+
+</HTML>                                                                                                                                                        
+
+
+</div>                                                                                                                                          
+
+
+

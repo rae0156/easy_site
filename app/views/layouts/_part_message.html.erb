@@ -1,0 +1,10 @@
+	<% unless flash[:notice].nil? or flash[:notice].blank? %>
+		<div class="alert alert-success">
+			<%= flash[:notice] %>
+		</div>
+	<% end %>
+	<% unless flash[:error].nil? or flash[:error].blank? %>
+		<div class="alert alert-error">
+			<%= flash[:error] %>
+		</div>
+	<% end %>

@@ -1,0 +1,57 @@
+
+
+
+<%= form_for(:dynamic_search, {:remote => true,:class => "form-inline"}) do |f| %>
+
+	<%@columns_screen.each do |column|
+		if column[:dynamic_search]%>
+		<div style="display:inline-block;">
+  		      <%= f.label column[:name].to_sym, column[:column_name] + " : " %>
+
+			  <% case column[:type]
+		      	 when "integer" %>
+			        <% if column[:foreign] 
+			             column_class = column[:model_linked] 
+			             if Object.const_defined?(column_class)%>
+			            <%= f.collection_select(column[:name], column_class.constantize.all, :id, :name, :prompt => "",:class=>"input-small") %>
+			          <% else %>
+						<%= f.text_field column[:name],:class=>"input-small inputmask","data-inputmask"=>"'alias': 'integer'"%>
+			          <% end %>
+			        <% else %>
+						<%= f.text_field column[:name],:class=>"input-small inputmask","data-inputmask"=>"'alias': 'integer'"%>
+			        <% end %>
+		      <% when "float", "decimal" %>
+				<%= f.text_field column[:name],:class=>"input-small inputmask","data-inputmask"=>"'alias': 'decimal', 'groupSeparator': ',', 'autoGroup': true"%>
+			  <% when "string" 
+		  		if column[:value_list].blank?%>
+					<%= f.text_field column[:name],:class=>"input-small",:size=>column[:length_field], :maxlength=>column[:length_value], :style=> "width:inherit;"%>
+				<%else%>	  
+				    <%= f.select(column[:name], column[:value_list].split(','), { include_blank: true },{:style=> "width:inherit;" })%>
+				<%end%>	  
+
+			  <% when "text" %>
+		        <%= f.text_area column[:name],:class=>"input-small"  %>
+		      <% when "datetime","date","time"
+		      		value = params[:dynamic_search].blank? ? "" : params[:dynamic_search][column[:name].to_sym] 
+		      %>
+			    <div class="input-append date" data-behaviour='datetimepicker' data-date="<%=value%>">
+				    <input id="dynamic_search_<%=column[:name]%>" name="dynamic_search[<%=column[:name]%>]" class="span2" type="text" value="<%=value%>">
+				    <span class="add-on"><i class="icon-th"></i></span>
+				</div>
+		      <% when "boolean" %>
+		        <%= f.check_box column[:name],{:class=>"input-small"},column[:checked_value]||"1", nil  %>
+		      <% end %>		
+		    &nbsp;
+		</div>
+	  <%end
+     end%>
+
+     <%= submit_tag "Trouver"%>
+     
+<% end %>
+
+<script>
+	init_datepicker();	
+	init_inputmask();	
+</script>
+

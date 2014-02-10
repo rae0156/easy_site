@@ -1,0 +1,11 @@
+<ul class="jqueryFileTree" style="display: none;">
+	
+    <% @trees[0].each do |parent| %>
+		<li class="selectable directory collapsed"><a href="#" rel="<%=parent[0] %>/"><%= parent[1] %></a></li>
+    <%end%>
+	<% @trees[1].each do |child|%>
+	    <li class="file ext_txt"><a href="#" rel="<%=child[0] %>"><%= child[1] %></a></li>
+    <% end %>
+
+
+</ul>

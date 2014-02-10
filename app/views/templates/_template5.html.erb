@@ -1,0 +1,26 @@
+	<!-- Barre de navigation -->
+	<div class="navbar navbar-inverse">
+		<div class="navbar-inner">
+			<%= get_template_part("part_1")%>
+		</div>
+	</div>
+
+
+<div class="container-fluid">
+
+  <%= get_template_part("part_2")%>
+
+  <div class="row">
+    <div class="span3">
+	  	<%= get_template_part("part_3")%>
+    </div>
+    <div class="span9">
+		<div class="hero-unit">
+			<%= get_template_part("part_4")%>
+		</div>
+		
+		<%= get_template_part("part_dynamic")%>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,38 @@
+    <div class="navbar navbar-fluid-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+			<%= get_template_part("part_1")%>
+        </div>
+      </div>
+    </div>
+
+
+
+
+    <div class="container-fluid">
+	  <%= get_template_part("part_dynamic")%>
+      <div class="row-fluid">
+        <div class="span3">
+			<%= get_template_part("part_2")%>
+			
+        </div><!--/span-->
+        <div class="span9">
+  	      <div class="alert alert-block">
+			  <%= get_template_part("part_3")%>		    	
+	      </div>
+	      <div class="row-fluid">
+	        <div class="span6">
+			  <%= get_template_part("part_4")%>		    	
+	        </div><!--/span-->
+	        <div class="span6">
+			  <%= get_template_part("part_5")%>		    	
+	        </div>
+	      </div><!--/row-->
+        </div>
+      </div><!--/row-->
+
+      <footer>
+		<%= get_template_part("part_6")%>
+      </footer>
+
+    </div> <!-- /container -->

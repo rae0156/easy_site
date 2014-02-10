@@ -1,0 +1,45 @@
+<!-- Data table header and content -->
+<%if @controller_setup[:parent_exists] %>
+	<div>
+		<p><%=@parent_info%><p>
+		<%=generate_breadcrumb(*@breadcrumb).html_safe%>
+	</div>
+<%end%>
+
+<table cellpadding="4" width="100%" class='adminlist'>
+  <tr>
+    <th width="1"><%= check_box_tag("toggle_it", "", false, {:onclick => "checkAll('list_form');"}) %></th>
+    
+    <%if @controller_setup[:parent_exists] %>
+    	<th>Enfants</th>
+    <%end%>
+
+    <%@columns_screen.each do |column|
+    	if column[:display_list]%>
+			<%unless column[:name] == 'sequence' && @parent.blank?%>
+				<%if column[:sort]
+					if column[:foreign] && column[:name]!="parent_id"
+					  tmp_model_link = column[:name][0..-4].classify.constantize
+				      tmp_sort_field = column[:name][0..-4] + "." + (tmp_model_link.column_names.include?("name") ? "name" : "id")
+					else
+ 					  tmp_sort_field = column[:name]
+					end
+				%>
+					<th><%= sort_link_remote :text => column[:column_name], :column => tmp_sort_field, :action => 'list'%></th>
+				<%else%>
+					<th><%= column[:column_name]%></th>
+				<%end%>
+		    <%end%>		
+    <%	end
+     end%>
+      
+  </tr>
+  <%if @controller_setup[:dynamic_filter_exists] %>
+    <%= render :partial => "shared/dynamic/dynamic_filter"%> 
+  <%end%>
+  
+  <%= render :partial => 'shared/dynamic/list_item', :collection => @instances %>
+</table>
+
+<%= will_paginate @instances, :params => params, :previous_label => '<< Précédent', :next_label => 'Suivant >>' %>
+<%= page_entries_info @instances, :entry_name => @controller_setup[:model_name] %>
