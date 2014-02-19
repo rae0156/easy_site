@@ -3,7 +3,7 @@ implementer RBC
 	retirer les bouton delete et modifier et modifier l'action delete avec le multi
 	Implementer le act_as_dynamic
 
-
+===============================
 
 continuer l'implémentation de act_as_multi_site dans l'act_as_dynamic
    finir le champs es_site_id avec scope par default
