@@ -21,7 +21,6 @@ partie creation tinycme :
 	(partie setup + application)
 
 
-
 Commencer une partie user et une admin avec connexion
 	3 parties en tout : visiteur (sans cnx), user (cnx + roles) et admin (cnx admin)
 
