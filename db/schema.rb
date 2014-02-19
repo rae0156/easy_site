@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131219170801) do
+ActiveRecord::Schema.define(:version => 20140211163715) do
 
   create_table "es_articles", :force => true do |t|
     t.string   "name",           :limit => 200,  :null => false
@@ -77,14 +77,20 @@ ActiveRecord::Schema.define(:version => 20131219170801) do
   end
 
   create_table "es_parts", :force => true do |t|
-    t.string  "name",           :limit => 200,  :null => false
-    t.string  "description",    :limit => 4000
-    t.integer "es_template_id",                 :null => false
-    t.integer "es_content_id"
+    t.string   "name",           :limit => 200,                   :null => false
+    t.string   "description",    :limit => 4000
+    t.integer  "es_template_id",                                  :null => false
+    t.integer  "es_content_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "active",         :limit => 1,    :default => "Y"
+    t.integer  "nombre"
+    t.string   "valeur",         :limit => 20
   end
 
   create_table "es_roles", :force => true do |t|
-    t.string  "description",    :limit => 20
+    t.string  "name",           :limit => 40
+    t.string  "description",    :limit => 200
     t.integer "es_category_id"
   end
 
@@ -92,6 +98,17 @@ ActiveRecord::Schema.define(:version => 20131219170801) do
     t.integer "es_user_id", :null => false
     t.integer "es_role_id", :null => false
   end
+
+  create_table "es_sessions", :force => true do |t|
+    t.string   "session_id", :null => false
+    t.text     "data"
+    t.integer  "es_user_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "es_sessions", ["session_id"], :name => "index_es_sessions_on_session_id"
+  add_index "es_sessions", ["updated_at"], :name => "index_es_sessions_on_updated_at"
 
   create_table "es_setups", :force => true do |t|
     t.string  "name",            :limit => 30,   :null => false
@@ -119,10 +136,7 @@ ActiveRecord::Schema.define(:version => 20131219170801) do
   create_table "es_users", :force => true do |t|
     t.string   "name",                   :limit => 50
     t.string   "firstname",              :limit => 50
-    t.string   "mail",                   :limit => 50
     t.string   "active",                 :limit => 20,  :default => "Y"
-    t.string   "password_hash",          :limit => 200
-    t.string   "tempo_password",         :limit => 20
     t.string   "address1",               :limit => 200
     t.string   "address2",               :limit => 200
     t.string   "zip",                    :limit => 10

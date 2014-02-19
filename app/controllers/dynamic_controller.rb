@@ -31,9 +31,10 @@ class DynamicController < ApplicationController
                    foreign: !column.name.match(/_id$/).nil?, 
                    linked_name: column.name.match(/_id$/) ? column.name.gsub(/_id$/, '') : nil,
                    model_linked: column.name.match(/_id$/) ? column.name.gsub(/_id$/, '').classify : nil,
-                   display_new: !["id","created_at","updated_at","sequence"].include?(column.name),
-                   display_edit: !["id","created_at","updated_at"].include?(column.name),
-                   display_list: !["id","created_at","updated_at"].include?(column.name),
+                   model_linked_field: column.name.match(/_id$/) ? "name" : nil,
+                   display_new: !["id","created_at","updated_at","sequence","es_site_id"].include?(column.name),
+                   display_edit: !["id","created_at","updated_at","es_site_id"].include?(column.name),
+                   display_list: !["id","created_at","updated_at","es_site_id"].include?(column.name),
                    value_list: (column.type.to_s=="string" && column.limit==1 && ["Y","N"].include?(column.default)) ? 'Y,N' : nil,
                    print: !["id","created_at","updated_at","sequence"].include?(column.name),
                    link_update: ["name","code"].include?(column.name),
@@ -163,7 +164,7 @@ class DynamicController < ApplicationController
 
     ####################################### pagination ####################################### 
 
-    session[:conditions] = conditions
+    session[:conditions] = tmp_search
     session[:sort] = @sort
 #    @instances = @controller_setup[:model].paginate :per_page => 20, :page => params[:page], :order => @sort, :conditions => conditions
 
@@ -332,7 +333,8 @@ class DynamicController < ApplicationController
     pdf.font_size 12
     
     # Find all New with the stored restrictions
-    instances = session[:conditions].includes(session[:sort][1]).order(session[:sort][0]).find :all
+    conditions = DynamicSearch.new(@controller_setup[:model],session[:conditions]).build_conditions.accessible_by(current_ability)
+    instances = conditions.includes(session[:sort][1]).order(session[:sort][0]).find :all
     data = []
 
       tab_header=[]
@@ -384,7 +386,8 @@ class DynamicController < ApplicationController
 
   def export_csv
     # Find all New with the stored restrictions
-    instances = session[:conditions].includes(session[:sort][1]).order(session[:sort][0]).find :all
+    conditions = DynamicSearch.new(@controller_setup[:model],session[:conditions]).build_conditions.accessible_by(current_ability)
+    instances = conditions.includes(session[:sort][1]).order(session[:sort][0]).find :all
     
     csv_string = CSV.generate({:col_sep => ';', :encoding => "ISO-8859-15" }) do |csv|
 
@@ -483,7 +486,7 @@ class DynamicController < ApplicationController
 
     ####################################### pagination ####################################### 
 
-    session[:conditions] = conditions
+    session[:conditions] = tmp_search
     @instances = conditions.includes(session[:sort][1]).order(session[:sort][0]).page(params[:page])
     #@instances = @controller_setup[:model].paginate :per_page => 20, :page => params[:page], :order => @sort, :conditions => conditions
 

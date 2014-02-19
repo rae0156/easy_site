@@ -132,6 +132,7 @@ module ApplicationHelper
 
   def generate_menu(menu_name,options={})
     element = EsMenu.find_by_name(menu_name)
+    return "" if element.nil?  
     case element.link_type
     when "navigation"
         return generate_navigation(element)
@@ -143,7 +144,7 @@ module ApplicationHelper
         return generate_dropdown(element)
     when "sheet"
         return generate_sheet(element)
-    end      
+    end    
   end
 
   def generate_sheet(element,options={})

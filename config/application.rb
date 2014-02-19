@@ -64,6 +64,9 @@ module EasySite
     # trap all errors
     config.exceptions_app = ->(env) { ErrorsController.action(:custom_error).call(env) }
     
+    #session store in db
+    config.action_dispatch.session_store = :active_record_store
+    
   end
 end
 

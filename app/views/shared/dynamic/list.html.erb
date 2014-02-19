@@ -1,7 +1,10 @@
-<% @title = @controller_setup[:model_name] %>
+<% 
+	@title = @controller_setup[:model_name]
+	titre = Rails.env.downcase == 'development' ? link_to(@title,  {:action => 'show_setup'}, :target=>"_blank") : @title 
+%>
 
 <div>
-    <h2><%= @title %></h2>
+    <h2><%= titre %></h2>
 	
 	<ul>
 		<li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Rapport",:image => "appli/pdf_32.png", :action => "export_pdf", :form => "list_form"}%></li>
@@ -35,7 +38,7 @@
 	    <%end%>
 	    <%if @controller_setup[:parent_exists] %>
 		<div class="tab-pane" id="tab_parent_search">
-			<%= form_tag({ :action => 'list' }, { :name => 'list_form'}) do%>
+			<%= form_tag({ :action => 'list' }, { :name => 'list_form_category'}) do%>
 			    <button type="button" id="view_hide" >Choisir un '<%=@controller_setup[:model_name]%>'</button>
 				<div id="fileTree_element"></div>
 			<% end %>

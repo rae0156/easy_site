@@ -11,9 +11,15 @@
 			  <% case column[:type]
 		      	 when "integer" %>
 			        <% if column[:foreign] 
-			             column_class = column[:model_linked] 
-			             if Object.const_defined?(column_class)%>
-			            <%= f.collection_select(column[:name], column_class.constantize.all, :id, :name, :prompt => "",:class=>"input-small") %>
+			             column_class = Object.const_defined?(column[:model_linked]) ? column[:model_linked].constantize : nil
+			             column_name = nil
+			             unless column_class.nil?
+				             column_name = column[:model_linked_field] if column_name.nil? && column_class.new.respond_to?(column[:model_linked_field])		             
+				             column_name = "id" if column_name.nil? && column_class.new.respond_to?("id") 
+			             end		             
+			             unless column_name.nil?
+			             %>
+			            <%= f.collection_select(column[:name], column_class.all, :id, column_name.to_sym, :prompt => "",:class=>"input-small") %>
 			          <% else %>
 						<%= f.text_field column[:name],:class=>"input-small inputmask","data-inputmask"=>"'alias': 'integer'"%>
 			          <% end %>

@@ -137,7 +137,6 @@ function isItemSelected(form_name) {
   var i = 0;
   var f = document.forms[form_name];
   var found = false;
-
   while ((cb = eval('f.cb' + i)) && (!found)) {
     if (cb.checked) {
       found = true;

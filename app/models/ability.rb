@@ -10,7 +10,7 @@ class Ability
     if user.role? 'admin'
       can :manage, :all
     elsif user.es_roles.count == 0  
-      can [:index,:list,:contenttree,:viewtree,:export_csv,:up,:down,:export_pdf,:edit], EsMenu
+      can [:index,:list,:contenttree,:viewtree,:export_csv,:up,:down,:export_pdf,:new,:create,:update,:show_setup,:activate,:edit], EsMenu
 #      can :edit, EsMenu , :parent_id => nil
 
       can [:index,:list,:contenttree,:viewtree,:export_csv,:up,:down,:export_pdf,:new,:create,:update,:show_setup,:activate], EsPart

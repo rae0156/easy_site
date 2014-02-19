@@ -18,9 +18,8 @@ class DynamicSearch
         if @model.column_names.include?(opt.to_s) || opt.to_s.split('.').count > 1
           tmp_column = @model.columns.select{|column| column.name == opt.to_s}[0]
           tmp[:name] = opt.split('.').count == 1 ? "#{@model.table_name}.#{opt}" : opt 
-          
           value = options[opt.to_sym]
-          unless value.blank?
+          unless value.nil?
             #tmp[:where]="#{tmp[:name]} IS NULL"
             if opt.to_s.split('.').count > 1
               tmp[:where] = "UPPER(#{opt.to_s.split('.')[-2].pluralize + "." + opt.to_s.split('.').last}) LIKE UPPER(?)" 
@@ -37,6 +36,8 @@ class DynamicSearch
               tmp[:where] = "UPPER(#{tmp[:name]}) LIKE UPPER(?)"
               tmp[:value] = "%#{value}%"
             end
+          else
+            tmp[:where]="#{tmp[:name]} IS NULL"
           end
         end          
 
