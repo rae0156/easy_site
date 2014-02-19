@@ -4,6 +4,7 @@ implementer RBC
 	Implementer le act_as_dynamic
 
 
+
 continuer l'implémentation de act_as_multi_site dans l'act_as_dynamic
    finir le champs es_site_id avec scope par default
    choix du site via un menu (checkbox avec le premier par defaut) ou via un fichier YML à charger au démarrage
