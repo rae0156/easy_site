@@ -1,24 +1,7 @@
 <%= render "shared/tinymce_script"%>
 
-<div>
+<div class="alert alert-info">
 	<h2>Template '<%=@es_template_name%>' - Thème '<%=@es_theme_name%>'</h2>
 	<h3>Ceci est la partie dynamique du site</h3>
-	<p><%=get_lorem%></p>	
-
-		<!--form method="post" action="somepage">
-			<textarea name="content" style="width:100%"><h1>dcfgh</h1></textarea>
-		</form-->
-
-
-	<%=generate_menu("vertical").html_safe%>
-	<%=generate_menu("Dropdown trigger").html_safe%>
-	<%=generate_collapse(EsMediaFile.find(:all,:conditions=> ["media_type = 'collapse'"])).html_safe%>
-	<%=generate_menu("sheet").html_safe%>
-
-	<%=generate_video(EsMediaFile.find_by_name("video1")).html_safe%>
-
-	<%=generate_alert("You successfully read this important alert message.", "Well done!","alert-success").html_safe%>
-
-	<%=generate_breadcrumb(["Home"],["Setup","#"],["Library","#"],"Data").html_safe%>
-
+	<p><%=get_lorem%></p>
 </div>

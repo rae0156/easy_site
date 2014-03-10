@@ -67,6 +67,8 @@ module EasySite
     #session store in db
     config.action_dispatch.session_store = :active_record_store
     
+    
+    
   end
 end
 

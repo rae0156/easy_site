@@ -3,25 +3,43 @@ class Ability
 
   def initialize(user)
     
+    no_signed = user.blank?
     
     user ||= EsUser.new 
-    
-
-    if user.role? 'admin'
-      can :manage, :all
-    elsif user.es_roles.count == 0  
-      can [:index,:list,:contenttree,:viewtree,:export_csv,:up,:down,:export_pdf,:new,:create,:update,:show_setup,:activate,:edit], EsMenu
-#      can :edit, EsMenu , :parent_id => nil
-
-      can [:index,:list,:contenttree,:viewtree,:export_csv,:up,:down,:export_pdf,:new,:create,:update,:show_setup,:activate], EsPart
-      can :edit, EsPart 
-      
-      #can :dynamic_menu, EsMenu , :name => 'Home'
-      #puts "ici 2 : #{can?(:dynamic_menu , EsMenu.new({:name=> "Home1"})) }"
-
-      
+    if no_signed
+      roles=[0]
+    else
+      roles = user.es_roles.collect(&:id)
     end
 
+    #:manage, :read, :create, :update and :destroy 
+
+    roles.each do |role_id|
+      es_abilities = EsAbility.where({:es_role_id => role_id})
+      es_abilities.each do |ability|
+        if ability.model=="all"
+          models = :all
+        else
+          models = ability.model.split(',').select {|m| Object.const_defined?(m)}.collect{|m| m.constantize} 
+        end
+        unless models.blank?
+          actions = ability.action.split(',').collect{|a| a.to_sym}
+          can actions, models
+        end
+      end
+    end
+      
+#    if user.role? 'admin'
+#      can :manage, :all
+#    elsif user.es_roles.count == 0  
+#      can [:index,:list,:contenttree,:viewtree,:export_csv,:up,:down,:export_pdf,:new,:create,:update,:show_setup,:activate,:show,:edit,:destroy], EsMenu
+#      can [:index,:list,:contenttree,:viewtree,:export_csv,:up,:down,:export_pdf,:new,:create,:update,:show_setup,:activate,:show,:destroy], EsPart
+#      can :edit, EsPart 
+#    end
+
+    #can :dynamic_menu, EsMenu , :name => 'Home'
+    #can :edit, EsMenu , :parent_id => nil
+    #puts "ici 2 : #{can?(:dynamic_menu , EsMenu.new({:name=> "Home1"})) }"
 
 
     # Define abilities for the passed in user here. For example:

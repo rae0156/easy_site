@@ -4,6 +4,7 @@ require 'iconv'
 class ApplicationController < ActionController::Base
   include ApplicationHelper
   protect_from_forgery
+  include Userstamp
 
   rescue_from CanCan::AccessDenied do |exception|
     flash[:error] = "Vous n'êtes pas autorisé à accéder à cette page"

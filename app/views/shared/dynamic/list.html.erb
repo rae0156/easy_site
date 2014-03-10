@@ -1,5 +1,5 @@
 <% 
-	@title = @controller_setup[:model_name]
+	@title = @controller_setup[:instance_name]
 	titre = Rails.env.downcase == 'development' ? link_to(@title,  {:action => 'show_setup'}, :target=>"_blank") : @title 
 %>
 
@@ -9,10 +9,9 @@
 	<ul>
 		<li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Rapport",:image => "appli/pdf_32.png", :action => "export_pdf", :form => "list_form"}%></li>
 		<li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Exporter",:image => "appli/excel_32.png", :action => "export_csv", :form => "list_form"}%></li>
-		<%unless @controller_setup[:table_field_active]%>
-		<li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Effacer",:image => "appli/delete_32.png", :action => "destroy", :form => "list_form", :checkbox => "true", :check => "true"}%></li>
+		<%if !@controller_setup[:table_field_active] && @controller_setup[:delete_multi]%>
+			<li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Effacer",:image => "appli/delete_32.png", :action => "destroy", :form => "list_form", :checkbox => "true", :check => "true"}%></li>
 		<%end%>
-		<li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Modifier",:image => "appli/edit_32.png", :action => "edit", :form => "list_form",  :checkbox => "true"} %></li>
 		<li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Nouveau",:image => "appli/new_32.png", :action => "new", :param_goto => {:parent_id => (@parent.blank? ? 0 : @parent.id)}} %></li>
 	</ul>
 	
@@ -39,7 +38,7 @@
 	    <%if @controller_setup[:parent_exists] %>
 		<div class="tab-pane" id="tab_parent_search">
 			<%= form_tag({ :action => 'list' }, { :name => 'list_form_category'}) do%>
-			    <button type="button" id="view_hide" >Choisir un '<%=@controller_setup[:model_name]%>'</button>
+			    <button type="button" id="view_hide" >Choisir un '<%=@controller_setup[:instance_name]%>'</button>
 				<div id="fileTree_element"></div>
 			<% end %>
 		    <%= render :partial => 'shared/dynamic/script_category_search' %>

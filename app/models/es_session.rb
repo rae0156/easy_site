@@ -1,4 +1,5 @@
 class EsSession < ActiveRecord::SessionStore::Session 
+  
   belongs_to :es_user 
   before_save :ensure_user_is_set 
   

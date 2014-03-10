@@ -10,56 +10,82 @@ class DynamicController < ApplicationController
   def initialize()
      
     self.class.load_and_authorize_resource
-    self.class.before_filter :authenticate_es_user! unless 'es_menus,es_parts'.include?(controller_name)
+    self.class.before_filter :authenticate_es_user! if EsController.must_sign?(controller_name) 
 
-    @controller_setup = {}
+    @controller_setup                    ||= {}
     @controller_setup[:controller_name]  ||= controller_name
     @controller_setup[:model]            ||= controller_name.classify.constantize
-    @controller_setup[:model_name]       ||= @controller_setup[:model].table_name.humanize
-    @controller_setup[:table_name]       ||= @controller_setup[:model].table_name
-    @controller_setup[:instance_name]    ||= @controller_setup[:model].table_name.singularize
+    @controller_setup[:instance_name]    ||= @controller_setup[:model].table_name.gsub("es_","").humanize.singularize
+
+
+    @controller_setup[:model].setup_model.each do |key,value|
+      @controller_setup[key] = value 
+    end unless @controller_setup[:model].setup_model.blank?     
+
+    column_setup = @controller_setup[:model].columns_setup
     
-    column_forced = @columns_screen||[] 
+    columns_screen_forced = @columns_screen||[] 
     @columns_screen = []
     @controller_setup[:model].columns.each do |column|
-      tmp_column ={name: column.name,
-                   order: nil,
-                   column_name: column.name[-3..-1] == '_id' ? column.name[0..-4].gsub("es_","") : column.name,
-                   type: (column.type.to_s=="string" && column.limit==1 && ["Y","N"].include?(column.default)) ? "boolean" : column.type.to_s,
-                   checked_value: (column.type.to_s=="string" && column.limit==1 && ["Y","N"].include?(column.default)) ? 'Y' : nil,
-                   unchecked_value: (column.type.to_s=="string" && column.limit==1 && ["Y","N"].include?(column.default)) ? 'N' : nil,
-                   foreign: !column.name.match(/_id$/).nil?, 
-                   linked_name: column.name.match(/_id$/) ? column.name.gsub(/_id$/, '') : nil,
-                   model_linked: column.name.match(/_id$/) ? column.name.gsub(/_id$/, '').classify : nil,
-                   model_linked_field: column.name.match(/_id$/) ? "name" : nil,
-                   display_new: !["id","created_at","updated_at","sequence","es_site_id"].include?(column.name),
-                   display_edit: !["id","created_at","updated_at","es_site_id"].include?(column.name),
-                   display_list: !["id","created_at","updated_at","es_site_id"].include?(column.name),
-                   value_list: (column.type.to_s=="string" && column.limit==1 && ["Y","N"].include?(column.default)) ? 'Y,N' : nil,
-                   print: !["id","created_at","updated_at","sequence"].include?(column.name),
-                   link_update: ["name","code"].include?(column.name),
-                   sort: ["name","code"].include?(column.name),
-                   search: ["name","code"].include?(column.name),
-                   dynamic_filter: ["name","code","description"].include?(column.name),
-                   dynamic_search: ["name","code","description"].include?(column.name),
-                   mandatory: ["name","code"].include?(column.name),
-                   length_field: [column.limit||0,40].min,
-                   length_value: [column.limit||0,400].min,
+      tmp_columns_screen ={name:                column.name,
+                   order:               nil,
+                   column_name:         column.name[-3..-1] == '_id' ? column.name[0..-4].gsub("es_","") : column.name,
+                   type:                (column.type.to_s=="string" && column.limit==1 && ["Y","N"].include?(column.default)) ? "boolean" : column.type.to_s,
+                   checked_value:       (column.type.to_s=="string" && column.limit==1 && ["Y","N"].include?(column.default)) ? 'Y' : nil,
+                   unchecked_value:     (column.type.to_s=="string" && column.limit==1 && ["Y","N"].include?(column.default)) ? 'N' : nil,
+                   linked_name:         column.name.match(/_id$/) ? column.name.gsub(/_id$/, '') : nil,
+                   model_linked:        column.name.match(/_id$/) ? column.name.gsub(/_id$/, '').classify : nil,
+                   model_linked_field:  column.name.match(/_id$/) ? "name" : nil,
+                   display_new:         !["id","created_at","updated_at","sequence","es_site_id","creator_id","updater_id"].include?(column.name),
+                   display_show:        !["id","created_at","updated_at","es_site_id","creator_id","updater_id"].include?(column.name),
+                   display_edit:        !["id","created_at","updated_at","es_site_id","creator_id","updater_id"].include?(column.name),
+                   display_list:        !["id","created_at","updated_at","es_site_id","creator_id","updater_id"].include?(column.name),
+                   value_list:          (column.type.to_s=="string" && column.limit==1 && ["Y","N"].include?(column.default)) ? 'Y,N' : nil,
+                   link_update:         ["name","code"].include?(column.name),
+                   sort:                ["name","code"].include?(column.name),
+                   search:              ["name","code"].include?(column.name),
+                   dynamic_filter:      ["name","code","description"].include?(column.name),
+                   dynamic_search:      ["name","code","description"].include?(column.name),
+                   length_field:        [column.limit||0,40].min,
+                   length_value:        [column.limit||0,400].min,
                    length_field_filter: [column.limit||0,15].min,
-                   hide: false
+                   hide:                false
                   } #unless @columns_screen.collect{ |col| col[:name]}.include?(column.name)
-      new_column = {}
-      exist_column= column_forced.select{ |col| col[:name]==column.name}
-      exist_column= exist_column.blank? ? {} : exist_column[0]
-      column_forced.delete_if{ |col| col[:name]==column.name}
       
-      tmp_column.each do |key,value|
-        new_column[key] = exist_column[key].nil? ? value : exist_column[key] 
-      end
-      @columns_screen.delete_if{ |col| col[:name]==column.name}
-      @columns_screen << new_column
+#      new_columns_screen = {}
+#      exist_columns_screen= columns_screen_forced.select{ |col| col[:name]==column.name}
+#      exist_columns_screen= exist_columns_screen.blank? ? {} : exist_columns_screen[0]
+#      columns_screen_forced.delete_if{ |col| col[:name]==column.name}      
+#      tmp_columns_screen.each do |key,value|
+#        new_columns_screen[key] = exist_columns_screen[key].nil? ? value : exist_columns_screen[key] 
+#      end
+#      @columns_screen.delete_if{ |col| col[:name]==column.name}
+#      @columns_screen << new_columns_screen
+
+
+
+#      get attribute from model
+      exist_column_setup = column_setup.select{|col| col[:name]==column.name}
+      exist_column_setup = exist_column_setup.blank? ? {} : exist_column_setup[0]
+      exist_column_setup.each do |key,value|
+        tmp_columns_screen[key] = value.nil? ? tmp_columns_screen[key] : value 
+      end unless exist_column_setup.blank?     
+               
+#      merge forced attribute
+      new_columns_screen = {}
+      exist_columns_screen = columns_screen_forced.select{|col| col[:name]==column.name}
+      exist_columns_screen = exist_columns_screen.blank? ? {} : exist_columns_screen[0]
+      columns_screen_forced.delete_if{ |col| col[:name]==column.name}
+      tmp_columns_screen.each do |key,value|
+        new_columns_screen[key] = exist_columns_screen[key].nil? ? value : exist_columns_screen[key] 
+      end      
+      @columns_screen << new_columns_screen                          
+
+
     end
-    column_forced.each do |new_column|
+    
+    #insert column added into the controller
+    columns_screen_forced.each do |new_column|
       @columns_screen << new_column      
     end
 
@@ -89,9 +115,6 @@ class DynamicController < ApplicationController
     @columns_screen = @columns_screen.sort_by { |hsh| hsh[:order]||0 }
        
 
-
-
-
     @controller_setup[:mandatory_exists]       ||= @columns_screen.select{ |col| col[:mandatory]}.count > 0
     @controller_setup[:dynamic_filter_exists]  ||= @columns_screen.select{ |col| col[:dynamic_filter]}.count > 0
     @controller_setup[:dynamic_search_exists]  ||= @columns_screen.select{ |col| col[:dynamic_search]}.count > 0
@@ -102,8 +125,9 @@ class DynamicController < ApplicationController
     @controller_setup[:default_column_name]    ||= @controller_setup[:column_name_exists] ? "name" : (@columns_screen.collect{ |col| col[:name]}.include?("code") ? "code" : "id")
     @controller_setup[:default_sort]           ||= @controller_setup[:sequence_exists] ? "sequence" : "id"
     @controller_setup[:table_field_active]     ||= @columns_screen.collect{ |col| col[:name]}.include?("active")
-    @controller_setup[:delete_if_used]         ||= false
-    @controller_setup[:delete_if_inactive]     ||= false
+    @controller_setup[:delete_if_used]           = @controller_setup[:delete_if_used].nil? ? false : @controller_setup[:delete_if_used] 
+    @controller_setup[:delete_if_inactive]       = @controller_setup[:delete_if_inactive].nil? ? false : @controller_setup[:delete_if_inactive] 
+    @controller_setup[:delete_multi]             = @controller_setup[:delete_multi].nil? ? false : @controller_setup[:delete_multi] 
 
     @es_theme_name          ||= "theme1"
     @es_template_name       ||= "template1" 
@@ -127,7 +151,7 @@ class DynamicController < ApplicationController
 
     ####################################### tri ####################################### 
 
-    sorting :default => "#{@controller_setup[:table_name]}.#{@controller_setup[:default_sort]}"
+    sorting :default => "#{@controller_setup[:model].table_name}.#{@controller_setup[:default_sort]}"
     
     ####################################### condition ####################################### 
     
@@ -182,6 +206,13 @@ class DynamicController < ApplicationController
   end
 
   alias index list
+
+  def show
+      @instance = @controller_setup[:model].find_by_id(params[:id])
+  
+      render "shared/dynamic/show"
+  end
+
 
   def show_setup
     
@@ -242,7 +273,7 @@ class DynamicController < ApplicationController
 
       initial_sequence_for(@instance.parent_id) if @controller_setup[:sequence_exists]
 
-      flash[:notice] = "'#{@controller_setup[:model_name]}' créé avec succès."
+      flash[:notice] = "'#{@controller_setup[:instance_name]}' créé avec succès."
 
       if @controller_setup[:parent_exists]
         redirect_to :action => "list", :parent_id => params[:instance][:parent_id]
@@ -260,7 +291,7 @@ class DynamicController < ApplicationController
   
   def update
     if @instance.update_attributes(params[:instance])
-      flash[:notice] = "'#{@controller_setup[:model_name]}' a été correctement modifié."
+      flash[:notice] = "'#{@controller_setup[:instance_name]}' a été correctement modifié."
       if @controller_setup[:parent_exists]
         redirect_to :action => "list", :parent_id => params[:instance][:parent_id]
       else
@@ -276,13 +307,13 @@ class DynamicController < ApplicationController
 
     if @instance.active=='N'
       @instance.update_attribute('active','Y')    
-      flash[:notice] = "#{@controller_setup[:model_name].singularize} a été activé."
+      flash[:notice] = "#{@controller_setup[:instance_name]} a été activé."
       redirect_to :action => "list",:page=> params[:page]
     else
       destroy = detect_association(@instance) ? @controller_setup[:delete_if_used] : @controller_setup[:delete_if_inactive]
       unless destroy 
         @instance.update_attribute('active',@instance.active=='Y' ? 'N' : 'Y')    
-        flash[:notice] = "#{@controller_setup[:model_name].singularize} a été #{@instance.active=='Y' ? 'activé' : 'désactivé'}."
+        flash[:notice] = "#{@controller_setup[:instance_name]} a été #{@instance.active=='Y' ? 'activé' : 'désactivé'}."
         redirect_to :action => "list",:page=> params[:page]
       else
         redirect_to :action => "destroy",:id=> params[:id]      
@@ -302,15 +333,24 @@ class DynamicController < ApplicationController
         tmp_element_error.errors.add(:base, "This #{@setup_controller[:model_name].singularize} can be deleted, cause it is used")
       elsif check_children_before_delete(tmp) || !tmp.destroy
         tmp.errors.full_messages.each do |tmp_error| 
-          tmp_element_error.errors.add(:base, "'#{@controller_setup[:model_name]} - #{tmp.name}' : #{tmp_error}")
+          tmp_element_error.errors.add(:base, "'#{@controller_setup[:instance_name]} - #{tmp.name}' : #{tmp_error}")
         end
       else
         initial_sequence_for(tmp.parent_id)
       end
-    end
+    end unless params[:cid].blank?
+    
+    unless params[:id].blank?
+      @instance = @controller_setup[:model].find_by_id(params[:id])
+      if !detect_association(@instance) || @controller_setup[:delete_if_used]
+        @instance.destroy unless @instance.blank?
+      else
+        flash[:error] = "This #{@controller_setup[:instance_name].humanize} can be deleted, cause it is used"
+      end
+    end    
     
     if tmp_element_error.errors.empty? 
-      flash[:notice] = "'#{@controller_setup[:model_name]}' correctement supprimé(s)."
+      flash[:notice] = "'#{@controller_setup[:instance_name]}' correctement supprimé(s)."
     else
       flash[:errors_destroy] = tmp_element_error
     end
@@ -323,11 +363,11 @@ class DynamicController < ApplicationController
 
   def export_pdf
 
-    file_name = "rapport_pdf_#{@controller_setup[:table_name]}_#{Time.zone.now.strftime("%Y%m%d%H%M%S%L")}.pdf"
+    file_name = "rapport_pdf_#{@controller_setup[:model].table_name}_#{Time.zone.now.strftime("%Y%m%d%H%M%S%L")}.pdf"
     pdf = Prawn::Document.new
 
     #Create the first page
-    create_title_page(pdf, "Liste - #{@controller_setup[:model_name]}","Date et Heure : #{Time.zone.now.strftime("%d/%m/%Y %H:%M:%S")}" ) 
+    create_title_page(pdf, "Liste - #{@controller_setup[:instance_name]}","Date et Heure : #{Time.zone.now.strftime("%d/%m/%Y %H:%M:%S")}" ) 
     
     pdf.start_new_page()
     pdf.font_size 12
@@ -339,7 +379,7 @@ class DynamicController < ApplicationController
 
       tab_header=[]
       @columns_screen.each do |column|
-        tab_header << column[:column_name] if column[:print]
+        tab_header << column[:label_name] if column[:print]
       end
       data << tab_header
 
@@ -393,7 +433,7 @@ class DynamicController < ApplicationController
 
       tab_header=[]
       @columns_screen.each do |column|
-        tab_header << column[:column_name] if column[:print]
+        tab_header << column[:label_name] if column[:print]
       end
       csv << tab_header
 
@@ -445,9 +485,9 @@ class DynamicController < ApplicationController
     parent_id = param_dir.end_with?('/') ? param_dir[0...-1] : param_dir unless param_dir.blank?
 
     if parent_id.blank?
-      conditions = ["(#{@controller_setup[:table_name]}.parent_id IS NULL)"]
+      conditions = ["(#{@controller_setup[:model].table_name}.parent_id IS NULL)"]
     else
-      conditions = ["(#{@controller_setup[:table_name]}.parent_id = ?)","#{parent_id}"]
+      conditions = ["(#{@controller_setup[:model].table_name}.parent_id = ?)","#{parent_id}"]
     end
     instances = @controller_setup[:model].find :all, :order => @controller_setup[:default_sort], :conditions => conditions
 
@@ -542,7 +582,7 @@ private
   def init_info_for_list(parent_id)
     if @controller_setup[:parent_exists]
       @parent = @controller_setup[:model].find_by_id(parent_id)
-      @parent_info = "#{@controller_setup[:model_name]} : " + (@parent.blank? ? "Origine" : "")
+      @parent_info = "#{@controller_setup[:instance_name]} : " + (@parent.blank? ? "Origine" : "")
       unless @parent.blank? 
         @breadcrumb = [["Début",url_for(:action=>'list')]]
         @parent.ancestors.reverse.each do |elem|

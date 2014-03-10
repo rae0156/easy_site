@@ -1,16 +1,26 @@
 # encoding: UTF-8
 
 class EsSetup < ActiveRecord::Base
-  acts_as_tree :order => "name"
 
   belongs_to :es_category
   
-  attr_accessible :name, :value, :type_data, :read_only, :path, :nbr_element, :possible_values
-  
-  validates_presence_of :name, :message => 'Le nom est obligatoire'
-  validates_presence_of :type_data, :message => 'Le type est obligatoire'
-  validates_uniqueness_of :path , :scope => [:name], :message => "Ce paramétrage existe déjà"
-  
+  acts_as_dynamic_model([
+                      {:name              => "name",
+                       :label_name        => "Name",
+                       :field_key         => false,
+                       :mandatory         => true
+                      }, 
+                      {:name              => "type_data",
+                       :label_name        => "Type",
+                       :mandatory         => true
+                      }, 
+                      {:name              => "Path",
+                       :label_name        => "Type",
+                       :field_key         => true,
+                       :field_key_scope   => "name"
+                      } 
+                      ]) 
+ 
   
   def self.get_setup(setup_name,default="")
     tmp_setup = self.find(:first, :conditions => ["name = ?", setup_name] )

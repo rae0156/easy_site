@@ -27,3 +27,8 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
      height: inherit;
 }
 
+tr.inactive_row { 
+        background-color: #EDE9E4; 
+        font-style: italic      
+} 
+

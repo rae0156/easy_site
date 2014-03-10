@@ -16,7 +16,7 @@ module ApplicationHelper
         html_text.gsub!("[#{id}]",tmp_content)
         num+=1
       end
-      return html_text    
+      return html_text.html_safe
   end
 
   def generate_carousel(collection)
@@ -42,7 +42,7 @@ module ApplicationHelper
     else
       html_text=""
     end
-    return html_text
+    return html_text.html_safe
   end
 
   def generate_blog(collection)
@@ -59,7 +59,7 @@ module ApplicationHelper
       html_text.gsub!("[#{id_image}]",tmp_content_container)
     end
     
-    return html_text
+    return html_text.html_safe
   end
 
   def generate_image_list(collection)
@@ -72,7 +72,7 @@ module ApplicationHelper
       html_text.gsub!("[#{id_image}]",tmp_content)
     end
     
-    return html_text
+    return html_text.html_safe
   end
 
   def generate_breadcrumb(*adrs)
@@ -91,21 +91,21 @@ module ApplicationHelper
     end if adrs.count > 0
     html_text=generate_tag(:UL, html_text, {:class=>"breadcrumb"}) unless html_text.blank?
     
-    return html_text
+    return html_text.html_safe
     
   end
 
   def generate_alert(msg,title='',level='')
-    return generate_tag(:DIV, generate_tag(:button, "&times;",{:class=> "close",:type=>"button", "data-dismiss"=>"alert"}) + (title=='' ? "" : generate_tag(:H4,title)) + msg,{:class=> "alert #{level}"}) 
+    return generate_tag(:DIV, generate_tag(:button, "&times;",{:class=> "close",:type=>"button", "data-dismiss"=>"alert"}) + (title=='' ? "" : generate_tag(:H4,title)) + msg,{:class=> "alert #{level}"}).html_safe 
   end
 
 
   def generate_citation(citation)
-    return substitute_string(generate_tag(:P, "[title]") + generate_tag(:P, generate_tag(:blockquote, "[description]<BR>" + generate_tag(:small, "[reference]",{:class => "pull-right"}))),citation) 
+    return substitute_string(generate_tag(:P, "[title]") + generate_tag(:P, generate_tag(:blockquote, "[description]<BR>" + generate_tag(:small, "[reference]",{:class => "pull-right"}))),citation).html_safe 
   end
 
   def generate_video(video)
-    return substitute_string(generate_tag(:DIV, "<iframe width='[width]' height='[height]' src='[path]' frameborder='0' allowfullscreen></iframe>", {:class => 'flex-video widescreen'}) ,video) 
+    return substitute_string(generate_tag(:DIV, "<iframe width='[width]' height='[height]' src='[path]' frameborder='0' allowfullscreen></iframe>", {:class => 'flex-video widescreen'}) ,video).html_safe 
   end
 
   def substitute_string(text,instance=nil)
@@ -127,7 +127,7 @@ module ApplicationHelper
       end
       text.gsub!("[#{word}]",tmp_word_replaced.to_s)
     end unless list_word.blank?
-    return text
+    return text.html_safe
   end
 
   def generate_menu(menu_name,options={})
@@ -135,15 +135,15 @@ module ApplicationHelper
     return "" if element.nil?  
     case element.link_type
     when "navigation"
-        return generate_navigation(element)
+        return generate_navigation(element).html_safe
     when "side"
-        return generate_side(element)
+        return generate_side(element).html_safe
     when "vertical_menu"
-        return generate_vertical_menu(element)
+        return generate_vertical_menu(element).html_safe
     when "dropdown"
-        return generate_dropdown(element)
+        return generate_dropdown(element).html_safe
     when "sheet"
-        return generate_sheet(element)
+        return generate_sheet(element).html_safe
     end    
   end
 
@@ -375,17 +375,6 @@ module ApplicationHelper
     end
     return tmp_link
   end
-
-
-
-
-
-
-
-
-
-
-
 
 
 

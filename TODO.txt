@@ -1,30 +1,16 @@
-implementer RBC
-	implementer le delete comme active plutot que la checkbox
-	retirer les bouton delete et modifier et modifier l'action delete avec le multi
-	Implementer le act_as_dynamic
+cancan : 
+	réaliser la gestion par db
 
-===============================
 
-continuer l'implémentation de act_as_multi_site dans l'act_as_dynamic
-   finir le champs es_site_id avec scope par default
-   choix du site via un menu (checkbox avec le premier par defaut) ou via un fichier YML à charger au démarrage
-		http://stackoverflow.com/questions/2907643/rails-application-settings     
-   
-
-Mettre en forme / trier toutes les données et les tests
-	Toutes les exemples d'essais dans une partie test avec le html_safe dans la partie code
-	Mettre les données et les medias dans un ficher csv
-	
+Commencer une partie user et une admin avec connexion
+	3 parties en tout : visiteur (sans cnx), user (cnx + roles) et admin (cnx admin)
+  
 partie creation tinycme :
 	div -> contenu setup
 	creation dans un écran à part
 	autres propriétés (image, class, etc..)
 	(partie setup + application)
-
-
-Commencer une partie user et une admin avec connexion
-	3 parties en tout : visiteur (sans cnx), user (cnx + roles) et admin (cnx admin)
-
+	
 
 penser à la gestion des autorisations
 	- tables (user,roles,droit)
@@ -46,5 +32,7 @@ Définir les modules :
 Faire le module "setup général" de l'appli comme avec le site langue
 
 Commencer à planifier chaque module
+
+traduction
 
 Todo list sur "D:\EasySite - Todo"

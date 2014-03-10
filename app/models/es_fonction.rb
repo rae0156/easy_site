@@ -3,7 +3,8 @@
 class EsFonction < ActiveRecord::Base
 
   belongs_to :es_category
-
+  acts_as_dynamic_model 
+  
   def self.execute(fonction_code)
     fonction = self.find_by_code(fonction_code)
     return fonction.blank? ? "" : fonction.execute

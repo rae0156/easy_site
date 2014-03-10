@@ -30,7 +30,7 @@ module ActiveSupport
     
     def init_log_setup(class_name="")
       @class_name=class_name.downcase
-      @setup_log=LogYamlSetup.get_setup((defined?(ENV) ? ENV["RAILS_ENV"] : Rails.env),@class_name)
+      @setup_log=LogYamlSetup.get_setup(rails_environment,@class_name)
       init_log_file() unless @setup_log.blank?
       @timing_log = Time.now
     end 
@@ -89,7 +89,7 @@ module ActiveSupport
           'logid' => self.object_id.to_s,
           'timing' => '[TIMLOG]' ,
           'client' => @client_ip.to_s.ljust(15," "),          
-          'env' => (defined?(ENV) ? ENV["RAILS_ENV"] : Rails.env)}.each do |key,var|
+          'env' => rails_environment}.each do |key,var|
           tmp_message_followed = tmp_message_followed.gsub("%#{key}%",var)
         end
 
@@ -108,7 +108,7 @@ module ActiveSupport
           if (@setup_log['log_to'] || 'file') == 'table'
             sql="INSERT INTO tactilogs "
             sql+= "(prefix,level_name,user_name,class_name,milli,pid,timing,env,line,date_time,logid,followed)"
-            sql+= " VALUES ('#{@setup_log['prefix'].to_s}','#{f_level}','#{f_user}','#{@class_name.to_s}',#{DateTime.now.strftime("%N").to_i},'#{$$.to_s}',#{tmp_timing.to_f},'#{(defined?(ENV) ? ENV["RAILS_ENV"] : Rails.env)}','#{line.gsub("'","''")}','#{Time.now.strftime("%Y/%m/%d %H:%M:%S")}','#{self.object_id}','#{complete_message.blank? ? 'N' : 'Y'}')"
+            sql+= " VALUES ('#{@setup_log['prefix'].to_s}','#{f_level}','#{f_user}','#{@class_name.to_s}',#{DateTime.now.strftime("%N").to_i},'#{$$.to_s}',#{tmp_timing.to_f},'#{rails_environment}','#{line.gsub("'","''")}','#{Time.now.strftime("%Y/%m/%d %H:%M:%S")}','#{self.object_id}','#{complete_message.blank? ? 'N' : 'Y'}')"
             ActiveRecord::Base.connection.execute(sql) 
           end
 
@@ -162,6 +162,11 @@ private
       (ENV['RAILS_VERSION'].blank? ? Rails::VERSION::STRING : ENV['RAILS_VERSION'])[0]      
     end
 
+    def rails_environment
+      rails_env == '3' ? Rails.env : ENV["RAILS_ENV"]
+    end
+
+
     def init_log_file
       file_name = @setup_log['file'] || "%env%.log"
       { 'year' => Time.now.strftime("%Y"),
@@ -170,7 +175,7 @@ private
         'time' => Time.now.strftime("%H:%M:%S"),
         'milli' => DateTime.now.strftime("%N"),
         'class' => (@class_name || ''),
-        'env' => (defined?(ENV) ? ENV["RAILS_ENV"] : Rails.env)}.each do |key,var|
+        'env' => rails_environment}.each do |key,var|
         file_name = file_name.gsub("%#{key}%",var)
       end
       self.close      

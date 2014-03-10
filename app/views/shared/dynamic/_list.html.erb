@@ -8,7 +8,9 @@
 
 <table cellpadding="4" width="100%" class='adminlist'>
   <tr>
-    <th width="1"><%= check_box_tag("toggle_it", "", false, {:onclick => "checkAll('list_form');"}) %></th>
+	<%if !@controller_setup[:table_field_active] && @controller_setup[:delete_multi]%>
+	    <th width="1"><%= check_box_tag("toggle_it", "", false, {:onclick => "checkAll('list_form');"}) %></th>
+    <%end%>
     
     <%if @controller_setup[:parent_exists] %>
     	<th>Enfants</th>
@@ -34,7 +36,7 @@
 		    <%end%>		
     <%	end
      end%>
-      
+     <th>Options</th> 
   </tr>
   <%if @controller_setup[:dynamic_filter_exists] %>
     <%= render :partial => "shared/dynamic/dynamic_filter"%> 
@@ -44,4 +46,4 @@
 </table>
 
 <%= will_paginate @instances, :params => params, :previous_label => '<< Précédent', :next_label => 'Suivant >>' %>
-<%= page_entries_info @instances, :entry_name => @controller_setup[:model_name] %>
+<%= page_entries_info @instances, :model => @controller_setup[:instance_name] %>

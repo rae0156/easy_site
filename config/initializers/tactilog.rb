@@ -1,5 +1,4 @@
 unless File.basename($0) == "rake" 
-  
   directory = File.join(Rails.root,'lib','plugins','tactilog') #File.dirname(__FILE__) 
   #copy view and controller
   ['/views', '/views/debugs', '/controllers',['/stylesheets','/public/stylesheets']].each do |dir|

@@ -1,13 +1,22 @@
-<tr class="<%= cycle("row0", "row1") %>">
-	<td><%= check_box_tag("cid[]", list_item.id, false, { :id => "cb" + list_item_counter.to_s }) %></td>
+<%
+tmp_class = @controller_setup[:table_field_active] ? (list_item[:active]== 'Y' ? "" : "inactive_row") : cycle("row0", "row1")
+tmp_update = !(@controller_setup[:table_field_active] && list_item[:active]== 'N')
+%>
+
+<tr class="<%= tmp_class %>">
+	<%if !@controller_setup[:table_field_active] && @controller_setup[:delete_multi]%>
+		<td><%= check_box_tag("cid[]", list_item.id, false, { :id => "cb" + list_item_counter.to_s }) %></td>
+	<%end%>
 
 
     <%if @controller_setup[:parent_exists] %>
 		<td>
-			<%if list_item.children.count==0%>
-				<%= link_to "<i class='icon-plus-sign'></i>".html_safe,  {:action => 'new', :parent_id => list_item.id}, {:title => "Créer un enfant"} %>
-			<%else%>
-				<%= link_to "<i class='icon-indent-left'></i>".html_safe,  {:action => 'list', :parent_id => list_item.id}, {:title => "Afficher #{@controller_setup[:column_name_exists] ? list_item.name : 'l''enfant'}"} %>
+			<%if tmp_update%>
+				<%if list_item.children.count==0%>
+					<%= link_to "<i class='icon-plus-sign'></i>".html_safe,  {:action => 'new', :parent_id => list_item.id}, {:title => "Créer un enfant"} %>
+				<%else%>
+					<%= link_to "<i class='icon-indent-left'></i>".html_safe,  {:action => 'list', :parent_id => list_item.id}, {:title => "Afficher #{@controller_setup[:column_name_exists] ? list_item.name : 'l''enfant'}"} %>
+				<%end%>
 			<%end%>
 		</td>  
     <%end%>
@@ -16,11 +25,11 @@
 	<%@columns_screen.each do |column|
 		if column[:display_list]
 			tmp_value = list_item.multi_send(column[:name])
-			if column[:link_update] 
+			if column[:link_update] && tmp_update
 				tmp_value= link_to tmp_value,  :action => 'edit', :id => list_item.id
 			elsif column[:name] == 'sequence'
 				tmp_value = tmp_value.to_s
-				unless @parent.blank? 
+				if !@parent.blank? && tmp_update 
 				    if list_item.sequence > 1
 						 tmp_value+=link_to("<i class='icon-arrow-up'></i>".html_safe,  :action => 'up', :id => list_item.id)
 					end
@@ -33,7 +42,7 @@
 					tmp_model_link = list_item.send(column[:name][0..-4])
 					unless tmp_model_link.nil?
 						tmp_value = tmp_model_link.class.column_names.include?("name") ? tmp_model_link.name : tmp_model_link.id
-						unless column[:name] == "parent_id"				
+						if column[:name] != "parent_id" && tmp_update				
 						 tmp_value = link_to tmp_value, :controller => column[:linked_name].pluralize, :action => 'edit', :id => list_item.send(column[:name])
 					    end
 				    end
@@ -45,19 +54,7 @@
 			elsif !tmp_value.blank? && column[:type]=="time" 
 				 tmp_value = tmp_value.strftime("%H:%M:%S")  
 			elsif !tmp_value.blank? && column[:type]=="boolean"
-				if column[:name]=='active'
-					if @controller_setup[:table_field_active]
-						tmp_value = link_to(tmp_value=='Y' ? "<i class='icon-ok-sign'></i>".html_safe : "<i class='icon-remove-sign'></i>".html_safe, 
-											url_for(:action => "activate", :id => list_item['id'], :page => params[:page]), 
-											:confirm =>"Voulez vous vraiment #{(tmp_value=='Y' ? 'désactiver/supprimer' : 'activer')} #{@controller_setup[:instance_name]} ?",
-											:title => (tmp_value=='Y' ? "Désactiver" : "Activer")) 
-					else
-						tmp_value = link_to("<i class='icon-remove-sign'></i>".html_safe, 
-											url_for(:action => "destroy", :id => column['id']), 
-											:confirm =>"Voulez vous vraiment supprimer  #{@controller_setup[:instance_name]} ?",
-											:title =>"Supprimer")
-				  	end
-				else
+				unless column[:name]=='active'
 					tmp_value = tmp_value==column[:checked_value] ? "<i class='icon-ok'></i>".html_safe : ""
 				end				
 			end%>
@@ -66,7 +63,31 @@
 
 		<%end
 	  end%>
+	<td>
+		<%
+		if !@controller_setup[:delete_multi] || @controller_setup[:table_field_active]
+			if  @controller_setup[:table_field_active]
+				tmp_value = list_item[:active]
+				tmp_value = link_to(tmp_value=='Y' ? "<i class='icon-ok-sign'></i>".html_safe : "<i class='icon-remove-sign'></i>".html_safe, 
+									url_for(:action => "activate", :id => list_item['id'], :page => params[:page]), 
+									:confirm =>"Voulez vous vraiment #{(tmp_value=='Y' ? 'désactiver/supprimer' : 'activer')} '#{@controller_setup[:instance_name].downcase}' ?",
+									:title => (tmp_value=='Y' ? "Désactiver" : "Activer")) 
+			else
+				tmp_value = link_to("<i class='icon-remove-sign'></i>".html_safe, 
+									url_for(:action => "destroy", :id => list_item['id']), 
+									:confirm =>"Voulez vous vraiment supprimer '#{@controller_setup[:instance_name].downcase}' ?",
+									:title =>"Supprimer")
+			end
+		%>
 
+			<%= (tmp_value.to_s||"").html_safe %>		
 
+		<%end%>
+
+		<%tmp_value = link_to("<i class='icon-book'></i>".html_safe, 
+							url_for(:action => "show", :id => list_item['id']),
+							:title =>"Visualiser")%>
+		<%= (tmp_value.to_s||"").html_safe %>
+	</td>				
 
 </tr>
