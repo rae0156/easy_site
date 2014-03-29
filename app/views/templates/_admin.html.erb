@@ -1,0 +1,15 @@
+
+    <div class="container-fluid">
+      <div class="row-fluid">
+		<div class="span2">
+			<%= generate_menu("menu_admin") %>
+		</div>
+		<div class="span10">
+			<div>
+				<%=substitute_string('[setup.message_admin]')%>
+			</div>	
+			<%= get_template_part("part_dynamic")%>
+		</div>
+      </div><!--/row-->
+    </div> <!-- /container -->
+

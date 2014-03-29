@@ -11,38 +11,57 @@
 
   def get_template_part(part_name)
     
-    template_name = caller.first.split('/').last.split('.').first[1..-1]
-    #create template and part if does not exist    
-    template = EsTemplate.find_by_name(template_name)
-    template = EsTemplate.create({:name => template_name, :description => template_name, :es_category_id => EsCategory.get_id("Site","template")}) if template.blank?
-    part = template.es_parts.find_by_name(part_name)
-    part = template.es_parts.create({:name => part_name, :description => part_name}) if part.blank?
-
-
-    tmp_layout = 'layouts/_' + part_name
-    if lookup_context.find_all(tmp_layout).any?
-      #find existing part
-      return render tmp_layout.gsub('/_','/')
+    if part_name.is_a?(Integer)
+        es_content_detail = EsContentDetail.find_by_id(part_name)
+        if es_content_detail.blank?
+          #error part
+          return render(:partial => "layouts/part_error", :locals => {:part_name => part_name, :template_name => Rails.application.config.current_template})
+        else
+          #from setup part
+          es_content_details = es_content_detail.content
+          #return render(:partial => "layouts/part_from_setup", :locals => {:content => es_content_details})
+          
+          return render(:inline => es_content_details)
+        end
     else
-      #find setup for current template
-      conditions = ["es_templates.name = ? AND es_parts.name = ? ", 
-                  template_name,
-                  part_name
-                  ] 
-      es_content_details = EsContentDetail.find(:all, :order => "es_content_details.sequence", :conditions => conditions, :include => [:es_content => [:es_parts => :es_template]])
-      
-      if es_content_details.blank?
-        #error part
-        return render(:partial => "layouts/part_error", :locals => {:part_name => tmp_layout})
+      if caller.first.split('/')[-2] == "templates"
+        template_name = caller.first.split('/').last.split('.').first[1..-1]
+        #create template and part if does not exist    
+        template = EsTemplate.find_by_name(template_name)
+        template = EsTemplate.create({:name => template_name, :description => template_name, :es_category_id => EsCategory.get_id("Site","template")}) if template.blank?
+        part = template.es_parts.find_by_name(part_name)
+        part = template.es_parts.create({:name => part_name, :description => part_name}) if part.blank?
       else
-        #from setup part
-        es_content_details = es_content_details.collect(&:content).join
-        #return render(:partial => "layouts/part_from_setup", :locals => {:content => es_content_details})
-        
-        return render(:inline => es_content_details)
-        
+        template_name=Rails.application.config.current_template
       end
+  
+      tmp_layout = 'layouts/_' + part_name
+      if lookup_context.find_all(tmp_layout).any?
+        #find existing part
+        return render tmp_layout.gsub('/_','/')
+      else
+        #find setup for current template
+        conditions = ["es_templates.name = ? AND es_parts.name = ? ", 
+                    template_name,
+                    part_name
+                    ] 
+        es_content_details = EsContentDetail.find(:all, :order => "es_content_details.sequence", :conditions => conditions, :include => [:es_content => [:es_parts => :es_template]])
+        
+        if es_content_details.blank?
+          #error part
+          return render(:partial => "layouts/part_error", :locals => {:part_name => tmp_layout, :template_name => template_name})
+        else
+          #from setup part
+          es_content_details = es_content_details.collect(&:content).join
+          #return render(:partial => "layouts/part_from_setup", :locals => {:content => es_content_details})
+          
+          return render(:inline => es_content_details)
+        end
+      end
+
     end
+    
+    
   end
 
   def create_dir(*tmp_dirs)    

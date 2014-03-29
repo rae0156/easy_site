@@ -1,25 +1,13 @@
-cancan : 
-	réaliser la gestion par db
+changement de theme et de template et changement de la page par défaut
 
-
-Commencer une partie user et une admin avec connexion
-	3 parties en tout : visiteur (sans cnx), user (cnx + roles) et admin (cnx admin)
-  
-partie creation tinycme :
-	div -> contenu setup
-	creation dans un écran à part
-	autres propriétés (image, class, etc..)
-	(partie setup + application)
+=========================================================================
 	
-
-penser à la gestion des autorisations
+penser à la gestion des autorisations + refaire les écrans
 	- tables (user,roles,droit)
-	- modules à implémenter
+	- modules à implémenter	
 	
-Mettre en place les menus admin sur base des infos
-	user,categorie,contenu media,setup
-	Faire juste les menus, pas l'implémentation des modules
 	
+	  
 Définir les modules :
 	- la partie admin est figée et contient le paramètrage des modules de la partie 'user' et 'invité'
 	- les autres parties (user et invité) sont administré par le module admin et sont entièrement dynamique
@@ -28,11 +16,24 @@ Définir les modules :
 		gestion des menus, création/modif/etc..
 		type de menu : horizontal, en haut, côté, dropdown,etc..
 		ajout automatique de la gestion du module menu dans la gestion des modules (A voir)
+
+refaire la gestion user
 	
 Faire le module "setup général" de l'appli comme avec le site langue
 
 Commencer à planifier chaque module
 
+modification des div du template 
+	autres propriétés (image, class, etc..)
+
+
 traduction
+
+drag drop pour le template
+http://thiagosf.net/projects/jfun/fun/xyyzu/Collapsible_Drag_&amp%3B_Drop_Panels_Using_jQuery 
+http://pathfindersoftware.com/2008/07/project-website-part-4-drag-and-drop-in-jquery/ 
+http://www.elated.com/articles/drag-and-drop-with-jquery-your-essential-guide/ 
+http://quickworx.info/using-jquery-drag-and-drop-to-order-div-based-tables-in-rails/ 
+http://jqueryui.com/draggable/#sortable 
 
 Todo list sur "D:\EasySite - Todo"

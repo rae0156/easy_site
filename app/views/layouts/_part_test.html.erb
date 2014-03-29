@@ -80,14 +80,6 @@
 </div>
 <div class="row-fluid">
 	<div class="span2 alert alert-info">
-		Menu vertical
-	</div>
-	<div class="span10">
-		<%=generate_menu("vertical")%>
-	</div>
-</div>
-<div class="row-fluid">
-	<div class="span2 alert alert-info">
 		Menu déroulant
 	</div>
 	<div class="span10">
@@ -100,6 +92,14 @@
 	</div>
 	<div class="span10">
 		<%=generate_collapse(EsMediaFile.find(:all,:conditions=> ["media_type = 'collapse'"]))%>
+	</div>
+</div>
+<div class="row-fluid">
+	<div class="span2 alert alert-info">
+		Menu vertical
+	</div>
+	<div class="span10">
+		<%=generate_menu("vertical")%>
 	</div>
 </div>
 <div class="row-fluid">

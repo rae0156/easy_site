@@ -10,8 +10,8 @@ class DynamicController < ApplicationController
   def initialize()
      
     self.class.load_and_authorize_resource
-    self.class.before_filter :authenticate_es_user! if EsController.must_sign?(controller_name) 
-
+    self.class.before_filter :authenticate_user 
+    
     @controller_setup                    ||= {}
     @controller_setup[:controller_name]  ||= controller_name
     @controller_setup[:model]            ||= controller_name.classify.constantize
@@ -129,16 +129,11 @@ class DynamicController < ApplicationController
     @controller_setup[:delete_if_inactive]       = @controller_setup[:delete_if_inactive].nil? ? false : @controller_setup[:delete_if_inactive] 
     @controller_setup[:delete_multi]             = @controller_setup[:delete_multi].nil? ? false : @controller_setup[:delete_multi] 
 
-    @es_theme_name          ||= "theme1"
-    @es_template_name       ||= "template1" 
-
-
     super
   end
 
   # Load the pages -
   def list
-
     parent_id= nil   
     if params[:parent_id].presence 
       #sans recherche
@@ -154,7 +149,6 @@ class DynamicController < ApplicationController
     sorting :default => "#{@controller_setup[:model].table_name}.#{@controller_setup[:default_sort]}"
     
     ####################################### condition ####################################### 
-    
     
     tmp_search={}
     if(!params[:global_search].blank?)
@@ -180,8 +174,6 @@ class DynamicController < ApplicationController
 #      session[:parent_id] = parent_id unless parent_id.blank?
     end
     conditions = DynamicSearch.new(@controller_setup[:model],tmp_search).build_conditions.accessible_by(current_ability)
-    
-    
     ####################################### init info ####################################### 
     
     init_info_for_list(parent_id)
@@ -536,6 +528,10 @@ class DynamicController < ApplicationController
 
 
 private
+
+  def authenticate_user
+      self.authenticate_es_user! if EsController.must_sign?(controller_name) 
+  end    
 
   def get_by_id
    

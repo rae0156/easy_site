@@ -6,4 +6,9 @@ class EsSite < ActiveRecord::Base
   def complete_name
     "#{self.code} - #{self.description}"
   end
+  
+  def self.current
+    self.find (Rails.application.config.default_site)
+  end
+  
 end

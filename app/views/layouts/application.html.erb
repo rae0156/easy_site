@@ -14,8 +14,8 @@
 
     <%= stylesheet_link_tag "application", :media => "all" %>
     
-    <%unless @es_template_name.blank?%>
-	    <%= stylesheet_link_tag "themes/#{@es_theme_name}", :media => "all" %>
+    <%unless Rails.application.config.current_theme.blank?%>
+	    <%= stylesheet_link_tag "themes/#{Rails.application.config.current_theme}", :media => "all" %>
 	<%end%>
 	<!-- File Tree -->
 	<%= stylesheet_link_tag 'jqueryFileTree.css' %>		
@@ -28,12 +28,13 @@
     <%= javascript_include_tag "application" %>
   </head>
   <body>
-	<%= render "layouts/part_site" %>
-	<%= render "layouts/part_login" %>
+  	
+	<%= (render "layouts/part_site") if session[:flag_admin] %>
+	<%= (render "layouts/part_login") if session[:flag_connection] %>
 	<%= render "layouts/part_message" %>
 	
-    <%unless @es_template_name.blank?%>
-		<%= render "templates/#{@es_template_name}" %>
+    <%unless Rails.application.config.current_template.blank?%>
+		<%= render "templates/#{Rails.application.config.current_template}" %>
 	<%else%>
 		<%= yield %>
 	<%end%>

@@ -8,9 +8,7 @@ class DynamicSearch
 
   def build_conditions
     model=@model
-
     unless options.empty?
-
       # note that we're using self.send to make sure we use the getter methods
       options.each_key do |opt|
         opt = opt.to_s
@@ -19,7 +17,7 @@ class DynamicSearch
           tmp_column = @model.columns.select{|column| column.name == opt.to_s}[0]
           tmp[:name] = opt.split('.').count == 1 ? "#{@model.table_name}.#{opt}" : opt 
           value = options[opt.to_sym]
-          unless value.nil?
+          unless value.blank?
             #tmp[:where]="#{tmp[:name]} IS NULL"
             if opt.to_s.split('.').count > 1
               tmp[:where] = "UPPER(#{opt.to_s.split('.')[-2].pluralize + "." + opt.to_s.split('.').last}) LIKE UPPER(?)" 
@@ -36,8 +34,9 @@ class DynamicSearch
               tmp[:where] = "UPPER(#{tmp[:name]}) LIKE UPPER(?)"
               tmp[:value] = "%#{value}%"
             end
-          else
-            tmp[:where]="#{tmp[:name]} IS NULL"
+#          else
+#            tmp[:where]="#{tmp[:name]} IS NULL"
+#attention, ca ne marche pas avec les filtre
           end
         end          
 
@@ -48,8 +47,6 @@ class DynamicSearch
         end
       end
     end
-    
-
     model 
   end
 

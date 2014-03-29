@@ -1,7 +1,7 @@
-<%= render "shared/tinymce_script"%>
+
 
 <div class="alert alert-info">
-	<h2>Template '<%=@es_template_name%>' - Thème '<%=@es_theme_name%>'</h2>
+	<h2>Template '<%=Rails.application.config.current_template%>' - Thème '<%=Rails.application.config.current_theme%>'</h2>
 	<h3>Ceci est la partie dynamique du site</h3>
 	<p><%=get_lorem%></p>
 </div>

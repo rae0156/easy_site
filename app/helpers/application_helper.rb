@@ -199,12 +199,12 @@ module ApplicationHelper
   end
 
   def generate_vertical_menu(element,options={})
-    tmp_list = generate_list(element,{:UL_LEVEL_1 => {:class => "nav"},
+    tmp_list = generate_list(element,{:UL_LEVEL_1 => {:class => "dropdown-menu", :role=>"menu", "aria-labelledby"=>"dropdownMenu"},
                                       :UL_LEVEL_2 => {:class => "dropdown-menu"},
-                                      :UL_LEVEL_OTHER => {:class => "dropdown-menu submenu-show submenu-hide"},
-                                      :LI_HAS_CHILDREN_LEVEL_1 => {:class => 'dropdown'},
-                                      :LI_HAS_CHILDREN_LEVEL_2 => {:class => 'dropdown submenu'},
-                                      :LI_HAS_CHILDREN_LEVEL_OTHER => {:class => 'dropdown submenu'}
+                                      :UL_LEVEL_OTHER => {:class => "dropdown-menu"},
+                                      :LI_HAS_CHILDREN_LEVEL_1 => {:class => 'dropdown-submenu'},
+                                      :LI_HAS_CHILDREN_LEVEL_2 => {:class => 'dropdown-submenu'},
+                                      :LI_HAS_CHILDREN_LEVEL_OTHER => {:class => 'dropdown-submenu'}
                                       })
     html_text = tmp_list[0]
 
@@ -219,9 +219,34 @@ module ApplicationHelper
       end
     end if tmp_list.count > 1 
 
-    html_text=generate_tag(:DIV, html_text, {:class => "nav-collapse"})    
+    html_text=generate_tag(:DIV, html_text, {:class => "dropdown menu"})    
     return html_text
   end
+
+#  def generate_vertical_menu(element,options={})
+#    tmp_list = generate_list(element,{:UL_LEVEL_1 => {:class => "nav"},
+#                                      :UL_LEVEL_2 => {:class => "dropdown-menu"},
+#                                      :UL_LEVEL_OTHER => {:class => "dropdown-menu submenu-show submenu-hide"},
+#                                      :LI_HAS_CHILDREN_LEVEL_1 => {:class => 'dropdown'},
+#                                      :LI_HAS_CHILDREN_LEVEL_2 => {:class => 'dropdown submenu'},
+#                                      :LI_HAS_CHILDREN_LEVEL_OTHER => {:class => 'dropdown submenu'}
+#                                      })
+#    html_text = tmp_list[0]
+#
+#
+#    tmp_list[1..-1].each do |elem|
+#      menu = EsMenu.find(elem)
+#      if menu.link_type=="separated"
+#        html_text.gsub!("<LI>[#{elem}]</LI>",generate_tag(:LI, "", {:class => "divider"}))
+#      else
+#        tmp_link = generate_link(menu)
+#        html_text.gsub!("[#{elem}]",tmp_link)
+#      end
+#    end if tmp_list.count > 1 
+#
+#    html_text=generate_tag(:DIV, html_text, {:class => "nav-collapse"})    
+#    return html_text
+#  end
 
   def generate_side(element,options={})
     tmp_list = generate_list(element,{:options => [:first],:UL => {:class => "nav nav-list"}})
@@ -285,7 +310,7 @@ module ApplicationHelper
             elsif level==2
               tmp_options = options[:LI_HAS_CHILDREN_LEVEL_2]||{}
             else  
-              tmp_options = options[:LI_HAS_CHILDREN_LEVEL_3]||{}
+              tmp_options = options[:LI_HAS_CHILDREN_LEVEL_OTHER]||{}
             end
           end
           tmp_options = (options[:LI]||{}) if tmp_options.blank?
@@ -363,14 +388,19 @@ module ApplicationHelper
     tmp_link=""
     unless menu.blank?
       case menu.link_type
-      when "function"
-          tmp_link = link_to(menu.name, EsFonction.execute(menu.link_params))
+      when "link"
+          menu_param = {}
+          menu_param[:controller] = "/#{menu.controller}" unless menu.controller.blank?
+          menu_param[:action]     = menu.action unless menu.action.blank?
+          menu_param = "#" if menu_param.blank?
+          tmp_link = link_to(menu.name, menu_param, {:title => menu.description})
       when "link_sheet"
-          tmp_link = generate_tag("a", menu.name, {"data-toggle"=> "tab", "href"=> "#tab_#{menu.link_params}"})
+          tmp_link = generate_tag("a", menu.name, {"data-toggle"=> "tab", "href"=> "#tab_#{menu.link_params}",:title => menu.description})
       when "submenu" 
-          tmp_link = generate_tag("a", menu.name + generate_tag("B","",{:class => "caret"}), {:class => "dropdown-toggle", "data-toggle"=> "dropdown", "href"=> "#"})
+          tmp_link = generate_tag("a", menu.name , {:class => "dropdown-toggle", "data-toggle"=> "dropdown", "href"=> "#",:title => menu.description})
+#          tmp_link = generate_tag("a", menu.name + generate_tag("B","",{:class => "caret"}), {:class => "dropdown-toggle", "data-toggle"=> "dropdown", "href"=> "#"})
       when "dropdown"
-          tmp_link = generate_tag("a", menu.name, {:class => "dropdown-toggle", "data-toggle"=> "dropdown", "href"=> "#"})
+          tmp_link = generate_tag("a", menu.name, {:class => "dropdown-toggle", "data-toggle"=> "dropdown", "href"=> "#",:title => menu.description})
       end    
     end
     return tmp_link

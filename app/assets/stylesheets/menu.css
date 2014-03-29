@@ -1,3 +1,8 @@
+.menu > .dropdown-menu {
+    display: block;
+    position: static;
+}
+
 .dropdown li {position: relative;}
 
 /*positionnement des sous menu*/
@@ -8,7 +13,6 @@
   top: 0%;
   left: 100%;
 }
-
 
 /**************************************/
 /* sous menu autres niveaux verticals */

@@ -60,20 +60,7 @@ class EsPartsController < DynamicController
                        search: true,
                        dynamic_filter: true,
                        dynamic_search: true
-                      },
-                      {name: "nombre",
-                       dynamic_filter: true,
-                       dynamic_search: true
-                      },
-                      {name: "active",
-                       dynamic_filter: true,
-                       dynamic_search: true
-                      },
-                      {name: "valeur",
-                       value_list: "1a,2b,3c",
-                       dynamic_filter: true,
-                       dynamic_search: true
-                      }      
+                      }
                     ]
     super
   end 

@@ -4,7 +4,6 @@ class EsCategory < ActiveRecord::Base
   self.columns.each { |c| attr_accessible c.name.to_sym}
 
   has_many :es_articles
-  has_many :es_fonctions
   has_many :es_languages
   has_many :es_menus
   has_many :es_roles

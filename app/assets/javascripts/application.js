@@ -19,6 +19,7 @@
 //= require ./bootstrap-datetimepicker/bootstrap-datetimepicker
 //= require_tree ./bootstrap-datetimepicker/locales/
 //= require jquery.inputmask
+//= require ./../tinymce/tinymce.min
 // require_tree .
 
 
@@ -319,4 +320,16 @@ function init_inputmask() {
 		$(".inputmask").inputmask();
 	});
 }
+
+
+
+
+// démarrage de l'application
+$( document ).ready(function() {
+	$('[title]').tooltip({
+	    placement: "right"
+    });
+});
+//
+
 

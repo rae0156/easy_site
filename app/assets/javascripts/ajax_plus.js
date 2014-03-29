@@ -25,15 +25,15 @@
 
         $.each(arr_obj,function(index,obj){ 
                 if (obj.type == 'text') 
-                        $(obj).bind('keyup', function(e) { 
+                        $(obj).on('keyup', function(e) { 
                                 create_ajax_event(this,arr_obj) 
                         }); 
                 else if (obj.type == 'checkbox' || obj.type == 'radio') 
-                        $(obj).bind('click', function(e) { 
+                        $(obj).on('click', function(e) { 
                                 create_ajax_event(this,arr_obj) 
                         }); 
                 else if (obj.type == 'select-one' || obj.type == 'select-multiple') 
-                        $(obj).bind('change', function(e) { 
+                        $(obj).on('change', function(e) { 
                                 create_ajax_event(this,arr_obj) 
                         }); 
         }); 
@@ -66,7 +66,7 @@
 	    if (action.split('/').length <= 1)
 	    {
 		    if (tmp_url.split('/').length > 1)
-		    	action = tmp_url.split('/')[1] + '/' + action;
+		    	action = '/' + tmp_url.split('/')[1] + '/' + action;
 		    else
 		    	action = $(location).attr('host') + '/' + action;
 	    }
@@ -93,7 +93,7 @@
 
         $.ajax({ 
             type: 'POST',
-            url: action, 
+            url: action + '_auto_completion', 
             data: values,
             dataType: 'json',
             success: function(data){
@@ -109,6 +109,7 @@
 
 
   
+  function initajaxplus(){ 
 	$( document ).ready(function() {
 	    var arr_action = []; 
 	    $("[ajax_action]").each(function( index ) {   	
@@ -121,6 +122,7 @@
 			});
 	    });
 	});
+  };
 
   
 

@@ -6,6 +6,8 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
   include Userstamp
 
+  before_filter :check_page
+
   rescue_from CanCan::AccessDenied do |exception|
     flash[:error] = "Vous n'êtes pas autorisé à accéder à cette page"
     redirect_to root_url 
@@ -16,6 +18,26 @@ class ApplicationController < ActionController::Base
   def current_ability
     @current_ability ||= Ability.new(current_es_user)
   end
+
+  def check_page
+
+    page = EsPage.find_page(controller_name,action_name)
+    if page
+      Rails.application.config.current_theme    = page.es_theme.file if page.es_theme
+      Rails.application.config.current_template = page.es_template.name if page.es_template
+      session[:flag_admin]                      = page.flag_admin=='Y'
+      session[:flag_connection]                 = page.flag_connection=='Y'
+    else
+      Rails.application.config.current_theme    = ""
+      Rails.application.config.current_template = ""
+      session[:flag_admin]                      = false
+      session[:flag_connection]                 = false
+      return if url_for(:controller => controller_name,:action => action_name)==root_url
+      flash[:error] = "Cette page n'est pas accessible"
+      redirect_to root_url
+    end
+  end
+
   
   # Builds up @sort based upon what the user has sent in params[:sort]
   def sorting(options = {})
@@ -40,8 +62,10 @@ class ApplicationController < ActionController::Base
     send_data pdf.render, :filename => displayed_filename
   end  
 
+  # ----------------------------
+  # Download the generated CSV -
+  # ----------------------------
   def download_csv(csv_string, file_name)
-    
     send_data Iconv.conv('iso-8859-1//IGNORE', 'utf-8', csv_string), :filename => file_name, :disposition => 'attachment', :type => 'text/csv;charset=utf-8;header=present'
 #    send_data csv_string, :filename => file_name, :disposition => 'attachment', :type => 'text/csv;charset=utf-8;header=present'
   end  

@@ -1,0 +1,46 @@
+
+<div class="container-fluid">
+  <div class="row-fluid">
+
+	<div class="span6">
+		<%= form_tag({ :action => 'test_tinymce' },{:id => "form_tinymce"}) do%>
+			<textarea name="tinymce_exemple" id="tinymce_exemple" class='tinymce' rows="10"><%=@content_tiny%></textarea> 		
+			<a href="#" class="btn btn-primary btn_tinymce" id="tester_tinymce">Tester</a>
+			<a href="#" class="btn btn-primary btn_tinymce" id="sauver_tinymce">Sauver</a>
+		<% end %>
+	</div>
+	<div class="span6">
+		<div class="alert alert-warning">
+			Résultat : 
+		</div>
+		<div id="test_tinymce">
+			<%= get_template_part(@content_detail_id.to_i)%>
+		</div>
+	</div>
+  </div><!--/row-->
+</div> <!-- /container -->
+
+
+<script>
+	$('.btn_tinymce').on('click', function(form){
+	    // save TinyMCE instances before serialize
+	    tinyMCE.triggerSave();
+	
+	    var data = $("#form_tinymce").serialize() + "&content_detail_id=<%=@content_detail_id%>&id_button=" + $(this).attr('id');
+	    $.ajax({
+	        type:       'POST',
+	        cache:      false,
+	        url:        '/tinymce/test_tinymce',
+	        data:       data,
+	        dataType:   "json",
+   			success: function(data, textStatus, xhr){
+		      $("#test_tinymce").html(data.result);
+		   }
+	    });
+
+
+	    return false;
+	});
+</script>
+
+<%= render "shared/tinymce_script"%>
