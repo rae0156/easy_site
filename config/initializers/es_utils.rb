@@ -7,7 +7,11 @@
     Lorem::Base.new('words', 100).output
   end
 
-
+  def get_content_detail(content_name,sequence=1)
+    es_content = EsContent.find_by_name(content_name)
+    es_content_detail = (es_content && !es_content.es_content_details.blank?) ? es_content.es_content_details.find_by_sequence(sequence) : nil
+    return es_content_detail.blank? ? "" : get_template_part(es_content_detail.id)
+  end
 
   def get_template_part(part_name)
     

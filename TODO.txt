@@ -1,6 +1,6 @@
-changement de theme et de template et changement de la page par défaut
+	
+refaire la gestion user
 
-=========================================================================
 	
 penser à la gestion des autorisations + refaire les écrans
 	- tables (user,roles,droit)
@@ -17,7 +17,6 @@ Définir les modules :
 		type de menu : horizontal, en haut, côté, dropdown,etc..
 		ajout automatique de la gestion du module menu dans la gestion des modules (A voir)
 
-refaire la gestion user
 	
 Faire le module "setup général" de l'appli comme avec le site langue
 

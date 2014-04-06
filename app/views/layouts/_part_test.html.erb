@@ -6,6 +6,57 @@
 	</div>
 </div>
 <BR>
+	
+	
+	
+	
+<div class="row-fluid">
+	<div class="span2 alert alert-info">
+		<span class='btn' id='btn_easy_tag'>Easy_tag</span>
+	</div>
+
+	<div class="span10">
+	<%= form_tag({},{:id => "form_easy"}) do%>
+		  aide : <%= easy_tag('help') %>
+		  libellé : <%= easy_tag('label',:label => "Ceci est un label",:help=>true) %>
+		  <%= easy_tag('text',:instance => "test", :field => "field1",:with_label => "Ceci est un texte",:value=> "choix 2", :help=>true) %>
+		  liste : <%= easy_tag('list',:instance => "test", :field => "field2",:value_list_array => ["choix 1","choix 2","choix 3"],:selected_value=> "choix 2",:number_of_line=>5,:multiple => true,:help=>true) %>
+		  information cachée : <%= easy_tag('hidden',:instance => "test", :field => "field3",:value => "text caché",:help=>true) %>
+		  liste avec collection : <%= easy_tag('list_collection',:instance => "test", :field => "field4",:collection => EsSite.all,:value_method => "id",:text_method => "code",:selected_value=> 2,:help=>true) %>
+		  coche : <%= easy_tag('check_box',:instance => "test", :field => "field5",:value => "N",:help=>true) %>
+		  <%= easy_tag('long_text',:instance => "test", :field => "field6",:with_label => "Long texte",:value=> "Ceci est un long text",:cols=> 600, :help=>true) %>
+		  <%= easy_tag('radio_button',:instance => "test", :field => "field7",:value => "choix 2",:read_only => true,:labels => ["choix 1","choix 2","choix 3","choix 4"],:with_label => "Radio bouton",:mandatory=>true,:help=>true) %>
+		  obligatoire : <%= easy_tag('mandatory',:label => "Les zones obligatoires",:help=>true) %>
+		  entier : <%= easy_tag('integer',:instance => "test", :field => "field8",:help=>true) %>
+		  décimale : <%= easy_tag('decimal',:instance => "test", :field => "field9",:help=>true) %>
+		  heure : <%= easy_tag('time',:instance => "test", :field => "field10",:help=>true) %>
+		  date : <%= easy_tag('date',:instance => "test", :field => "field11",:help=>true) %>
+		  date et heure : <%= easy_tag('date_time',:instance => "test", :field => "field12",:help=>true) %>
+	<% end %>
+	</div>
+
+
+</div>
+
+<script>
+	$(document).ready(function() {
+		$('#btn_easy_tag').on("click",function(e) {  
+			var data = $("#form_easy").serialize();
+			$.ajax({
+	        url: '/sites/refresh_page',
+	        data:       data,
+	        dataType: 'script',
+		    });	    
+		    return false;
+		}
+		
+		);	
+	});
+	init_datepicker();	
+	init_inputmask();		
+</script>
+
+
 <div class="row-fluid">
 	<div class="span2 alert alert-info">
 		Citation

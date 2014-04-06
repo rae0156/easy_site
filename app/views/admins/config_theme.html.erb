@@ -1,0 +1,8 @@
+<h1>Changement de thème</h1>
+<%= form_tag({}, { :name => 'admin_form'}) do%>
+
+	<label>Thème : </label>
+    <%=  collection_select(:admin, :theme, EsTheme.all.sort_by{|t| t.code}, :code, :code, {:selected => @theme}) %>
+	<li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver", :action => "save_theme",  :form => "admin_form"}%></li>
+
+<% end %>

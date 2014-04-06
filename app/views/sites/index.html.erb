@@ -2,6 +2,5 @@
 
 <div class="alert alert-info">
 	<h2>Template '<%=Rails.application.config.current_template%>' - Thème '<%=Rails.application.config.current_theme%>'</h2>
-	<h3>Ceci est la partie dynamique du site</h3>
-	<p><%=get_lorem%></p>
+	<%= get_content_detail("principal")%>
 </div>

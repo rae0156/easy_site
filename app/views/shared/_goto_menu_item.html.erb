@@ -2,7 +2,6 @@
 	back = false if back.nil?  
 	image = "" if image.nil?  
 	text = "back" if text.nil?
-	text = "<br />" + text unless text.blank?
 	controller = "" if controller.nil?  
 	action = "index" if action.nil?
 	id = "" if id.nil?
@@ -32,7 +31,11 @@
 	option_hash = {}
 	option_hash = option_hash.merge({:confirm => "Voulez vous vraiment réaliser cette action ?"}) if check == 'true' && form.blank?	
 	
-	link = image_tag(image, {:alt => text}) + "#{text}".html_safe
+	if image.blank?
+		link = text
+	else
+		link = image_tag(image, {:alt => text}) + "#{'<br />' + text}".html_safe
+	end
 	
 	unless form.blank?
 		if checkbox == 'true'
