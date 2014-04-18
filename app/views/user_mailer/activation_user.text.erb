@@ -1,0 +1,12 @@
+Bonjour <%=@name%>,
+L'activation de votre utilisateur <%=@mail%> sur le site <%=@web_site_name%> vient d'être faite.
+<%unless @newpassword.blank? %>
+Vous pouvez dès maintenant vous connecter avec votre nouveau mot de passe : <%= @newpassword %>
+<%else%>
+Vous pouvez vous connecter en utilisant votre ancien mot de passe.
+Si vous ne vous en rappellez plus, utilisez l'option "j'ai perdu mon mot de passe" 
+<%end%>
+Si vous rencontrez un problème, n'hésitez pas à nous contacter.
+
+Bien à vous,
+  L'équipe <%=@web_site_name%>.

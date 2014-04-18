@@ -10,7 +10,7 @@ class DynamicController < ApplicationController
   def initialize()
      
     self.class.load_and_authorize_resource
-    self.class.before_filter :authenticate_user 
+    self.class.before_filter :login_required 
     
     @controller_setup                    ||= {}
     @controller_setup[:controller_name]  ||= controller_name

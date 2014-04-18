@@ -440,34 +440,41 @@ module ApplicationHelper
 
 
   def errors_for(object, message=nil)
+    model_name = object.class.name.underscore.humanize.downcase
+    model_name = model_name.split(' ')[1..-1].join(' ') if model_name.split(' ')[0]=='es'
     html = ""
     unless object.errors.blank?
       html << "<div id = 'errorExplanation' class='alert alert-error'>\n"
       if message.blank?
         if object.new_record?
-          html << "<h4>#{object.errors.full_messages.length} erreur(s) pour '#{object.class.name.underscore.humanize.downcase}' </h4>"
-          html << "\t\t<p>Il y a un problème lors de la création de #{object.class.name.underscore.humanize.downcase}</p>\n"
+          html << "<h4>#{object.errors.full_messages.length} erreur(s) pour '#{model_name}' </h4>"
+          html << "\t\t<p>Il y a un problème lors de la création de #{model_name}</p>\n"
         else
-          html << "<h4>#{object.errors.full_messages.length} erreur(s) pour '#{object.class.name.underscore.humanize.downcase}' </h4>"
-          html << "\t\t<p>Il y a un problème lors de la modification de #{object.class.name.underscore.humanize.downcase}</p>\n"
+          html << "<h4>#{object.errors.full_messages.length} erreur(s) pour '#{model_name}' </h4>"
+          html << "\t\t<p>Il y a un problème lors de la modification de #{model_name}</p>\n"
         end    
       else
         if message == "delete"
-          html << "<h4>#{object.errors.full_messages.length} erreur(s) pour '#{object.class.name.underscore.humanize.downcase}' </h4>"
-          html << "\t\t<p>Il y a un problème lors de la suppression de #{object.class.name.underscore.humanize.downcase}</p>\n"
+          html << "<h4>#{object.errors.full_messages.length} erreur(s) pour '#{model_name}' </h4>"
+          html << "\t\t<p>Il y a un problème lors de la suppression de #{model_name}</p>\n"
         else
           html << "<h4>#{object.errors.full_messages.length} erreur(s) pour #{message} </h4>"
           html << "<p>Détail :</p>"
         end
       end  
       html << "\t\t<ul>\n"
-      object.errors.full_messages.each do |error|
-        html << "\t\t\t<li>#{error}</li>\n"
+#      object.errors.full_messages.each do |error|
+      object.errors.map do |attribute, message| 
+        if message[0]== '#'
+          html << "\t\t\t<li>#{message[1..-1]}</li>\n"
+        else
+          html << "\t\t\t<li>#{object.errors.full_message(attribute, message)}</li>\n"
+        end 
       end
       html << "\t\t</ul>\n"
       html << "\t</div>\n"
     end
-    html
+    html.html_safe
   end  
 
   # Generate the description with the styles for the form fields of the new and edit screens
@@ -477,6 +484,8 @@ module ApplicationHelper
   end
   
   
-  
-  
+  def generate_activation_code(size = 6)
+    charset = %w{ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z}
+    (0...size).map{ charset.to_a[rand(charset.size)] }.join
+  end
 end

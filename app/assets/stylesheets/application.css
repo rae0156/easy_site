@@ -32,3 +32,5 @@ tr.inactive_row {
         font-style: italic      
 } 
 
+
+.field_with_errors {display:inline-block;background-color: #FF0000}

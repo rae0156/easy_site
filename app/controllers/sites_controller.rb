@@ -1,5 +1,5 @@
 class SitesController < ApplicationController
-  
+    
   def refresh_page
     respond_to do |format|
       format.html {redirect_to :back} 

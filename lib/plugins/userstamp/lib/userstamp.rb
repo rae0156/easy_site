@@ -28,7 +28,7 @@ module Ddb
           # your own implementation of this method to the private section of
           # the controller where you are including the Userstamp module.
           def set_stamper
-            EsUser.stamper = current_es_user #self.current_user
+            EsUser.stamper = self.current_user
           end
 
           # The <tt>reset_stamper</tt> method as implemented here assumes that a

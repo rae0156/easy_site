@@ -2,6 +2,7 @@
 
 class ErrorsController < ActionController::Base
   layout 'application'
+  include AuthenticatedSystem   
    
   def custom_error
     @exception = env['action_dispatch.exception']

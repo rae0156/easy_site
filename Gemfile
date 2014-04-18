@@ -26,7 +26,7 @@ gem 'lorem'
 gem "acts_as_tree_rails3"
 
 gem 'will_paginate', '~> 3.0'
-gem 'devise'
+gem "bcrypt-ruby"
 gem "cancan"
 gem "prawn"
 #gem "rails3-jquery-autocomplete"

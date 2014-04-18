@@ -1,0 +1,130 @@
+	  <%
+	    complete = params[:action] == 'new' || params[:action] == 'create_complete'
+	    admin = params[:action] == 'edit' || params[:action] == 'update'
+	  %>
+	  
+	  <%unless complete%>	
+	      <H2><%=@user.mail%></H2>
+	  <%end%>
+
+      <%if admin%>	
+      	  <%unless @user.mail == EsUser.current_user.mail%>
+		    <div class="control-group">
+		      <label for="roles_es_role_ids" class="control-label">Rôles à assigner : </label>
+			  <div class="controls">
+		      	<%= select("user", :es_role_ids, @roles.map {|u| [u.description, u.id]}, {}, :multiple => "multiple", :size => 3) %>
+			  </div>
+  			</div>
+        	<%if @user.active.length == 1%>
+		      <div class="control-group">
+			    <label for="user_active" class="control-label">Activé : </label>
+			    <div class="controls">
+				    <%= check_box "user", "active", {}, "Y", "N" %>
+				    <span><%="(Un mail sera envoyé si vous l'activez)" if @user.active == "N"%></span>
+				</div>
+  			  </div>
+  		    <%end%>
+		  <%end%>
+	  	  <%if @user.active.length == 1%>
+		    <div class="control-group">
+			    <label for="user_password1" class="control-label">Nouveau mot de passe : </label>
+				<div class="controls">
+					<%= password_field "user", "password1", :size => 12, :maxlength => 12 %>
+				</div>
+  			</div>
+		    <div class="control-group">
+			    <label for="user_password2" class="control-label">Validation : </label>
+				<div class="controls">
+					<%= password_field "user", "password2", :size => 12, :maxlength => 12 %>
+				</div>
+  			</div>
+		  <%end%>		
+	  <%end%>		
+
+
+	  <h4><%= field_description "Données obligatoires", true %></h4>
+	  <div class="control-group">
+	    <label for="user_pseudo" class="control-label">Speudo : </label>
+		<div class="controls">
+			<%= text_field "user", "pseudo", :size => 60, :maxlength => 60 %>
+	    </div>
+	  </div>
+	  <div class="control-group">
+	    <label for="user_name" class="control-label">Nom : </label>
+	    <div class="controls">
+			<%= text_field "user", "name", :size => 60, :maxlength => 60 %>
+			<%= field_description "", true %>
+		</div>
+	  </div>
+	  <div class="control-group">
+	    <label for="user_firstname" class="control-label">Prénom : </label>
+	    <div class="controls">
+			<%= text_field "user", "firstname", :size => 60, :maxlength => 60 %>
+			<%= field_description "", true %>
+		</div>
+	  </div>
+	  <%if complete%>	
+		  <div class="control-group">
+		    <label for="user_mail" class="control-label">E-mail : </label>
+		    <div class="controls">
+				<%= email_field "user", "mail", :size => 60, :maxlength => 60 %>
+				<%= field_description "", true %>
+			</div>
+		  </div>
+		  <div class="control-group">
+		    <label for="user_password1" class="control-label">Mot de passe : </label>
+		    <div class="controls">
+				<%= password_field "user", "password1", :size => 12, :maxlength => 12 %>
+				<%= field_description "", true %>
+			</div>
+		  </div>
+		  <div class="control-group">
+		    <label for="user_password2" class="control-label">Validation : </label>
+		    <div class="controls">
+				<%= password_field "user", "password2", :size => 12, :maxlength => 12 %>
+				<%= field_description "", true %>
+			</div>
+		  </div>
+	  <%end%>		
+	  <div class="control-group">
+	    <label for="user_address1" class="control-label">Adresse : </label>
+	    <div class="controls">
+			<%= text_field "user", "address1", :size => 60, :maxlength => 60 %>
+		</div>
+	  </div>
+	  <div class="control-group">
+	    <label for="user_address2" class="control-label">Adresse (suite) : </label>
+	    <div class="controls">
+			<%= text_field "user", "address2", :size => 60, :maxlength => 60 %>
+		</div>
+	  </div>
+	  <div class="control-group">
+	    <label for="user_zip" class="control-label">Code postal : </label>
+	    <div class="controls">
+			<%= text_field "user", "zip", :size => 10, :maxlength => 10 %>
+		</div>
+	  </div>
+	  <div class="control-group">
+	    <label for="user_city" class="control-label">Localité : </label>
+	    <div class="controls">
+			<%= text_field "user", "city", :size => 30, :maxlength => 30 %>
+		</div>
+	  </div>
+	  <div class="control-group">
+	    <label for="user_country" class="control-label">Pays : </label>
+	    <div class="controls">
+			<%= text_field "user", "country", :size => 30, :maxlength => 30 %>
+		</div>
+	  </div>
+	  <div class="control-group">
+	    <label for="user_tel" class="control-label">Téléphone : </label>
+	    <div class="controls">
+			<%= text_field "user", "tel", :size => 20, :maxlength => 20 %>
+		</div>
+	  </div>
+	  <div class="control-group">
+	    <label for="user_gsm" class="control-label">GSM : </label>
+	    <div class="controls">
+			<%= text_field "user", "gsm", :size => 20, :maxlength => 20 %>
+		</div>
+	  </div>

@@ -1,12 +1,15 @@
     <div class="navbar navbar-fluid-top">
         <div class="container-fluid pull-right">
-			<% if es_user_signed_in? %>
-			  <strong><%= current_es_user.email %></strong> est connecté.
-			  <%= link_to 'Modifier son profile', edit_es_user_registration_path, :class => 'navbar-link' %> |
-			  <%= link_to "Se déconnecter", destroy_es_user_session_path, method: :delete, :class => 'navbar-link'  %>
+			<% if self.logged_in? %>
+			  <span><%= current_user.pseudo.blank? ? current_user.mail : current_user.pseudo %></span> est connecté.&nbsp;
+			  <%= link_to 'Modifier son profile', {:controller => 'es_users', :action => 'profile'}, :class => 'navbar-link' %> |
+			  <%= link_to 'Modifier son mot de passe', {:controller => 'es_users', :action => 'password'}, :class => 'navbar-link' %> |
+			  <%= link_to 'Modifier son mail', {:controller => 'es_users', :action => 'mail'}, :class => 'navbar-link' %> |
+			  <%= link_to "Se déconnecter", {:controller => 'es_users', :action => 'logout'}, method: :delete, :class => 'navbar-link'  %>
 			<% else %>
-			  <%= link_to "S'incrire", new_es_user_registration_path, :class => 'navbar-link'  %> |
-			  <%= link_to "Se connecter", new_es_user_session_path, :class => 'navbar-link'  %>
+			  <%= link_to "S'incrire", {:controller => 'es_users', :action => 'new_user'}, :class => 'navbar-link'  %> |
+			  <%= link_to 'Mot de passe perdu', {:controller => 'es_users', :action => 'password_lost'}, :class => 'navbar-link' %> |
+			  <%= link_to "Se connecter", {:controller => 'es_users', :action => 'login'}, :class => 'navbar-link'  %>
 			<% end %>
         </div>
     </div>

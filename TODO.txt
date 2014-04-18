@@ -1,12 +1,14 @@
-	
-refaire la gestion user
 
+jquery hide show div arrow
+http://www.codemashups.com/yet-another-show-hide-top-menu/
+http://jsfiddle.net/VLNDL/
+a faire pour le part_site	
+
+============================================================	
 	
 penser à la gestion des autorisations + refaire les écrans
-	- tables (user,roles,droit)
+	- tables (user,roles,droits)
 	- modules à implémenter	
-	
-	
 	  
 Définir les modules :
 	- la partie admin est figée et contient le paramètrage des modules de la partie 'user' et 'invité'
@@ -34,5 +36,7 @@ http://pathfindersoftware.com/2008/07/project-website-part-4-drag-and-drop-in-jq
 http://www.elated.com/articles/drag-and-drop-with-jquery-your-essential-guide/ 
 http://quickworx.info/using-jquery-drag-and-drop-to-order-div-based-tables-in-rails/ 
 http://jqueryui.com/draggable/#sortable 
+
+
 
 Todo list sur "D:\EasySite - Todo"

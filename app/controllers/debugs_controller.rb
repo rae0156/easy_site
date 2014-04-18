@@ -1,7 +1,5 @@
 class DebugsController < ApplicationController
   
-# necessary for non login users
-skip_before_filter :login_required
 
   def index 
     tmp_text = "" 

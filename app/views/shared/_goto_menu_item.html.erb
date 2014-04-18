@@ -2,14 +2,14 @@
 	back = false if back.nil?  
 	image = "" if image.nil?  
 	text = "back" if text.nil?
+	form = "" if form.nil?   
 	controller = "" if controller.nil?  
-	action = "index" if action.nil?
+	action = "index" if action.nil? && !form.blank? && !controller.blank?
 	id = "" if id.nil?
 	check = "false" if check.nil?
 	checkbox = "false" if check.nil?
 	class_btn = "goto_btn" if class_btn.nil?
 	id_btn = "" if id_btn.nil?
-	form = "" if form.nil?   
 	param_goto = {} if param_goto.nil?
 
 	if back
@@ -38,15 +38,21 @@
 	end
 	
 	unless form.blank?
+		url = url_hash.blank? ? "" : url_for(url_hash)
 		if checkbox == 'true'
-		    javascript = "checkAndSubmitForm('#{form}', '#{url_for(url_hash)}', #{check})"
+		    javascript = "checkAndSubmitForm('#{form}', '#{url}', #{check})"
 		else
-		    javascript = "questionAndSubmitForm('#{form}', '#{url_for(url_hash)}', #{check})" 
+		    javascript = "questionAndSubmitForm('#{form}', '#{url}', #{check})" 
 		end
 	end 
-	
 %>
 
+
+
 <div class="<%=class_btn%>" <%=id_btn.blank? ? "" : "id='#{id_btn}'"%>>
-	<%= !form.blank? ? link_to_function(link, javascript ) : link_to(link, url_hash, option_hash) %>
+	<%if form.blank? && controller.blank? && action.blank? %>
+		<%= submit_tag text %>
+	<%else%>
+		<%= !form.blank? ? link_to_function(link, javascript ) : link_to(link, url_hash, option_hash) %>
+	<%end%>
 </div>

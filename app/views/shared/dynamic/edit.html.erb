@@ -6,13 +6,10 @@
 
 <%= form_tag({}, { :name => 'update_form', :class => 'form-horizontal' }) do%>
 
-	<div class="center-menu">
-		<ul>
-			<li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver",:image => "appli/save_32.png", :action => "update", :id => @instance.id,  :form => "update_form"}%></li>
-			<li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => {:back => true, :text => "Retour",:image => "appli/back_32.png", :action => "list", :param_goto => {:parent_id => (@parent.blank? ? "" : @parent.id)}}%></li>
-		</ul>
-		<div class="clearer"></div>
-	</div>
+	<ul>
+		<li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver",:image => "appli/save_32.png", :action => "update", :id => @instance.id,  :form => "update_form"}%></li>
+		<li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => {:back => true, :text => "Retour",:image => "appli/back_32.png", :action => "list", :param_goto => {:parent_id => (@parent.blank? ? "" : @parent.id)}}%></li>
+	</ul>
 	<!-- Error messages -->
 	<%= errors_for(@instance) %>
 	

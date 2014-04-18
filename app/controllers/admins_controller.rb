@@ -1,6 +1,5 @@
 class AdminsController < ApplicationController
-    self.before_filter :authenticate_user 
-
+    self.before_filter :login_required 
 
     def config_template
       @template = Rails.application.config.current_template

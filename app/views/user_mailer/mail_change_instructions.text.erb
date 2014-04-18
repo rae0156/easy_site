@@ -1,0 +1,17 @@
+Bonjour <%=@name%>,
+Une demande de changement de mail vient d'être faite sur le site <%=@web_site_name%>.
+<%if @confirm_new_mail.blank?%>
+	Votre nouvelle adresse : <%= @new_mail %>
+Si vous n'avez pas effectué cette demande, merci de nous le signaler via notre site.
+<%else%>
+
+Si vous avez effectué cette demande, il vous suffit de cliquer sur le lien ci-dessous pour activer cette nouvelle adresse.
+<%= @confirm_new_mail %>
+<%end%>
+
+Si le lien ci-dessus ne fonctionne pas, tentez de le copier / coller directement dans votre navigateur.
+Si vous rencontrez un problème, n'hésitez pas à nous contacter.
+
+Bien à vous,
+  L'équipe <%=@web_site_name%>.
+

@@ -1,6 +1,6 @@
 class TinymceController < ApplicationController
 #    self.load_and_authorize_resource
-    self.before_filter :authenticate_user 
+    self.before_filter :login_required 
   
   def config_content 
     init_selection(params[:ajax_param] && params[:ajax_param][:selection] ? params[:ajax_param][:selection] : {})
@@ -45,10 +45,10 @@ private
       @part_list = template.es_parts.where(["es_content_id IS NOT NULL AND es_content_id > 0"])
       @part_id = options[:es_part_id] if @part_list.collect(&:id).include?(options[:es_part_id].to_i)
     end
-    if options[:es_template_id].presence && options[:es_part_id].presence
+    if options[:es_template_id].presence && options[:es_part_id].presence && !@part_id.blank?
       part = EsPart.find_by_id(options[:es_part_id])
       if part.es_content && part.es_content.es_content_details.length>0
-        @content_detail_list = part.es_content.es_content_details.where({:editable => 'Y'}).order("sequence") 
+        @content_detail_list = part.es_content.es_content_details.where({:editable => 'Y'}).order("sequence")
         @content_detail_id = options[:es_content_detail_id] if @content_detail_list.collect(&:id).include?(options[:es_content_detail_id].to_i)
       end
     end

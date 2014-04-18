@@ -1,0 +1,29 @@
+<% @title = "Utilisateurs" %>
+
+
+<h2><%= image_tag("appli/user_48.png", {:alt => @title, :align => "middle"}) %>&nbsp;<%= @title %></h2>
+<ul>
+	<li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Exporter",:image => "appli/excel_32.png", :action => "export_csv", :form => "user_list_form"}%></li>
+	<li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Effacer",:image => "appli/delete_32.png", :action => "destroy", :form => "user_list_form", :checkbox => "true", :check => "true"}%></li>
+	<li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Nouveau",:image => "appli/new_32.png", :action => "new"} %></li>
+</ul>
+
+
+<!-- Search -->
+<%= render :partial => 'shared/search' %>
+	
+
+<!-- Error messages -->	
+<%= errors_for(flash[:errors_destroy], "delete").html_safe if flash[:errors_destroy] %>
+
+<%= form_tag({ :action => 'new' }, { :name => 'user_list_form'}) do%>
+
+<!-- Data table -->
+<div id="user_div">
+  <%= render :partial => 'list' %>
+</div>
+
+
+
+<% end %>
+

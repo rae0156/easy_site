@@ -1,0 +1,16 @@
+<% @title = "Nouvel utilisateur" %>
+
+<div class="hero-unit">
+	<h2><%= image_tag("appli/user_48.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
+    <ul>
+		<li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver",:image => "appli/save_32.png", :action => "create_complete",  :form => "user_form"}%></li>
+		<li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour",:image => "appli/back_32.png", :action => "list"}%></li>
+    </ul>
+	<%= errors_for(@user) %>
+
+	<%= form_tag({ :action => 'create_complete'}, { :name => 'user_form', :class => 'form-horizontal' }) do%>
+		
+		  <%= render :partial => 'form' %>
+	
+	<% end %>
+</div>
