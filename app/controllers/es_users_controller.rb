@@ -65,7 +65,8 @@ class EsUsersController < ApplicationController
     mail = send_mail_activation(@user, params[:user][:active])
     @user.special_action="update" 
     @roles        = EsRole.find :all, :order => 'description'
-    params[:user][:es_role_ids] = []  if params[:user].blank? || !params[:user].include?(:es_role_ids) 
+    
+    params[:user][:es_role_ids] = []  if params[:user].blank? || !params[:user].include?(:es_role_ids) && !EsUser.current_user.id == params[:id]
     if @user.update_attributes(params[:user])
       @user.update_attribute(:password, @user.password1) unless @user.password1.blank? 
       flash[:notice] = 'Cet utilisateur a été correctement modifiée.'

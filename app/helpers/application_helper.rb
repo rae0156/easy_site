@@ -4,13 +4,13 @@ module ApplicationHelper
 
   def generate_collapse(collection)
       id_rand = "accordion_" + rand(100000..999999).to_s 
-      tmp_list = generate_list(collection,{:options => [:all_div],:UL => {:class => "accordion",:id=> id_rand},:LI => {:class => "accordion-group"}})
+      tmp_list = generate_list(collection,{:options => [:all_div],:UL => {:class => "panel-group",:id=> id_rand},:LI => {:class => "panel panel-default"}})
       html_text=tmp_list[0]
       num =0
       tmp_list[1..-1].each do |id|
         element = collection[0].class.find(id)
-        html_element_text = generate_tag(:DIV, generate_tag(:a, "[title]", {:class=>"accordion-toggle","data-toggle"=>"collapse", "data-parent"=>"##{id_rand}", :href=>"#collapse#{id}"}), {:class=>"accordion-heading"}) + 
-                            generate_tag(:DIV, generate_tag(:DIV, "[description]",{:class=>"accordion-inner"}) ,{:id=>"collapse#{id}",:class=>"accordion-body collapse #{(num==0 ? "in" : "")}"}) 
+        html_element_text = generate_tag(:DIV, generate_tag(:h4,generate_tag(:a, "[title]", {"data-toggle"=>"collapse", "data-parent"=>"##{id_rand}", :href=>"#collapse#{id}"}), {:class=>"panel-title"}), {:class=>"panel-heading"}) + 
+                            generate_tag(:DIV, generate_tag(:DIV, "[description]",{:class=>"panel-body"}) ,{:id=>"collapse#{id}",:class=>"panel-collapse collapse #{(num==0 ? "in" : "")}"}) 
                             
         tmp_content = substitute_string(html_element_text,element)
         html_text.gsub!("[#{id}]",tmp_content)
@@ -36,7 +36,7 @@ module ApplicationHelper
         num+=1
       end
       html_text = generate_tag(:OL, html_indicators_text, {:class=>"carousel-indicators"}) + html_text
-      html_text += generate_tag(:A, "&lsaquo;", {:class=>"carousel-control left", :href => "#carousel_#{id_rand}", "data-slide" => "prev"}) + generate_tag(:A, "&rsaquo;", {:class=>"carousel-control right", :href => "#carousel_#{id_rand}", "data-slide" => "next"})
+      html_text += generate_tag(:A, "<span class='glyphicon glyphicon-chevron-left'></span>", {:class=>"carousel-control left", :href => "#carousel_#{id_rand}", "data-slide" => "prev"}) + generate_tag(:A, "<span class='glyphicon glyphicon-chevron-right'></span>", {:class=>"carousel-control right", :href => "#carousel_#{id_rand}", "data-slide" => "next"})
       
       html_text = generate_tag(:DIV, html_text, {:id=>"carousel_#{id_rand}",:class=>"carousel slide"}) + generate_tag(:script, "$('.carousel').carousel()", {:type=>"text/javascript"})
     else
@@ -63,7 +63,7 @@ module ApplicationHelper
   end
 
   def generate_image_list(collection)
-    tmp_list = generate_list(collection,{:UL => {:class => "thumbnails"},:LI => {:class => "span2"}})
+    tmp_list = generate_list(collection,{:UL => {:class => "thumbnails"},:LI => {:class => "col-md-2"}})
     html_text=tmp_list[0]
     
     tmp_list[1..-1].each do |id_image|
@@ -148,7 +148,7 @@ module ApplicationHelper
   end
 
   def generate_sheet(element,options={})
-    tmp_list = generate_list(element,{:UL_LEVEL_1 => {:class => "nav nav-tabs"},
+    tmp_list = generate_list(element,{:UL_LEVEL_1 => {:class => "nav navbar-default nav-tabs navbar-nav"},
                                       :UL_LEVEL_2 => {:class => "dropdown-menu"},
                                       :LI_HAS_CHILDREN_LEVEL_1 => {:class => 'dropdown'},
                                       :LI_FIRST => {:class => "active"}
@@ -224,7 +224,7 @@ module ApplicationHelper
   end
 
 #  def generate_vertical_menu(element,options={})
-#    tmp_list = generate_list(element,{:UL_LEVEL_1 => {:class => "nav"},
+#    tmp_list = generate_list(element,{:UL_LEVEL_1 => {:class => "nav navbar-default navbar-nav"},
 #                                      :UL_LEVEL_2 => {:class => "dropdown-menu"},
 #                                      :UL_LEVEL_OTHER => {:class => "dropdown-menu submenu-show submenu-hide"},
 #                                      :LI_HAS_CHILDREN_LEVEL_1 => {:class => 'dropdown'},
@@ -249,7 +249,7 @@ module ApplicationHelper
 #  end
 
   def generate_side(element,options={})
-    tmp_list = generate_list(element,{:options => [:first],:UL => {:class => "nav nav-list"}})
+    tmp_list = generate_list(element,{:options => [:first],:UL => {:class => "nav nav-pills nav-stacked"}})
     html_text = tmp_list[0]
     html_text.gsub!("[FIRST]",generate_tag(:LI, element.description, {:class => "nav-header"}))
 
@@ -264,7 +264,7 @@ module ApplicationHelper
 
 
   def generate_navigation(element,options={})
-    tmp_list = generate_list(element,{:UL => {:class => "nav"}})
+    tmp_list = generate_list(element,{:UL => {:class => "nav nav-pills"}})
     html_text = tmp_list[0]
     tmp_list[1..-1].each do |elem|
       menu = EsMenu.find(elem)
@@ -294,7 +294,15 @@ module ApplicationHelper
         element.children.each do |child|
           num+=1
           options[:level]=level+1
+
           tmp_sub_child = child.children.blank? ? [""] : generate_list(child,options)
+          if child.children.blank? 
+            if child.respond_to?('all_roles') && child.all_roles == 'N' 
+              next if (EsUser.current_user.blank? || !EsUser.current_user.role?(child.es_roles.collect(&:name)))
+            end
+          elsif tmp_sub_child == [""]
+            next 
+          end
   
           before_element = options.has_key?(:options) && options[:options].include?(:before_element) ? "[BEFORE_#{child.id}]" : ""
           after_element =  options.has_key?(:options) && options[:options].include?(:after_element) ? "[AFTER_#{child.id}]" : ""
@@ -317,7 +325,7 @@ module ApplicationHelper
 
 
           tmp_options = (options[:LI_FIRST]||tmp_options) if num==1 && level==1
-          
+
           text_list += generate_tag(tmp_tag, text_element, tmp_options)
   
           tab_element << child.id
@@ -328,7 +336,15 @@ module ApplicationHelper
         element.each do |child|
           num+=1
           options[:level]=level+1
+
           tmp_sub_child = child.children.blank? ? [""] : generate_list(child,options)
+          if child.children.blank? 
+            if child.respond_to?('all_roles') && child.all_roles == 'N' 
+              next if (EsUser.current_user.blank? || !EsUser.current_user.role?(child.es_roles.collect(&:name)))
+            end
+          elsif tmp_sub_child == [""]
+            next 
+          end
 
           before_element = options.has_key?(:options) && options[:options].include?(:before_element) ? "[BEFORE_#{child.id}]" : ""
           after_element =  options.has_key?(:options) && options[:options].include?(:after_element) ? "[AFTER_#{child.id}]" : ""
@@ -346,21 +362,23 @@ module ApplicationHelper
         end 
       end        
       
-      text_list += options.has_key?(:options) && options[:options].include?(:last) ? "[LAST]" : ""
-
-      tmp_tag = options.has_key?(:options) && options[:options].include?(:all_div) ? :DIV : :UL
-
-      if level==1
-        tmp_options = options[:UL_LEVEL_1]||{}
-      elsif level==2
-        tmp_options = options[:UL_LEVEL_2]||{}
-      else  
-        tmp_options = options[:UL_LEVEL_OTHER]||{}
+      unless text_list.blank?
+        text_list += options.has_key?(:options) && options[:options].include?(:last) ? "[LAST]" : ""
+  
+        tmp_tag = options.has_key?(:options) && options[:options].include?(:all_div) ? :DIV : :UL
+  
+        if level==1
+          tmp_options = options[:UL_LEVEL_1]||{}
+        elsif level==2
+          tmp_options = options[:UL_LEVEL_2]||{}
+        else  
+          tmp_options = options[:UL_LEVEL_OTHER]||{}
+        end
+        tmp_options = (options[:UL]||{}) if tmp_options.blank?
+  
+        temp_ul= generate_tag(tmp_tag, text_list, tmp_options)
       end
-      tmp_options = (options[:UL]||{}) if tmp_options.blank?
-
-
-      temp_ul= generate_tag(tmp_tag, text_list, tmp_options)
+        
     end
     
     temp_ul = (options.has_key?(:options) && options[:options].include?(:before) ? "[BEFORE]" : "") + temp_ul + (options.has_key?(:options) && options[:options].include?(:after) ? "[AFTER]" : "")
@@ -392,6 +410,15 @@ module ApplicationHelper
           menu_param = {}
           menu_param[:controller] = "/#{menu.controller}" unless menu.controller.blank?
           menu_param[:action]     = menu.action unless menu.action.blank?
+          unless menu.link_params.blank?
+            menu.link_params.split('|').each do |param_value|
+              unless param_value.index('=').nil?
+                param = param_value.split('=')[0].to_sym
+                value = param_value[param_value.index('=')+1..-1]
+                menu_param[param] = value
+              end 
+            end
+          end
           menu_param = "#" if menu_param.blank?
           tmp_link = link_to(menu.name, menu_param, {:title => menu.description})
       when "link_sheet"
@@ -421,8 +448,8 @@ module ApplicationHelper
       key += "_reverse"
     end
 
-    icon = "<i class='icon-arrow-up'></i>" if (params[:sort] == column)
-    icon = "<i class='icon-arrow-down'></i>" if (params[:sort] == column + '_reverse')
+    icon = "<i class='glyphicon glyphicon-arrow-up'></i>" if (params[:sort] == column)
+    icon = "<i class='glyphicon glyphicon-arrow-down'></i>" if (params[:sort] == column + '_reverse')
 
 
     param_merged = params.merge({:sort => key, :id => nil, :page => nil, :controller => controller, :action => action })
@@ -431,7 +458,7 @@ module ApplicationHelper
         :url => { :params => param_merged }
     }
     html_options = {
-      :title => "Sort by #{text}",
+      :title => "Trié sur '#{text}'",
       :href => url_for( :params => param_merged ),
       :remote => true
     }

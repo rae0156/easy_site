@@ -1,0 +1,60 @@
+
+  <h4><%= field_description "Données obligatoires", true %></h4>
+
+		    <div class="control-group">
+		      <label for="roles_es_role_ids" class="control-label">Chemin : </label>
+			  <div class="controls">
+				<%= @setup.path.blank? ? '*' : @setup.path %>
+			  </div>
+  			</div>
+
+		    <div class="control-group">
+		      <label for="roles_es_role_ids" class="control-label">Nom : </label>
+			  <div class="controls">
+		      	<%=@setup.name%>
+			  </div>
+  			</div>
+
+		    <div class="control-group">
+		      <label for="roles_es_role_ids" class="control-label">Valeur : </label>
+			  <div class="controls">
+				<%case @setup.type_data
+				  when "text"%>
+					<%= text_field "setup", "value", "size" => 60, "maxlength" => 60, :style=>"width:90%" %>
+				  
+				<%when "long text"%>
+					<%= text_area "setup", "value", {:cols => 80, :rows => 15,:maxlength => 1000, :style=>"width: 90%"} %>
+				
+				<%when "choice"%>
+				    <%= select("setup", "value", @setup.possible_values.split("|").map {|u| [u, u]}, {}, :size => 5) %>
+				  
+				<%when "color"%>
+					<%= text_field "setup", "value", "size" => 6, "maxlength" => 6, :class => 'color' %>
+				<%when "date"%>
+					<%= text_field "setup", "value", "size" => 10, "maxlength" => 10, :class => 'datepicker' %>
+				<%when "time"%>
+					<%= text_field "setup", "value", "size" => 10, "maxlength" => 10, :class => 'timepicker' %>
+				<%when "image", "css"%>
+					<%= text_field "setup", "value", "size" => 60, "maxlength" => 200, :class => 'filepicker', :rel => @setup.possible_values.blank? ? '' : @setup.possible_values%>
+				<%when "number"%>
+					<%= text_field "setup", "value", "size" => 20, "maxlength" => 20, :class => 'numberpicker', :rel => @setup.possible_values.blank? ? '0' : @setup.possible_values %>
+				<%when "integer"%>
+					<%= text_field "setup", "value", "size" => 20, "maxlength" => 20, :class => 'integerpicker' %>
+				<%when "alpha"%>
+					<%= text_field "setup", "value", "size" => 20, "maxlength" => 20, :class => 'alphapicker' %>
+				<%when "font"%>
+					<%= text_field "setup", "value", "size" => 60, "maxlength" => 60, :class => 'fontpicker' %>
+				<%when "directory"%>
+					<%= text_field "setup", "value", "size" => 60, "maxlength" => 200, :class => 'filepicker', :rel => @setup.possible_values.blank? ? '' : @setup.possible_values%>
+				<%when "sund"%>
+					<%= text_field "setup", "value", "size" => 60, "maxlength" => 200, :class => 'filepicker', :rel => @setup.possible_values.blank? ? '' : @setup.possible_values%>
+				<%else%>
+					<span><%=@setup.value%></span>
+				  
+				<%end%>
+				<%= field_description "", true %>
+			  </div>
+  			</div>
+
+
+

@@ -2,7 +2,17 @@
 
 class EsAbility < ActiveRecord::Base
 
-  belongs_to :es_role    
-  acts_as_dynamic_model 
+  has_and_belongs_to_many :es_roles    
+  acts_as_dynamic_model([{:name => "action",
+                          :type => "list_free",
+                          :mandatory => true},
+                         {:name => "controller",
+                          :type => "list_free",
+                          :field_key => true,
+                          :field_key_scope => "action",
+                          :mandatory => true},
+                         {:name => "description",
+                          :type => "text"}
+                      ])
   
 end

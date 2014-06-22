@@ -1,2 +1,0 @@
-puts "ici"
-    page.replace_html("global_search","")

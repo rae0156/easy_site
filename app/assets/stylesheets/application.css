@@ -9,11 +9,10 @@
  * compiled file, but it's generally better to create a new file per style scope.
  *
  *= require bootstrap
- *= require bootstrap-responsive
  *= require menu
  *= require jquery-ui-1.10.3.custom
  *= require bootstrap-datetimepicker
-
+ *= require drag_drop.css
 
  *= require_self
  * require_tree .
@@ -23,7 +22,7 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
     height: inherit;
 }
 
-.input-append .add-on, .input-prepend .add-on {
+.input-group-addon, .input-group .input-group-addon {
      height: inherit;
 }
 
@@ -33,4 +32,11 @@ tr.inactive_row {
 } 
 
 
-.field_with_errors {display:inline-block;background-color: #FF0000}
+.field_with_errors {display:inline-block;background-color: #FF0000;}
+
+.text-error {    color: #B94A48;}
+
+.thumbnails {
+    list-style: none outside none;
+    margin-left: -20px;
+}

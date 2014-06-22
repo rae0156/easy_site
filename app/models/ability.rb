@@ -2,7 +2,7 @@ class Ability
   include CanCan::Ability
 
   def initialize(user)
-    
+    can :index, :site
     no_signed = user.blank?
     
     user ||= EsUser.new 
@@ -15,16 +15,23 @@ class Ability
     #:manage, :read, :create, :update and :destroy 
 
     roles.each do |role_id|
-      es_abilities = EsAbility.where({:es_role_id => role_id})
+      if role_id==0
+        es_abilities = EsAbility.where({:include_not_connected => "Y"})
+      else
+        es_abilities = EsRole.find_by_id(role_id).es_abilities
+      end
       es_abilities.each do |ability|
-        if ability.model=="all"
-          models = :all
+        if ability.controller=="all"
+          controllers = [:all]
         else
-          models = ability.model.split(',').select {|m| Object.const_defined?(m)}.collect{|m| m.constantize} 
+#          controllers = ability.controller.split(',').select {|m| Object.const_defined?(m)}.collect{|c| c.constantize}  
+          controllers = ability.controller.split(',').collect{|c| c.to_sym} 
         end
-        unless models.blank?
+        unless controllers.blank?
           actions = ability.action.split(',').collect{|a| a.to_sym}
-          can actions, models
+          controllers.each do |c|
+            can actions, c
+          end
         end
       end
     end

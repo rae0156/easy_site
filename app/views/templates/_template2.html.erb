@@ -1,26 +1,26 @@
-    <div class="navbar navbar-fluid-top">
-      <div class="navbar-inner">
-        <div class="container-fluid">
+    <div class="navbar navbar-default navbar-fluid-top">
+      <div>
+        <div class="container">
 			<%= get_template_part("part_1")%>
         </div>
       </div>
     </div>
 
-    <div class="container-fluid">
+    <div class="container">
 
-	  <div class="row-fluid">
-	    <div class="span12">
-			<div class="hero-unit">
+	  <div class="row">
+	    <div class="col-md-12">
+			<div class="jumbotron">
 				<%= get_template_part("part_2")%>
 			</div>
 	    </div>
 	  </div>
 
-      <div class="row-fluid">
-        <div class="span9">
+      <div class="row">
+        <div class="col-md-9">
 			<%= get_template_part("part_dynamic")%>
         </div>
-        <div class="span3">
+        <div class="col-md-3">
 			<%= get_template_part("part_3")%>
         </div><!--/span-->
       </div><!--/row-->

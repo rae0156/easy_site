@@ -50,6 +50,7 @@ module AuthenticatedSystem
     #   skip_before_filter :login_required
     #
     def login_required
+      return true unless EsPage.must_sign?(params[:controller],params[:action]) 
       username, passwd = get_auth_data
       self.current_user ||= EsUser.authenticate(username, passwd) || :false if username && passwd
       return true if logged_in? && authorized?

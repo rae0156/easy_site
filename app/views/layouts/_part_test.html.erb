@@ -1,22 +1,88 @@
-<div class="row-fluid">
-	<div class="span2">
+<div class="row">
+	<div class="col-md-2">
 	</div>
-	<div class="span10">
+	<div class="col-md-10">
 		<h1>Page d'exemples</h1>
 	</div>
 </div>
 <BR>
 	
 	
-	
-	
-<div class="row-fluid">
-	<div class="span2 alert alert-info">
-		<span class='btn' id='btn_easy_tag'>Easy_tag</span>
+<div class="row">
+	<div class="col-md-2 alert alert-info">
+		Drag and drop
 	</div>
 
-	<div class="span10">
-	<%= form_tag({},{:id => "form_easy"}) do%>
+
+	<div class="col-md-10 row drag_drop_template">
+
+		<div class="col-md-4">
+			<div id='template_part1'>
+				<div class="label label-info">Ceci est le div 01</div>
+				<div>Ceci est le texte explicatif du contenu du div 01</div>
+			</div>
+			<div id='template_part2'>
+				<div class="label label-info">Ceci est le div 02</div>
+				<div>Ceci est le texte explicatif du contenu du div 02</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div id='template_part3'>
+				<div class="label label-info">Ceci est le div 03</div>
+				<div>Ceci est le texte explicatif du contenu du div 03</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div id='template_part4'>
+				<div class="label label-info">Ceci est le div 04</div>
+				<div>Ceci est le texte explicatif du contenu du div 04</div>
+			</div>
+			<div id='template_part5'>
+				<div class="label label-info">Ceci est le div 05</div>
+				<div>Ceci est le texte explicatif du contenu du div 05</div>
+			</div>
+		</div>
+
+	</div>
+</div>
+<script>
+	$(document).ready(function() {
+		$( ".d0,.d1" ).sortable();		
+		/*( "div" ).draggable({
+				connectToSortable: "div",
+				revert: "invalid"
+		 							});*/
+	});
+</script>
+
+<BR>	
+	
+<div class="row">
+	<div class="col-md-2 alert alert-info">
+		Bouton slide
+	</div>
+
+	<div class="col-md-10">
+		Essayez les boutons 'Gauche' et 'Haut'
+		<div class='alert-info panel_t_slide' alt='Haut'>
+			<span>Ceci est un div à mettre en haut avec la class panel_t_slide ou panel_t_m_slide</span>
+		</div>
+		<div class='alert-info panel_l_slide' alt='Gauche'>
+			<span>Ceci est un div à mettre à gauche avec la class panel_l_slide ou panel_l_m_slide</span>
+		</div>
+	</div>
+
+
+</div>
+	
+	
+<div class="row">
+	<div class="col-md-2 alert alert-info">
+		<span class='btn btn-default' id='btn_easy_tag'>Easy_tag</span>
+	</div>
+
+	<div class="col-md-10">
+	<%= form_tag({},{:id => "form_easy", :class=> "form-inline"}) do%>
 		  aide : <%= easy_tag('help') %>
 		  libellé : <%= easy_tag('label',:label => "Ceci est un label",:help=>true) %>
 		  <%= easy_tag('text',:instance => "test", :field => "field1",:with_label => "Ceci est un texte",:value=> "choix 2", :help=>true) %>
@@ -24,7 +90,7 @@
 		  information cachée : <%= easy_tag('hidden',:instance => "test", :field => "field3",:value => "text caché",:help=>true) %>
 		  liste avec collection : <%= easy_tag('list_collection',:instance => "test", :field => "field4",:collection => EsSite.all,:value_method => "id",:text_method => "code",:selected_value=> 2,:help=>true) %>
 		  coche : <%= easy_tag('check_box',:instance => "test", :field => "field5",:value => "N",:help=>true) %>
-		  <%= easy_tag('long_text',:instance => "test", :field => "field6",:with_label => "Long texte",:value=> "Ceci est un long text",:cols=> 600, :help=>true) %>
+		  <%= easy_tag('long_text',:instance => "test", :field => "field6",:with_label => "Long texte",:value=> "Ceci est un long text",:cols=> 100, :help=>true) %>
 		  <%= easy_tag('radio_button',:instance => "test", :field => "field7",:value => "choix 2",:read_only => true,:labels => ["choix 1","choix 2","choix 3","choix 4"],:with_label => "Radio bouton",:mandatory=>true,:help=>true) %>
 		  obligatoire : <%= easy_tag('mandatory',:label => "Les zones obligatoires",:help=>true) %>
 		  entier : <%= easy_tag('integer',:instance => "test", :field => "field8",:help=>true) %>
@@ -57,139 +123,139 @@
 </script>
 
 
-<div class="row-fluid">
-	<div class="span2 alert alert-info">
+<div class="row">
+	<div class="col-md-2 alert alert-info">
 		Citation
 	</div>
-	<div class="span10">
+	<div class="col-md-10">
 		<%=generate_citation(EsMediaFile.find(:first,:conditions => ["name=?","Citation site"]))%>
 	</div>
 </div>
-<div class="row-fluid">
-	<div class="span2 alert alert-info">
+<div class="row">
+	<div class="col-md-2 alert alert-info">
 		Liste d'images
 	</div>
-	<div class="span10">
+	<div class="col-md-10">
 		<%= generate_image_list(EsMediaFile.find(:all,:conditions => ["media_type=? and sequence <= ?","image",6]))%>
 	</div>
 </div>
-<div class="row-fluid">
-	<div class="span2 alert alert-info">
+<div class="row">
+	<div class="col-md-2 alert alert-info">
 		Carouselle
 	</div>
-	<div class="span10">
+	<div class="col-md-10">
 		<%= generate_carousel(EsMediaFile.find(:all,:conditions => ["media_type=?","carousel"]))	%>
 	</div>
 </div>
-<div class="row-fluid">
-	<div class="span2 alert alert-info">
+<div class="row">
+	<div class="col-md-2 alert alert-info">
 		Menu côté
 	</div>
-	<div class="span10">
+	<div class="col-md-10">
 		<div class="well sidebar-nav">
 			<%= generate_menu("sidebar") %>
 		</div>
 	</div>
 </div>
-<div class="row-fluid">
-	<div class="span2 alert alert-info">
+<div class="row">
+	<div class="col-md-2 alert alert-info">
 		Blog
 	</div>
-	<div class="span10">
+	<div class="col-md-10">
 		<%= generate_blog(EsMediaFile.find(:all,:conditions => ["media_type = ? and parent_id is null","blog"]))%>
 	</div>
 </div>
-<div class="row-fluid">
-	<div class="span2 alert alert-info">
+<div class="row">
+	<div class="col-md-2 alert alert-info">
 		Adresse
 	</div>
-	<div class="span10">
+	<div class="col-md-10">
 		<%=substitute_string("<address><p>[setup.address_title]</p><p><strong>[setup.address_nom]</strong><br>[setup.address_line1]<br>[setup.address_line2]<br></address>")%>	
 	</div>
 </div>
-<div class="row-fluid">
-	<div class="span2 alert alert-info">
+<div class="row">
+	<div class="col-md-2 alert alert-info">
 		Menu navigation
 	</div>
-	<div class="span10">
-		<div class="navbar navbar-fluid-top">
-		  <div class="navbar-inner">
-			<div class="container-fluid nav-collapse">
+	<div class="col-md-10">
+		<div class="navbar navbar-default navbar-fluid-top">
+		  <div>
+			<div class="container nav-collapse">
 				<%= generate_menu("navigation") %>
 			</div>
 		  </div>
 		</div>
 	</div>
 </div>
-<div class="row-fluid">
-	<div class="span2 alert alert-info">
+<div class="row">
+	<div class="col-md-2 alert alert-info">
 		Lorem ipsum
 	</div>
-	<div class="span10">
+	<div class="col-md-10">
 		<%=get_lorem%>	
 	</div>
 </div>
-<div class="row-fluid">
-	<div class="span2 alert alert-info">
+<div class="row">
+	<div class="col-md-2 alert alert-info">
 		Menu déroulant
 	</div>
-	<div class="span10">
+	<div class="col-md-10">
 		<%=generate_menu("Dropdown trigger")%>
 	</div>
 </div>
-<div class="row-fluid">
-	<div class="span2 alert alert-info">
+<div class="row">
+	<div class="col-md-2 alert alert-info">
 		Collapse
 	</div>
-	<div class="span10">
+	<div class="col-md-10">
 		<%=generate_collapse(EsMediaFile.find(:all,:conditions=> ["media_type = 'collapse'"]))%>
 	</div>
 </div>
-<div class="row-fluid">
-	<div class="span2 alert alert-info">
+<div class="row">
+	<div class="col-md-2 alert alert-info">
 		Menu vertical
 	</div>
-	<div class="span10">
+	<div class="col-md-10">
 		<%=generate_menu("vertical")%>
 	</div>
 </div>
-<div class="row-fluid">
-	<div class="span2 alert alert-info">
+<div class="row">
+	<div class="col-md-2 alert alert-info">
 		Menu Sheet
 	</div>
-	<div class="span10">
+	<div class="col-md-10">
 		<%=generate_menu("sheet")%>
 	</div>
 </div>
-<div class="row-fluid">
-	<div class="span2 alert alert-info">
+<div class="row">
+	<div class="col-md-2 alert alert-info">
 		Vidéo
 	</div>
-	<div class="span10">
+	<div class="col-md-10">
 		<%=generate_video(EsMediaFile.find_by_name("video1"))%>
 	</div>
 </div>
-<div class="row-fluid">
-	<div class="span2 alert alert-info">
+<div class="row">
+	<div class="col-md-2 alert alert-info">
 		Alerte
 	</div>
-	<div class="span10">
+	<div class="col-md-10">
 		<%=generate_alert("You successfully read this important alert message.", "Well done!","alert-success")%>
 	</div>
 </div>
-<div class="row-fluid">
-	<div class="span2 alert alert-info">
+<div class="row">
+	<div class="col-md-2 alert alert-info">
 		Fil conducteur
 	</div>
-	<div class="span10">
+	<div class="col-md-10">
 		<%=generate_breadcrumb(["Home"],["Setup","#"],["Library","#"],"Data")%>
 	</div>
 </div>
-<div class="row-fluid">
-	<div class="span2 alert alert-info">
+<div class="row">
+	<div class="col-md-2 alert alert-info">
 		Tableau
 	</div>
-	<div class="span10">
+	<div class="col-md-10">
 	    <table class="table table-bordered table-striped">
 	   		<tr class='info'>
 	   			<th>Titre 1</th>

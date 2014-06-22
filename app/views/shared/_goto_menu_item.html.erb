@@ -27,7 +27,6 @@
 	url_hash = url_hash.merge(param_goto) unless param_goto.blank?
 	
 	url_hash = "#" if action == "#"
-	
 	option_hash = {}
 	option_hash = option_hash.merge({:confirm => "Voulez vous vraiment réaliser cette action ?"}) if check == 'true' && form.blank?	
 	

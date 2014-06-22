@@ -1,4 +1,5 @@
 class SitesController < ApplicationController
+
     
   def refresh_page
     respond_to do |format|

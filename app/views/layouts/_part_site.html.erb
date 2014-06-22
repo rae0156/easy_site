@@ -1,7 +1,9 @@
-    <div class="navbar navbar-fluid-top">
-        <div class="container-fluid pull-left">
-		  <%= label_tag('site_id', 'Sélectionner un site : ') %>
-          <%= collection_select(:site, :id, EsSite.order("code"), :id, "complete_name", {:selected => Rails.application.config.default_site},{}) %>
+    <div class="navbar navbar-default navbar-fluid-top">
+        <div class="container pull-left form-horizontal">
+		  <%= label_tag('site_id', 'Sélectionner un site : ',{:class=> "col-sm-2 control-label"}) %>
+		  	<div class="col-sm-3">
+          		<%= collection_select(:site, :id, EsSite.order("code"), :id, "complete_name", {:selected => Rails.application.config.default_site},{:class => "form-control"}) %>
+	        </div>
         </div>
     </div>
 

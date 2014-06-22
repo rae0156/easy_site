@@ -60,11 +60,5 @@ class AdminsController < ApplicationController
     end
 
   
-private
-
-  def authenticate_user
-      self.authenticate_es_user! if EsController.must_sign?(controller_name) 
-  end    
-
 end
 

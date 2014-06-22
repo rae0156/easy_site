@@ -1,13 +1,13 @@
 		<label>Model : </label>
-		<%= select('debug', 'model', ActiveRecord::Base.send(:subclasses).collect(&:name).sort_by{|e| e},{:selected => @selected_model},{:class => "span4", :ajax_action => "refresh_debug"} )%>    
+		<%= select('debug', 'model', ActiveRecord::Base.send(:subclasses).collect(&:name).sort_by{|e| e},{:selected => @selected_model},{:class => "col-md-4", :ajax_action => "refresh_debug"} )%>    
 		<label>Detail level : </label>
-		<%= select('debug', 'level', Array(0..20).map{|e|e.to_s}.sort_by{|e| e.to_i},{:selected => @selected_level},{:class => "span4"} )%>    
+		<%= select('debug', 'level', Array(0..20).map{|e|e.to_s}.sort_by{|e| e.to_i},{:selected => @selected_level},{:class => "col-md-4"} )%>    
 		<label>Relation : </label>
-		<%= select('debug', 'filter', @tmp_models.sort_by{|e| e},{:selected => @selected_filter},{:multiple=>true,:class => "span4"} )%>    
+		<%= select('debug', 'filter', @tmp_models.sort_by{|e| e},{:selected => @selected_filter},{:multiple=>true,:class => "col-md-4"} )%>    
 		<label>Field : </label>
-		<%= select('debug', 'field', @tmp_fields.sort_by{|e| e},{:selected => @selected_field,:include_blank => "[No selection]" },{:class => "span4"} )%>    
+		<%= select('debug', 'field', @tmp_fields.sort_by{|e| e},{:selected => @selected_field,:include_blank => "[No selection]" },{:class => "col-md-4"} )%>    
 		<label>Value : <small>(you may use '*')</small>	</label>							
-		<%= text_field('debug', 'value', {:class => "span4", :value => @selected_value} )%>  
+		<%= text_field('debug', 'value', {:class => "col-md-4", :value => @selected_value} )%>  
 		  
 		<script>
 			jQuery( document ).ready(function() {

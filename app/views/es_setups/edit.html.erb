@@ -1,0 +1,19 @@
+<% @title = "Modification d'une préférence" %>
+
+
+
+    <h2><%= image_tag('appli/setup_48.png', {:alt => @title, :align => "middle"}) %><%= @title %></h2>
+	<ul>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver",:image => "appli/save_32.png", :action => "update", :id => @setup.id,  :form => "setup_form"}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour",:image => "appli/back_32.png", :action => "list"}%></li>
+	</ul>
+
+	<!-- Error messages -->
+	<%= errors_for(@setup) %>
+
+	<%= form_tag({ :action => 'update', :id => @setup.id}, { :name => 'setup_form' , :class => 'form-horizontal'}) do%>
+	
+	  <%= render 'form' %>
+
+	<% end %>
+

@@ -1,18 +1,18 @@
 	<!-- Barre de navigation -->
-	<div class="navbar navbar-inverse">
-		<div class="navbar-inner">
+	<div class="navbar navbar-default navbar-inverse">
+		<div>
 			<%= get_template_part("part_1")%>
 		</div>
 	</div>
 
-    <div class="container-fluid">
+    <div class="container">
 
 		<!-- Première ligne de notre grille -->
 		<div class="row">
-			<div class="span7">
+			<div class="col-md-7">
 				<%= get_template_part("part_2")%>
 			</div>
-			<div class="span5">
+			<div class="col-md-5">
 				<%= get_template_part("part_3")%>
 			</div>
 		</div>
@@ -23,13 +23,13 @@
 
 		<!-- Deuxième ligne -->
 		<div class="row">
-			<div class="span4">
+			<div class="col-md-4">
 				<%= get_template_part("part_4")%>
 			</div>
-			<div class="span4">
+			<div class="col-md-4">
 				<%= get_template_part("part_5")%>
 			</div>
-			<div class="span4">
+			<div class="col-md-4">
 				<%= get_template_part("part_6")%>
 			</div>
 		</div>

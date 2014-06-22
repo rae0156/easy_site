@@ -1,5 +1,5 @@
 <% @title = "Modification de votre profil" %>
-<div class="hero-unit">
+<div class="jumbotron">
 
     <h2><%= image_tag('appli/user_48.png', {:alt => @title, :align => "middle"}) %>&nbsp;<%= @title %></h2>
 
@@ -9,7 +9,7 @@
         <%= render :partial => 'form' %>
 
 		<div class="control-group">  
-		    <div class="controls btn">
+		    <div class="controls btn btn-default">
 				<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver",:image => "appli/save_32.png", :form => "user_form"}%>
 			</div>
 		</div>

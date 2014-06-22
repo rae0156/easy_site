@@ -83,3 +83,18 @@
     end
   end    
 
+
+class String
+  def limit(nbr,types='text')
+    if self.length>nbr
+      text = self[0..nbr-4]
+      if !(types=='text') and text.index(',') > 0
+        text = text[0..text.rindex(',')-1]
+      end
+      text + '...'      
+    else
+      self
+    end
+  end
+end
+

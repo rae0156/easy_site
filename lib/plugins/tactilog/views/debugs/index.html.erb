@@ -4,13 +4,12 @@
     <title>Tactilog & CrossTable</title>                                                                                                                    
     <meta name='viewport' content='width=device-width, initial-scale=1.0'> 
     <link href='/stylesheets/bootstrap_debug.css' media="screen" rel="stylesheet" type="text/css">                                                                   
-    <link href='/stylesheets/bootstrap-responsive_debug.css' media="screen" rel="stylesheet" type="text/css">                                                                   
     <script src="http://code.jquery.com/jquery-1.10.1.js"></script>
   </HEAD>                                                                                                                                                     
   <BODY>                  
 	<div class='container'>    
 	    <div class='row'>
-			<div class='span12 alert alert-info'>                                                                                                                             
+			<div class='col-md-12 alert alert-info'>                                                                                                                             
 		        <H2>Debug - <%=Rails.root.to_s.split('/').last%></H2>                                                                                                               
 				<form action='i' method='post' name='debug_form'>                                                                                                     		
 				  <fieldset>                                                                                                                              
@@ -49,7 +48,7 @@
 			</div>                                                                                                                                          
 	    </div>                                                                                                                                   
 	    <div class='row'>
-			<div class='span12 alert alert-info'>                                                                                                                             
+			<div class='col-md-12 alert alert-info'>                                                                                                                             
 				<div id="debug_comment">
 				  <%= render :partial => 'debug_comment' %>
 				</div>

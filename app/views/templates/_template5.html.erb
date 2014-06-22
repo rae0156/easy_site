@@ -1,21 +1,21 @@
 	<!-- Barre de navigation -->
-	<div class="navbar navbar-inverse">
-		<div class="navbar-inner">
+	<div class="navbar navbar-default navbar-inverse">
+		<div>
 			<%= get_template_part("part_1")%>
 		</div>
 	</div>
 
 
-<div class="container-fluid">
+<div class="container">
 
   <%= get_template_part("part_2")%>
 
   <div class="row">
-    <div class="span3">
+    <div class="col-md-3">
 	  	<%= get_template_part("part_3")%>
     </div>
-    <div class="span9">
-		<div class="hero-unit">
+    <div class="col-md-9">
+		<div class="jumbotron">
 			<%= get_template_part("part_4")%>
 		</div>
 		

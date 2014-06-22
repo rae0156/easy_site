@@ -1,0 +1,34 @@
+
+<tr class="<%= cycle("row0", "row1") %>">
+    <%@link_to[:column].split(',').each_with_index do |column_name,i|
+    	column = @columns_screen.select{|col| col[:name]==column_name}[0]	%>
+    	
+<%
+			tmp_value = link_to_item[column[:name]]
+			tmp_value = "/" if tmp_value.blank?
+			tmp_value = tmp_value.limit(50,column[:type]) if ["text","list_free","list_multi"].include?(column[:type]) 		
+
+			if i==0				
+				tmp_value= link_to(tmp_value, :action => 'link_to', :id => link_to_item.id, :link => @link_to[:model_linked].name) if @enabled_ids.include?(link_to_item.id) 
+			elsif column[:foreign] 
+				unless tmp_value.blank?
+					tmp_model_link = list_item.send(column[:name][0..-4])
+					unless tmp_model_link.nil?
+						tmp_value = tmp_model_link.class.column_names.include?(column[:model_linked_field]) ? tmp_model_link[column[:model_linked_field]] : tmp_model_link.id
+				    end
+				end
+			elsif !tmp_value.blank? && column[:type]=="datetime" 
+				 tmp_value = tmp_value.strftime("%d/%m/%Y %H:%M:%S") 
+			elsif !tmp_value.blank? && column[:type]=="date" 
+				 tmp_value = tmp_value.strftime("%d/%m/%Y") 
+			elsif !tmp_value.blank? && column[:type]=="time" 
+				 tmp_value = tmp_value.strftime("%H:%M:%S")  
+			elsif !tmp_value.blank? && column[:type]=="boolean"
+				 tmp_value = tmp_value==column[:checked_value] ? "<i class='glyphicon glyphicon-ok'></i>".html_safe : ""
+			end						
+
+%>
+    	
+		<td><%=  tmp_value %></td>
+     <%end%>
+</tr>

@@ -1,0 +1,17 @@
+<tr class="<%= cycle("row0", "row1") %>">
+  <td><%= list_item.path.blank? ? '*' : list_item.path %></td> 
+  <td>
+  	<%if list_item.read_only=='Y'%>
+		<%= list_item.name.humanize %>
+  	<%else%>
+	  	<%= link_to list_item.name.humanize, :controller => 'es_setups', :action => 'edit', :id => list_item.id%>
+  	<%end%>
+  </td>
+  <td>
+	<%= list_item.value %>  
+  </td>
+  <td>
+	<%= list_item.type_data %>  
+  </td>
+  
+</tr>

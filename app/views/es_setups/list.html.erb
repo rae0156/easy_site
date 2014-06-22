@@ -1,0 +1,56 @@
+<% @title = "Préférences" %>
+
+<div class="center-menu">
+    <h2><%= image_tag("appli/setup_48.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
+	
+	<ul>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Exporter",:image => "appli/excel_32.png", :action => "export_csv", :form => "setup_list_form"}%></li>
+	</ul>
+	
+	
+	<!-- Search -->
+	<%= render :partial => 'shared/search' %>
+	
+	<div class="clearer"></div>	
+</div>
+
+<!-- Error messages -->	
+<%= errors_for(flash[:errors_destroy], "delete").html_safe if flash[:errors_destroy] %>
+
+<%= form_tag({ :action => 'new' }, { :name => 'setup_list_form'}) do%>
+    <button type="button" id="view_hide" >Choisir une catégorie</button>
+
+
+	<div id="fileTree_element">
+		
+	</div>
+
+
+<!-- Data table -->
+<div id="setup_div">
+  <%= render :partial => 'list' %>
+</div>
+
+
+
+<% end %>
+
+<script type="text/javascript">
+    $('#fileTree_element').fileTree({ root: '', script: '/es_setups/contenttree' }, function(branch) {
+		$.ajax('/es_setups/viewtree', {
+		    data: { branch: branch}
+		});
+    });
+        
+	$(document ).on('click','#view_hide', function() {
+		$('#fileTree_element').toggle();
+	});
+	$('#fileTree_element').mouseleave(function(ev) {
+        ev.preventDefault();
+        $('#fileTree_element').hide();
+        return false;
+	});
+	$('#fileTree_element').hide();
+        
+        
+</script>

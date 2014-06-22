@@ -2,13 +2,19 @@
 require 'iconv'
 
 class ApplicationController < ActionController::Base
+  before_filter :debug_param if Rails.env.downcase == 'development'
+      
+  
   include ApplicationHelper
   protect_from_forgery
   include Userstamp
   
   include AuthenticatedSystem
 
+  authorize_resource :class => false #pour les controller sans model
+
   before_filter :set_current_user , :check_page
+  
 
   rescue_from CanCan::AccessDenied do |exception|
     flash[:error] = "Vous n'êtes pas autorisé à accéder à cette page"
@@ -71,6 +77,14 @@ class ApplicationController < ActionController::Base
     send_data Iconv.conv('iso-8859-1//IGNORE', 'utf-8', csv_string), :filename => file_name, :disposition => 'attachment', :type => 'text/csv;charset=utf-8;header=present'
 #    send_data csv_string, :filename => file_name, :disposition => 'attachment', :type => 'text/csv;charset=utf-8;header=present'
   end  
+
+  def debug_param
+    puts "========================="
+    puts " params  : #{params.inspect}"   
+    puts " session : #{session.inspect}"   
+    puts "========================="
+    puts " "
+  end
 
   protected
 

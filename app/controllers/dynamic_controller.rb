@@ -9,14 +9,15 @@ class DynamicController < ApplicationController
 
   def initialize()
      
-    self.class.load_and_authorize_resource
+    #self.class.load_and_authorize_resource
     self.class.before_filter :login_required 
     
+    
+    @controller_link_to                  ||= {}
     @controller_setup                    ||= {}
     @controller_setup[:controller_name]  ||= controller_name
     @controller_setup[:model]            ||= controller_name.classify.constantize
     @controller_setup[:instance_name]    ||= @controller_setup[:model].table_name.gsub("es_","").humanize.singularize
-
 
     @controller_setup[:model].setup_model.each do |key,value|
       @controller_setup[key] = value 
@@ -29,17 +30,20 @@ class DynamicController < ApplicationController
     @controller_setup[:model].columns.each do |column|
       tmp_columns_screen ={name:                column.name,
                    order:               nil,
-                   column_name:         column.name[-3..-1] == '_id' ? column.name[0..-4].gsub("es_","") : column.name,
+                   column_name:         (column.name[-3..-1] == '_id' ? column.name[0..-4].gsub("es_","") : column.name).humanize,
+                   column_text:         "",
+                   label_name:          (column.name[-3..-1] == '_id' ? column.name[0..-4].gsub("es_","") : column.name).humanize,
                    type:                (column.type.to_s=="string" && column.limit==1 && ["Y","N"].include?(column.default)) ? "boolean" : column.type.to_s,
                    checked_value:       (column.type.to_s=="string" && column.limit==1 && ["Y","N"].include?(column.default)) ? 'Y' : nil,
                    unchecked_value:     (column.type.to_s=="string" && column.limit==1 && ["Y","N"].include?(column.default)) ? 'N' : nil,
                    linked_name:         column.name.match(/_id$/) ? column.name.gsub(/_id$/, '') : nil,
                    model_linked:        column.name.match(/_id$/) ? column.name.gsub(/_id$/, '').classify : nil,
                    model_linked_field:  column.name.match(/_id$/) ? "name" : nil,
-                   display_new:         !["id","created_at","updated_at","sequence","es_site_id","creator_id","updater_id"].include?(column.name),
-                   display_show:        !["id","created_at","updated_at","es_site_id","creator_id","updater_id"].include?(column.name),
-                   display_edit:        !["id","created_at","updated_at","es_site_id","creator_id","updater_id"].include?(column.name),
-                   display_list:        !["id","created_at","updated_at","es_site_id","creator_id","updater_id"].include?(column.name),
+                   linked_to_model:     false,
+                   display_new:         !["id","created_at","updated_at","sequence","es_site_id","creator_id","updater_id","read_only"].include?(column.name),
+                   display_show:        !["id","created_at","updated_at","es_site_id","creator_id","updater_id","read_only"].include?(column.name),
+                   display_edit:        !["id","created_at","updated_at","es_site_id","creator_id","updater_id","read_only"].include?(column.name),
+                   display_list:        !["id","created_at","updated_at","es_site_id","creator_id","updater_id","read_only"].include?(column.name),
                    value_list:          (column.type.to_s=="string" && column.limit==1 && ["Y","N"].include?(column.default)) ? 'Y,N' : nil,
                    link_update:         ["name","code"].include?(column.name),
                    sort:                ["name","code"].include?(column.name),
@@ -128,6 +132,9 @@ class DynamicController < ApplicationController
     @controller_setup[:delete_if_used]           = @controller_setup[:delete_if_used].nil? ? false : @controller_setup[:delete_if_used] 
     @controller_setup[:delete_if_inactive]       = @controller_setup[:delete_if_inactive].nil? ? false : @controller_setup[:delete_if_inactive] 
     @controller_setup[:delete_multi]             = @controller_setup[:delete_multi].nil? ? false : @controller_setup[:delete_multi] 
+    @controller_setup[:readonly_exists]        ||= @columns_screen.collect{ |col| col[:name]}.include?("read_only")
+    @controller_setup[:readonly_exists]        ||= @columns_screen.collect{ |col| col[:name]}.include?("read_only")
+    @controller_setup[:search_exists]          ||= @columns_screen.select{ |col| col[:search]}.count > 0
 
     super
   end
@@ -167,13 +174,13 @@ class DynamicController < ApplicationController
     session.delete(:parent_id) 
     if @controller_setup[:parent_exists]
       if parent_id.blank?
-        tmp_search[:parent_id]=nil
+        tmp_search[:parent_id]=0
       else
         tmp_search[:parent_id]=parent_id
       end
 #      session[:parent_id] = parent_id unless parent_id.blank?
     end
-    conditions = DynamicSearch.new(@controller_setup[:model],tmp_search).build_conditions.accessible_by(current_ability)
+    conditions = DynamicSearch.new(@controller_setup[:model],tmp_search).build_conditions #.accessible_by(current_ability)
     ####################################### init info ####################################### 
     
     init_info_for_list(parent_id)
@@ -260,6 +267,7 @@ class DynamicController < ApplicationController
   # Save the New to database -
   def create
     params[:instance][:sequence]=999999999 if @controller_setup[:sequence_exists]
+    transform_list(params[:instance])
     @instance = @controller_setup[:model].new(params[:instance])
     if @instance.save
 
@@ -273,6 +281,7 @@ class DynamicController < ApplicationController
         redirect_to :action => "list"
       end
     else
+      params[:action]="new"
       render "shared/dynamic/new"
     end
   end
@@ -282,6 +291,7 @@ class DynamicController < ApplicationController
   end
   
   def update
+    transform_list(params[:instance])
     if @instance.update_attributes(params[:instance])
       flash[:notice] = "'#{@controller_setup[:instance_name]}' a été correctement modifié."
       if @controller_setup[:parent_exists]
@@ -290,6 +300,7 @@ class DynamicController < ApplicationController
         redirect_to :action => "list"
       end
     else
+      params[:action]="edit"
       render "shared/dynamic/edit"
     end
   end
@@ -302,7 +313,7 @@ class DynamicController < ApplicationController
       flash[:notice] = "#{@controller_setup[:instance_name]} a été activé."
       redirect_to :action => "list",:page=> params[:page]
     else
-      destroy = detect_association(@instance) ? @controller_setup[:delete_if_used] : @controller_setup[:delete_if_inactive]
+      destroy = !detect_association(@instance).blank? ? @controller_setup[:delete_if_used] : @controller_setup[:delete_if_inactive]
       unless destroy 
         @instance.update_attribute('active',@instance.active=='Y' ? 'N' : 'Y')    
         flash[:notice] = "#{@controller_setup[:instance_name]} a été #{@instance.active=='Y' ? 'activé' : 'désactivé'}."
@@ -320,9 +331,10 @@ class DynamicController < ApplicationController
       tmp = @controller_setup[:model].find(id)
       back_to_parent = @controller_setup[:parent_exists] && tmp.ancestors.count > 0 ? (tmp.ancestors[0].children.count > 1 ? tmp.parent_id : tmp.ancestors[0].parent_id) : ""      
       
-      
-      if !@controller_setup[:delete_if_used] && detect_association(@instance) 
-        tmp_element_error.errors.add(:base, "This #{@setup_controller[:model_name].singularize} can be deleted, cause it is used")
+      if @controller_setup[:readonly_exists] && tmp["read_only"]=='Y'
+        tmp_element_error.errors.add(:base, "La suppresison de '#{@setup_controller[:model_name].singularize}' ne peut être faite, cet élément est en lecture seule.")
+      elsif !@controller_setup[:delete_if_used] && !detect_association(@instance).blank?
+        tmp_element_error.errors.add(:base, "La suppresison de '#{@setup_controller[:model_name].singularize}' ne peut être faite, car des liaisons existent.")
       elsif check_children_before_delete(tmp) || !tmp.destroy
         tmp.errors.full_messages.each do |tmp_error| 
           tmp_element_error.errors.add(:base, "'#{@controller_setup[:instance_name]} - #{tmp.name}' : #{tmp_error}")
@@ -334,10 +346,11 @@ class DynamicController < ApplicationController
     
     unless params[:id].blank?
       @instance = @controller_setup[:model].find_by_id(params[:id])
-      if !detect_association(@instance) || @controller_setup[:delete_if_used]
+      detect = detect_association(@instance)
+      if detect_association(@instance).blank? || @controller_setup[:delete_if_used]
         @instance.destroy unless @instance.blank?
       else
-        flash[:error] = "This #{@controller_setup[:instance_name].humanize} can be deleted, cause it is used"
+        tmp_element_error.errors.add(:base, "La suppresison de '#{@controller_setup[:instance_name].humanize}' ne peut être faite, car des liaisons existent. (#{detect.join(', ')})")
       end
     end    
     
@@ -526,12 +539,62 @@ class DynamicController < ApplicationController
     render 'shared/replace_content', :formats => [:js]
   end
 
+  def link_to
+    @model_link = params[:id].presence.blank? ? nil : @controller_setup[:model].find_by_id(params[:id])
+    @link_to = init_link_to(params[:link])
+    @instances = @controller_setup[:model].where(@link_to[:query]).page(params[:page])
+    @instances_to_link = @link_to[:model_linked].where(@link_to[:query_link]).page(params[:page])
+    @enabled_ids = @controller_setup[:model].where(@link_to[:query_enabled_ids]).collect(&:id)
+    link_id_string = get_link_id_field_name(params[:link]) 
+    @model_linked_list_ids = @model_link.blank? ? nil : @model_link.send(link_id_string)
+    render "shared/dynamic/link_to" 
+  end
+
+  def link_to_model
+    element = @controller_setup[:model].find_by_id(params[:id])
+    link_id_string = get_link_id_field_name(params[:link]) 
+    if element && element.respond_to?(link_id_string) && params[:model_linked].present? && params[:model_linked][:id].present? 
+      if params[:model_linked][:id].is_a?(Array)
+        element.update_attribute(link_id_string,params[:model_linked][:id].reject! { |e| e.empty? }.map{|e| e.to_i})
+      else
+        element.update_attribute(link_id_string,params[:model_linked][:id].to_i)
+      end
+    end
+    link_to
+  end
+
 
 private
 
-  def authenticate_user
-      self.authenticate_es_user! if EsController.must_sign?(controller_name) 
-  end    
+  def init_link_to(model_name_linked)
+    link = (model_name_linked || 'dummy').downcase
+    
+    
+    link_to = @controller_link_to[link.to_sym].presence||{}
+    link_to[:model_name]          = @controller_setup[:instance_name]
+    link_to[:model_linked]        = model_name_linked.constantize
+    link_to[:model_name_linked]   = model_name_linked.underscore.gsub("es_","").humanize.singularize
+    link_to[:association_type]    = get_model_assoc_type(model_name_linked)
+    link_to[:title]             ||= "Liaison entre #{link_to[:model_name]} et #{link_to[:model_name_linked]}"
+    link_to[:title_left]        ||= link_to[:model_name]
+    link_to[:title_right]       ||= link_to[:model_name_linked]
+    link_to[:description]       ||= "Veuillez faire une liaison entre #{link_to[:model_name]} et #{link_to[:model_name_linked]}"
+    link_to[:query]             ||= ""
+    link_to[:query_link]        ||= ""
+    link_to[:query_enabled_ids] ||= ""
+    link_to[:column]            ||= ""
+    link_to[:column_link]       ||= ""
+    link_to
+  end
+
+  def get_model_assoc_type(model_name_linked)
+    as      = @controller_setup[:model].reflect_on_all_associations.select{|elem| elem.name.to_s==model_name_linked.tableize}
+    return as.size > 0 ? as[0].macro.to_s : 'NA'        
+  end
+
+  def get_link_id_field_name(model_name_linked)
+    return model_name_linked.underscore + "_" + (['has_and_belongs_to_many','has_many'].include?(get_model_assoc_type(model_name_linked)) ? "ids" : "id") 
+  end
 
   def get_by_id
    
@@ -609,17 +672,33 @@ private
   end
   
   def detect_association(instance)
-    linked=false
+    linked=[]
     @controller_setup[:model].reflect_on_all_associations.each do |elem|
        case elem.macro.to_s
 #          when "belongs_to", "has_one"
 #            tmp_obj = instance.send(elem.name)
 #            linked ||= !tmp_obj.blank?
           when "has_many", "has_and_belongs_to_many"
-            linked ||= instance.send(elem.name).count > 0
+            linked << elem.name.to_s.humanize if  instance.send(elem.name).count > 0
        end
    end
    return linked
+  end
+
+
+  def transform_list(element)    
+    element.each do |k,v|
+      column = @columns_screen.select{|col| col[:name]==k.to_s}[0]
+      if v.is_a?(Array) && column[:type]=='list_multi'
+        list=[]
+        v.each do |elem|
+          list << elem if column[:value_list].split(',').include?(elem)
+        end
+        element[k]=list.join(',')
+      elsif column[:type]=='list_free'
+        element[k] = v.split("\n").map{|line| line.strip}.join(',')
+      end
+    end    
   end
   
 end

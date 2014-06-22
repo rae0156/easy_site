@@ -1,8 +1,7 @@
-  <%tmp_readonly = params[:action]=='show'
+  <%tmp_readonly = params[:action]=='show' || (@controller_setup[:readonly_exists] && @instance["read_only"]=='Y')
     if @controller_setup[:mandatory_exists] && !tmp_readonly%>
 	  <h4><%= field_description "Données obligatoires", true %></h4>
   <%end%>
-  
 	<%@columns_screen.each do |column|
 		if column["display_#{params[:action]}".to_sym] && column[:name].split('.').count==1%>
 		  <div class="control-group">
@@ -14,7 +13,7 @@
 			<%if column[:name] == 'sequence'%>
 				<%= text_field(:instance, column[:name],{:disabled => true,:readonly => tmp_readonly})%>
 			<%elsif column[:name] == 'parent_id'%>
-				<%=hidden_field(:instance, column[:name],:value => (@parent.blank? ? "" : @parent.id))%>
+				<%=hidden_field(:instance, column[:name],:value => (@parent.blank? ? 0 : @parent.id))%>
 				<%= text_field(:dummy, :parent,{:disabled => true,:readonly => tmp_readonly, :value => (@parent.blank? ? "Origine" : @parent.name)})%>
     		<%else%>
 			  <% case column[:type]
@@ -30,30 +29,36 @@
 			             %>
 			            <%=  collection_select(:instance, column[:name], column_class.all, :id, column_name.to_sym, {:prompt => ""},:disabled => (tmp_readonly ? "disabled" : false)) %>
 			          <% else %>
-						<%= text_field :instance, column[:name],:class=>"input-small inputmask","data-inputmask"=>"'alias': 'integer'",:readonly => tmp_readonly%>
+						<%= text_field :instance, column[:name],:class=>"input-sm inputmask","data-inputmask"=>"'alias': 'integer'",:readonly => tmp_readonly%>
 			          <% end %>
 			        <% else %>
-						<%= text_field :instance, column[:name],:class=>"input-small inputmask","data-inputmask"=>"'alias': 'integer'",:readonly => tmp_readonly%>
+						<%= text_field :instance, column[:name],:class=>"input-sm inputmask","data-inputmask"=>"'alias': 'integer'",:readonly => tmp_readonly%>
 			        <% end %>
+		      <% when "list" %>
+	            <%=  select(:instance, column[:name], column[:value_list].split(","), {:prompt => ""},:disabled => (tmp_readonly ? "disabled" : false)) %>
+		      <% when "list_multi" %>
+	            <%=  select(:instance, column[:name], column[:value_list].split(","), {:selected => @instance[column[:name]].split(",")},:multiple=>true, :disabled => (tmp_readonly ? "disabled" : false)) %>
 		      <% when "float", "decimal" %>
-				<%= text_field :instance, column[:name],:class=>"input-small inputmask","data-inputmask"=>"'alias': 'decimal', 'groupSeparator': ',', 'autoGroup': true",:readonly => tmp_readonly%>
+				<%= text_field :instance, column[:name],:class=>"input-sm inputmask","data-inputmask"=>"'alias': 'decimal', 'groupSeparator': ',', 'autoGroup': true",:readonly => tmp_readonly%>
 			  <% when "string" 
 			  		if column[:value_list].blank?%>
-						<%= text_field :instance, column[:name],:class=>"input-small",:readonly => tmp_readonly,:size=>column[:length_field], :maxlength=>column[:length_value], :style=> "width:inherit;"%>
+						<%= text_field :instance, column[:name],:class=>"input-sm",:readonly => tmp_readonly,:size=>column[:length_field], :maxlength=>column[:length_value], :style=> "width:inherit;"%>
 					<%else%>	  
 					    <%=select(:instance, column[:name], column[:value_list].split(','), { include_blank: true},{:disabled => (tmp_readonly ? "disabled" : false),:style=> "width:inherit;" })%>
 					<%end%>	  
 			  <% when "text" %>
-		        <%= text_area :instance, column[:name],:readonly => tmp_readonly  %>
+		        <%= text_area :instance, column[:name],:readonly => tmp_readonly,:class=>"span_12",:rows=>5  %>
+			  <% when "list_free" %>
+		        <%= text_area :instance, column[:name],:readonly => tmp_readonly,:class=>"span_12",:rows=>5,:value=>@instance[column[:name]].gsub(',',"\r")  %>
 		      <% when "datetime","date","time" 
 		        value = @instance.send(column[:name])
 		        value = value.strftime("%d/%m/%Y %H:%M:%S") unless value.blank?
 		        if tmp_readonly%>				
-					<%= text_field :instance, column[:name],:class=>"span2",:readonly => tmp_readonly%>
+					<%= text_field :instance, column[:name],:class=>"col-md-2",:readonly => tmp_readonly%>
 				<%else%>
-				    <div class="input-append date" data-behaviour='datetimepicker' data-date="<%=value%>">
-					    <input id="instance_<%=column[:name]%>" name="instance[<%=column[:name]%>]" class="span2" type="text" value="<%=value%>" readonly>
-					    <span class="add-on"><i class="icon-th"></i></span>
+				    <div class="input-group date" data-behaviour='datetimepicker' data-date="<%=value%>">
+					    <input id="instance_<%=column[:name]%>" name="instance[<%=column[:name]%>]" class="col-md-2" type="text" value="<%=value%>" readonly>
+					    <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
 					</div>
 				<%end%>
 		      <% when "boolean" %>
@@ -64,6 +69,10 @@
 			  <%if column[:mandatory] && !tmp_readonly%>
 	  			  <%= field_description "", true %>
 	    	  <%end%>
+			  <%unless column[:column_text].blank?%>
+	  			  <%= column[:column_text]	%>
+	    	  <%end%>
+	    	  
     		<%end%>
 		    </div>
   		  </div>

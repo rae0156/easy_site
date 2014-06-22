@@ -1,5 +1,5 @@
 <% @title = "Connexion" %>
-<div class="hero-unit">
+<div class="jumbotron">
 	    <h2><%= image_tag('appli/padlock_32.png', {:alt => @title, :align => "middle"}) %> <%= @title %></h2>
 
 	<%= form_tag({}, { :name => 'login_form', :class => "form-horizontal" }) do %>
@@ -17,7 +17,7 @@
 			</div>
 		</div>
 		<div class="control-group">  
-		    <div class="controls btn">
+		    <div class="controls btn btn-default">
 				<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Se connecter",:image => "appli/padlock_32.png", :controller => 'es_users',:action => 'login_connect', :form => "login_form"}%>
 			</div>
 		</div>

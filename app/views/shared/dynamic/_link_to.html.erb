@@ -1,0 +1,12 @@
+<table cellpadding="4" width="100%" class='adminlist'>
+  <tr>
+    <%@link_to[:column].split(',').each do |column_name|%>
+		<th><%=  @columns_screen.select{|col| col[:name]==column_name}[0][:column_name]%></th>
+     <%end%>
+  </tr>
+  
+  <%= render :partial => 'shared/dynamic/link_to_item', :collection => @instances %>
+</table>
+
+<%= will_paginate @instances, :params => params, :previous_label => '<< Précédent', :next_label => 'Suivant >>' %>
+<%= page_entries_info @instances, :model => @controller_setup[:instance_name] %>

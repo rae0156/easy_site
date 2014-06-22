@@ -12,7 +12,8 @@ class EsUser < ActiveRecord::Base
 
   has_and_belongs_to_many :es_roles
   belongs_to :es_category  
-
+  has_many :es_abilities
+  
   #include encryption method
   include BCrypt
 
@@ -111,7 +112,15 @@ class EsUser < ActiveRecord::Base
 
 
   def role?(role)
+    if role.is_a?(Array) && self.es_roles
+      role.each do |r|
+        return true if self.es_roles.find_by_name(r.to_s)
+      end
+    else
       return !!self.es_roles.find_by_name(role.to_s)
+    end
+    return false
   end  
+    
   
 end

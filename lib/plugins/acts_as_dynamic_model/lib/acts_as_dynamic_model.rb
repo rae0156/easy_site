@@ -20,6 +20,7 @@ module ActsAsDynamicModel
           
           before_validation :manage_dynamic_default, :on => :create    
           before_save   :upper_case_dynamic
+          before_save   :read_only_assign , :on => :create
           self.init_setup(columns,options) 
           self.dynamic_validation
         end        
@@ -50,7 +51,6 @@ module ActsAsDynamicModel
         self.columns.each do |column|
           foreign = is_id(column) && linked_model_list.include?(column.name[0..-4]) 
           tmp_columns_setup= { :name                => column.name,
-                               :column_name         => (column.name[-3..-1] == '_id' ? column.name[0..-4] : column.name).humanize,
                                :mandatory           => ["name","code"].include?(column.name),
                                :length_min          => column.type.to_s=="string" ? (column.limit>10 ? -1 : column.limit) : -1,
                                :length_max          => column.type.to_s=="string" ? column.limit : -1,
@@ -66,11 +66,7 @@ module ActsAsDynamicModel
                                :default_value       => (column.type.to_s=="string" && column.limit==1 && column.default=='Y') ? 'Y' : nil,
                                :order               => nil,
                                :order_load          => nil,
-                               :label_name          => (column.name[-3..-1] == '_id' ? column.name[0..-4] : column.name).humanize,
                                :foreign             => foreign, 
-                               :linked_model_field  => foreign ? "id" : nil,
-                               :linked_model_class  => foreign ? column.name.gsub(/_id$/, '').classify : nil,
-                               :linked_model        => foreign ? column.name.gsub(/_id$/, '') : nil,
                                :hiden               => ["id","created_at","updated_at","creator_id","updater_id"].include?(column.name) #|| foreign
                               } 
           exist_columns_setup = columns_setup_forced.select{|col| col[:name]==column.name}
@@ -138,7 +134,7 @@ module ActsAsDynamicModel
 
           validates_inclusion_of(column[:name].to_sym, 
                                  :in => (column[:value_list].is_a?(Array) ? column[:value_list] : column[:value_list].split(",")), 
-                                 :message => "is not included in the list '#{column[:value_list]}'") unless column[:value_list].blank?
+                                 :message => "is not included in the list '#{column[:value_list]}'") if !column[:value_list].blank? && !column[:type] == 'list_multi'  
           
           if column[:field_key]
             scope = column[:field_key_scope].blank? ? nil : (column[:field_key_scope].split(",").map{|elem| elem.to_sym})  
@@ -189,7 +185,7 @@ module ActsAsDynamicModel
   
  
       def is_boolean(column)
-        return column.type.to_s=="string" && column.limit==1 #&& ["Y","N"].include?(column.default)
+        return column.type.to_s=="string" && column.limit==1 && ["Y","N"].include?(column.default)
       end
 
       def get_list(model_name,sort,conditions={},params={})
@@ -211,6 +207,10 @@ module ActsAsDynamicModel
 
       def validate_dynamic
 #        method to overwrite
+      end
+
+      def read_only_assign        
+          self.read_only = 'N' if self.respond_to?("read_only") 
       end
 
       def upper_case_dynamic

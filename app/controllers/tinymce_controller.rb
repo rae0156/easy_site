@@ -1,5 +1,4 @@
 class TinymceController < ApplicationController
-#    self.load_and_authorize_resource
     self.before_filter :login_required 
   
   def config_content 
@@ -53,13 +52,8 @@ private
       end
     end
     
-    
-    
   end
 
-  def authenticate_user
-      self.authenticate_es_user! if EsController.must_sign?(controller_name) 
-  end    
 
 end
 

@@ -1,10 +1,12 @@
 
-    <div class="container-fluid">
-      <div class="row-fluid">
-		<div class="span2">
-			<%= generate_menu("menu_admin") %>
+    <div class="container">
+      <div class="row">
+		<div class="col-md-2">
+			<div >
+				<%= generate_menu("menu_admin") %>
+			</div>
 		</div>
-		<div class="span10">
+		<div class="col-md-10">
 			<div>
 				<%=substitute_string('[setup.message_admin]')%>
 			</div>	

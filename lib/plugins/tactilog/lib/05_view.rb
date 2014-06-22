@@ -21,15 +21,17 @@ class TactilogController < ActionController::Base
     text << "    <link href='http://getbootstrap.com/2.3.2/assets/css/bootstrap-responsive.css' rel='stylesheet'>                                                                   "
     text << "  </HEAD>                                                                                                                                                     "
     text << "  <BODY>                                                                                                                                                      "
-    text << "    <div class='navbar navbar-inverse navbar-fixed-top'>                                                                                                     "
-    text << "      <div class='navbar-inner'>                                                                                                                            "
-    text << "        <div class='container'>                                                                                                                             "
-    text << "          <p class='brand'>Tactilog & CrossTable (Rails 2 & 3) <small>plugged in " + Rails.root.to_s.split('/').last + "</small></p>                                                                                                        "
+    text << "    <div class='navbar navbar-default navbar-inverse navbar-fixed-top'>                                                                                                     "
+    text << "      <div>                                                                                                                                                 "
+    text << "        <div class='container'> "
+    text << "          <div class='navbar-header'>                                                                                                                             "
+    text << "            <p class='navbar-brand'>Tactilog & CrossTable (Rails 2 & 3) <small>plugged in " + Rails.root.to_s.split('/').last + "</small></p>                                                                                                        "
+    text << "          </div>                                                                                                                                              "
     text << "        </div>                                                                                                                                              "
     text << "      </div>                                                                                                                                                "
     text << "    </div>                                                                                                                                                  "
     text << "    <div class='container'>                                                                                                                                 "
-    text << "      <div class='hero-unit'>                                                                                                                              "
+    text << "      <div class='jumbotron'>                                                                                                                              "
     text << "        <h2>Quick help</h2>                                                                                                                                "
     text << "        <BR>                                                                                                                                               "
     text << "        <p>First time you launch your application after installing Tactilog, a setup file 'tactilog.yml' is created into your '/config' directory.<BR>     "
@@ -50,7 +52,7 @@ class TactilogController < ActionController::Base
     
     text << "      <HR>                                                                                                                                              "
     text << "    <div class='row'>                                                                                                                                   "
-    text << "      <div class='span12'>                                                                                                                             "
+    text << "      <div class='col-md-12'>                                                                                                                             "
     text << "        <H2>'Tactilog' sample</H2>                                                                                                               "
     text << "        <form action='tactilog' method='post'>                                                                                                     "
     text << "          <fieldset>                                                                                                                              "
@@ -64,7 +66,7 @@ class TactilogController < ActionController::Base
     unless @selected_model_log.blank?
       tmp_message = @selected_model_log.constantize.log
       text << "    <div class='row'>                                                                                                                                   "
-      text << "      <div class='span12'>                                                                                                                             "
+      text << "      <div class='col-md-12'>                                                                                                                             "
       text << "        <div class = 'thumbnail'>                                                                                                                   "
       text << "          <h4> " + @selected_model_log + " has been logged. You can see the text below in the log file into '/log'</h4>"       
       tmp_text = tmp_message.gsub(10.chr,'<BR>').gsub('  ','&nbsp;&nbsp;')
@@ -88,7 +90,7 @@ class TactilogController < ActionController::Base
 
     
     text << "    <div class='row'>                                                                                                                                   "
-    text << "      <div class='span6'>                                                                                                                             "
+    text << "      <div class='col-md-6'>                                                                                                                             "
     text << "        <H2>'Cross Table' sample</H2>                                                                                                               "
     text << "        <form action='tactilog' method='post'>                                                                                                     "
     text << "          <fieldset>                                                                                                                              "
@@ -99,7 +101,7 @@ class TactilogController < ActionController::Base
     text << "      </div>                                                                                                                                          "
 
     if @selected_model.blank?
-      text << "      <div class='span6'>                                                                                                                             "
+      text << "      <div class='col-md-6'>                                                                                                                             "
       text << "      </div>                                                                                                                                          "
       text << "    </div>                                                                                                                                            "
     else
@@ -120,7 +122,7 @@ class TactilogController < ActionController::Base
       tmp_models << @selected_model
       tmp_models = tmp_models.map{|elem| "'" + elem + "'"}.join(",") 
 
-      text << "      <div class='span6'>                                                                                                                             "
+      text << "      <div class='col-md-6'>                                                                                                                             "
       text << "        <H3 style='text-align: left;'>Relations for " + @selected_model + "</H3>                                                                                  "
       text << "        <P>" + tmp_models_list + "</P>"       
       text << "      </div>                                                                                                                                          "
@@ -129,13 +131,13 @@ class TactilogController < ActionController::Base
 
 
       text << "    <div class='row'>                                                                                                                                   "
-      text << "      <div class='span6'>                                                                                                                             "
+      text << "      <div class='col-md-6'>                                                                                                                             "
       text << "        <div class = 'thumbnail'>                                                                                                                   "
       text << "          <H3 style='text-align: left;'>Linked tables for " + @selected_model + "</H3>                                                                          "
       text << "          <CODE><%= " + @selected_model + ".cross_table(:filter => [" + tmp_models + "]).gsub(10.chr,'<BR>').gsub('  ','&nbsp;&nbsp;')" + (rails_env=='3' ? ".html_safe" : "") + "%></CODE>"       
       text << "        </div>                                                                                                                                      "
       text << "      </div>                                                                                                                                          "
-      text << "      <div class='span6'>                                                                                                                             "
+      text << "      <div class='col-md-6'>                                                                                                                             "
       text << "        <div class = 'thumbnail'>                                                                                                                   "
       text << "          <H3 style='text-align: left;'>Setup for " + @selected_model + "</H3>                                                                                  "
       text << "          <CODE><%= " + @selected_model + ".cross_table(:filter => [" + tmp_models + "], :show_setup => true).gsub(10.chr,'<BR>').gsub('  ','&nbsp;&nbsp;')" + (rails_env=='3' ? ".html_safe" : "") + "%></CODE>"       

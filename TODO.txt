@@ -1,14 +1,19 @@
+bootstrap 3
+	http://okgwon.tistory.com/27 -> ok
+	http://bassjobsen.weblogs.fm/migrate-your-templates-from-twitter-bootstrap-2-x-to-twitter-bootstrap-3/ 
+	http://upgrade-bootstrap.bootply.com/ 
+	http://stackoverflow.com/questions/17974998/updating-bootstrap-to-version-3-what-do-i-have-to-do 
 
-jquery hide show div arrow
-http://www.codemashups.com/yet-another-show-hide-top-menu/
-http://jsfiddle.net/VLNDL/
-a faire pour le part_site	
+	model user
 
-============================================================	
+		
+Design à uniformiser : bootstrap partout comme le model user
+	-> dynamique
+	-> admins
+	-> es_seup
+	-> sites
 	
-penser à la gestion des autorisations + refaire les écrans
-	- tables (user,roles,droits)
-	- modules à implémenter	
+
 	  
 Définir les modules :
 	- la partie admin est figée et contient le paramètrage des modules de la partie 'user' et 'invité'
@@ -20,22 +25,21 @@ Définir les modules :
 		ajout automatique de la gestion du module menu dans la gestion des modules (A voir)
 
 	
-Faire le module "setup général" de l'appli comme avec le site langue
+
 
 Commencer à planifier chaque module
 
-modification des div du template 
-	autres propriétés (image, class, etc..)
+
+modification des partie du template 
+	par partie, mettre dans une table les attributs suivants
+		image
+		class prédéfinie
+		margin, padding
+		ect...
+		
 
 
 traduction
-
-drag drop pour le template
-http://thiagosf.net/projects/jfun/fun/xyyzu/Collapsible_Drag_&amp%3B_Drop_Panels_Using_jQuery 
-http://pathfindersoftware.com/2008/07/project-website-part-4-drag-and-drop-in-jquery/ 
-http://www.elated.com/articles/drag-and-drop-with-jquery-your-essential-guide/ 
-http://quickworx.info/using-jquery-drag-and-drop-to-order-div-based-tables-in-rails/ 
-http://jqueryui.com/draggable/#sortable 
 
 
 

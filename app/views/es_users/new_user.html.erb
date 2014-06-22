@@ -1,5 +1,5 @@
 <% @title = "Nouvelle inscription" %>
-<div class="hero-unit">
+<div class="jumbotron">
     <h2><%= image_tag('appli/user_48.png', {:alt => @title, :align => "middle"}) %> <%= @title %></h2>
 
 	<%= errors_for(@user) %>
@@ -52,7 +52,7 @@
 	<% end %>
 
 	<ul>
-		<li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => { :controller => 'es_users',:action => 'create', :image => "appli/process_32.png", :text => "S'inscrire", :form => "user_form"}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => { :controller => 'es_users',:action => 'create', :image => "appli/process_32.png", :text => "S'inscrire", :form => "user_form"}%></li>
 	</ul>
 
 </div>

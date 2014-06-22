@@ -20,6 +20,8 @@
 //= require_tree ./bootstrap-datetimepicker/locales/
 //= require jquery.inputmask
 //= require ./../tinymce/tinymce.min
+//= require slide
+//= require drag_drop
 // require_tree .
 
 

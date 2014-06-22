@@ -3,6 +3,6 @@
 
 	<label>Template : </label>
     <%=  collection_select(:admin, :template, EsTemplate.all.sort_by{|t| t.name}, :name, :name, {:selected => @template}) %>
-	<li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver", :action => "save_template",  :form => "admin_form"}%></li>
+	<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver", :action => "save_template",  :form => "admin_form"}%></li>
 
 <% end %>
