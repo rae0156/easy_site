@@ -28,7 +28,7 @@
 	
 	url_hash = "#" if action == "#"
 	option_hash = {}
-	option_hash = option_hash.merge({:confirm => "Voulez vous vraiment réaliser cette action ?"}) if check == 'true' && form.blank?	
+	option_hash = option_hash.merge({:confirm => "Voulez vous vraiment réaliser cette action ?".trn}) if check == 'true' && form.blank?	
 	
 	if image.blank?
 		link = text

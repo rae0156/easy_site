@@ -37,7 +37,7 @@ class EsSetup < ActiveRecord::Base
         tmp_err = !self.value.is_a_valid_time?
       when "numéro"
         tmp_decimal = self.possible_values.to_s.is_numeric? ? self.possible_values.to_i : 0
-        tmp_complement = " avec #{tmp_decimal} décimale(s)"
+        tmp_complement = " " + "avec %{nbr_decimale} décimale(s)".trn(:nbr_decimale => tmp_decimal)
         if !self.value.is_numeric?
           tmp_err = true
         else
@@ -50,7 +50,7 @@ class EsSetup < ActiveRecord::Base
           end
         end        
     end
-    errors.add_to_base "La valeur doit être de type '#{self.type_data}#{tmp_complement}'" if tmp_err
+    errors.add_to_base "La valeur doit être de type '%{type_donnee}'".trn(:type_donnee =>"#{self.type_data}#{tmp_complement}") if tmp_err
   end
 
   def self.arbo(dir)

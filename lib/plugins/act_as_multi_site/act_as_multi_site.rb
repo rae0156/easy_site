@@ -13,7 +13,7 @@ module MultiSite
       
       EsSite.create({:code => "site",:description =>"premier"}) if EsSite.first.nil?
       default_scope do 
-        site = EsSite.find_by_id(Rails.application.config.default_site) || EsSite.sort("id").first
+        site = EsSite.find_by_id(EsSite.current_site_id) || EsSite.order("id").first
         site_id = site ? site.id : 0
         where(:es_site_id => site_id) 
       end if self.new.respond_to?("es_site_id")

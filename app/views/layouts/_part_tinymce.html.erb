@@ -1,12 +1,11 @@
 
-<div class="container">
   <div class="row">
 
 	<div class="col-md-6">
 		<%= form_tag({ :action => 'test_tinymce' },{:id => "form_tinymce"}) do%>
 			<textarea name="tinymce_exemple" id="tinymce_exemple" class='tinymce' rows="10"><%=@content_tiny%></textarea> 		
-			<a href="#" class="btn btn-primary btn_tinymce" id="tester_tinymce">Tester</a>
-			<a href="#" class="btn btn-primary btn_tinymce" id="sauver_tinymce">Sauver</a>
+			<a href="#" class="btn btn-primary btn_tinymce" id="tester_tinymce"><%="Tester".trn%></a>
+			<a href="#" class="btn btn-primary btn_tinymce" id="sauver_tinymce"><%="Sauver".trn%></a>
 		<% end %>
 	</div>
 	<div class="col-md-6">
@@ -18,7 +17,6 @@
 		</div>
 	</div>
   </div><!--/row-->
-</div> <!-- /container -->
 
 
 <script>

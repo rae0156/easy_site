@@ -1,0 +1,33 @@
+interface:
+  models: 
+    - EsPostit    
+  controllers: 
+    - EsPostitsController
+
+version: 0.0.0.4
+
+
+installation:
+   table_verification:
+     - es_users
+     - es_postits:
+        - label
+        - id
+        - dyn_workflow_status_id
+        - dyn_workflow_user_id        
+  
+setup:
+  admin:
+    title: module Post it <<string-Y-Titre du module>>
+    specific:
+      about: Le module post-it est en construction <<long_string-N-A propos de>>
+
+controllers: 
+  entry_point_names:
+    EsPostitsController: Post it
+  entry_points:
+    EsPostitsController:    
+        new_postit: Nouveau postit
+        new_checklist: Nouvelle check liste
+        new_todolist: Nouvelle todo liste
+        my_postit: Liste des postit

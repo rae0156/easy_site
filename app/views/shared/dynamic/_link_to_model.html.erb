@@ -3,5 +3,5 @@
 	tmp_readonly = @controller_setup[:readonly_exists] && @model_link["read_only"]=='Y'	
 %>
 <div>
-	<%= select("model_linked", "id",@instances_to_link.map {|i| [@link_to[:column_link].split(',').collect{|c| i[c].to_s }.join(' - ').limit(50), i.id]}, {:selected => @model_linked_list_ids}, :size => size, :multiple => multiple,:disabled => (tmp_readonly ? "disabled" : false)) %>
+	<%= select("model_linked", "id",@instances_to_link.map {|i| [@link_to[:column_link].split(',').collect{|c| i[c].to_s }.join(' - ').limit(50), i.id]}, {:selected => @model_linked_list_ids}, :size => size, :multiple => multiple,:disabled => (tmp_readonly ? "disabled" : false), :class => "form-control") %>
 </div>

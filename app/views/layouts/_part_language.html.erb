@@ -1,0 +1,18 @@
+<%unless Rails.application.config.translation_mode.blank?%>
+  	<div class="cadre bg-info pull-right">
+		<%
+		languages = EsSetup.get_setup("languages","fr")
+		languages.split(',').each do |l|%>
+			<%if Rails.application.config.default_locale_easysite.to_s == l%>
+				<span class=' lead'><%=l%></span>
+			<%else%>
+				<%=link_to l, {:language => l}, :class => 'lead' %>
+			<%end%>
+			&nbsp;
+		<%
+		end
+		%>			
+    </div>
+<%end%>
+
+

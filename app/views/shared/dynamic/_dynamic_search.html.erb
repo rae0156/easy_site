@@ -1,12 +1,12 @@
 
 
 
-<%= form_for(:dynamic_search, {:remote => true,:class => "form-inline"}) do |f| %>
+<%= form_for(:dynamic_search, {:remote => true, :html=> {:class => "form-inline"}}) do |f| %>
 
 	<%@columns_screen.each do |column|
 		if column[:dynamic_search]%>
-		<div style="display:inline-block;">
-  		      <%= f.label column[:name].to_sym, column[:column_name] + " : " %>
+		<div class="form-group">
+  		      <%= f.label column[:name].to_sym, column[:column_name] + " : "%>
 
 			  <% case column[:type]
 		      	 when "integer" %>
@@ -30,7 +30,7 @@
 				<%= f.text_field column[:name],:class=>"input-sm inputmask","data-inputmask"=>"'alias': 'decimal', 'groupSeparator': ',', 'autoGroup': true"%>
 			  <% when "string" 
 		  		if column[:value_list].blank?%>
-					<%= f.text_field column[:name],:class=>"input-sm",:size=>column[:length_field], :maxlength=>column[:length_value], :style=> "width:inherit;"%>
+					<%= f.text_field column[:name],:class=>"form-control",:size=>column[:length_field], :maxlength=>column[:length_value], :style=> "width:inherit;"%>
 				<%else%>	  
 				    <%= f.select(column[:name], column[:value_list].split(','), { include_blank: true },{:style=> "width:inherit;" })%>
 				<%end%>	  
@@ -52,7 +52,7 @@
 	  <%end
      end%>
 
-     <%= submit_tag "Trouver"%>
+     <%= submit_tag "Trouver".trn, :class => "btn btn-default"%>
      
 <% end %>
 

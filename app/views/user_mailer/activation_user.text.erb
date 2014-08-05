@@ -1,12 +1,12 @@
-Bonjour <%=@name%>,
-L'activation de votre utilisateur <%=@mail%> sur le site <%=@web_site_name%> vient d'être faite.
+<%="Bonjour".trn%> <%=@name%>,
+<%="L'activation de votre utilisateur %{mail} sur le site %{web_site} vient d'être faite".trn(:mail => @mail, :web_site => @web_site_name)%>.
 <%unless @newpassword.blank? %>
-Vous pouvez dès maintenant vous connecter avec votre nouveau mot de passe : <%= @newpassword %>
+<%="Vous pouvez dès maintenant vous connecter avec votre nouveau mot de passe".trn%> : <%= @newpassword %>
 <%else%>
-Vous pouvez vous connecter en utilisant votre ancien mot de passe.
-Si vous ne vous en rappellez plus, utilisez l'option "j'ai perdu mon mot de passe" 
+<%="Vous pouvez vous connecter en utilisant votre ancien mot de passe".trn%>.
+<%="Si vous ne vous en rappellez plus, utilisez l'option [j'ai perdu mon mot de passe]".trn%>. 
 <%end%>
-Si vous rencontrez un problème, n'hésitez pas à nous contacter.
+<%="Si vous rencontrez un problème, n'hésitez pas à nous contacter".trn%>.
 
-Bien à vous,
-  L'équipe <%=@web_site_name%>.
+<%="Bien à vous".trn%>,
+  <%="L'équipe".trn%> <%=@web_site_name%>.

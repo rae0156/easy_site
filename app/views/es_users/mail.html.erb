@@ -1,32 +1,31 @@
-<% @title = "Modification du mail" %>
-<div class="jumbotron">
+<% @title = "Modification du mail".trn %>
+<div class="cadre bg-primary">
     <h2><%= image_tag('appli/padlock_32.png', {:alt => @title, :align => "middle"}) %>&nbsp;<%= @title %></h2>
 
 	<%= errors_for(@user) %>
 
 	<%= form_tag({:controller => 'es_users',:action => 'mail_update'}, { :name => 'mail_form', :class => "form-horizontal"  }) do %>
 
-	    <h4><%= field_description "Données obligatoires", true %></h4>
-		<div class="control-group">  
-		    <label class="control-label" for="user_mail">Mail actuel : </label>
-		    <div class="controls">
-				<%= @user.mail %>
+	    <h4><%= field_description "Données obligatoires".trn, true %></h4>
+		<div class="form-group">  
+		    <label class="col-sm-4 control-label" for="user_mail"><%="Mail actuel".trn%> : </label>
+		    <div class="col-sm-7">
+				<p class="form-control-static"><%= @user.mail %></p>
 			</div>
 		</div>
-		<div class="control-group">  
-		    <label class="control-label" for="user_newmail">Nouveau mail : </label>
-		    <div class="controls">
-				<%= email_field "user", "newmail", :size => 60, :maxlength => 60 %>
-				<%= field_description "", true %>
+		<div class="form-group">  
+		    <label class="col-sm-4 control-label" for="user_newmail"><%= field_description "", true %> <%="Nouveau mail".trn%> : </label>
+		    <div class="col-sm-7">
+				<%= email_field "user", "newmail", :maxlength => 60, :class => "form-control" %>
 			</div>
 		</div>
-		<div class="control-group">  
-		    <div class="controls">
-				<p>Un mail d'activation vous sera automatiquement envoyé</p>
-				<p>L'ancien mail reste valide jusqu'à l'activation du nouveau</p>
-			    <div class="btn btn-default">
-					<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver",:image => "appli/process_32.png", :form => "mail_form" }%>
-				</div>
+		<div class="form-group">  
+		    <div class="col-md-offset-4">
+				<p><%="Un mail d'activation vous sera automatiquement envoyé".trn%></p>
+				<p><%="L'ancien mail reste valide jusqu'à l'activation du nouveau".trn%></p>
+			</div>
+		    <div class="col-md-offset-4 btn btn-default">
+				<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/process_32.png", :form => "mail_form" }%>
 			</div>
 		</div>
 

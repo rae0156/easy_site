@@ -9,8 +9,8 @@ module Sample
     end
   
   
-    def acts_as_multi_site
-      puts "ici : act as multi_site"    
+    def acts_as_sample
+      puts "ici : act as sample"    
       puts "ici : before extend all method to #{self.name}"    
       extend AddActAsMethods::ClassMethods
       include AddActAsMethods::InstanceMethods

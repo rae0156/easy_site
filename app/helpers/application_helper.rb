@@ -12,7 +12,7 @@ module ApplicationHelper
         html_element_text = generate_tag(:DIV, generate_tag(:h4,generate_tag(:a, "[title]", {"data-toggle"=>"collapse", "data-parent"=>"##{id_rand}", :href=>"#collapse#{id}"}), {:class=>"panel-title"}), {:class=>"panel-heading"}) + 
                             generate_tag(:DIV, generate_tag(:DIV, "[description]",{:class=>"panel-body"}) ,{:id=>"collapse#{id}",:class=>"panel-collapse collapse #{(num==0 ? "in" : "")}"}) 
                             
-        tmp_content = substitute_string(html_element_text,element)
+        tmp_content = substitute_string(html_element_text,element,["title","description"])
         html_text.gsub!("[#{id}]",tmp_content)
         num+=1
       end
@@ -30,7 +30,7 @@ module ApplicationHelper
       tmp_list[1..-1].each do |id_image|
         element = collection[0].class.find(id_image)
         html_element_text =  generate_tag(:IMG, "", {:src=>"[path]"}) + generate_tag(:DIV, generate_tag(:H4, "[title]") + generate_tag(:P, "[description]"),{:class=>"carousel-caption"}) 
-        tmp_content = substitute_string(html_element_text,element)
+        tmp_content = substitute_string(html_element_text,element,["title","description"])
         html_indicators_text += generate_tag(:LI, "", {"data-target"=> "#carousel_#{id_rand}", "data-slide-to"=> "#{num}", :class=>(num==0 ? "active": "")})
         html_text.gsub!("[#{id_image}]",tmp_content)
         num+=1
@@ -53,7 +53,7 @@ module ApplicationHelper
       html_element_text_before =  generate_tag(:A, generate_tag(:IMG, "", {:class=>"media-object",:src=>"[path]"}), {:class=>"pull-left"}) 
       html_element_text_container = generate_tag(:H4, "[title]", {:class=>"media-heading"}) + generate_tag(:P, "[description]") 
       tmp_content_before = substitute_string(html_element_text_before,element)
-      tmp_content_container = substitute_string(html_element_text_container,element)
+      tmp_content_container = substitute_string(html_element_text_container,element,["title","description"])
       
       html_text.gsub!("[BEFORE_#{id_image}]",tmp_content_before)
       html_text.gsub!("[#{id_image}]",tmp_content_container)
@@ -68,7 +68,7 @@ module ApplicationHelper
     
     tmp_list[1..-1].each do |id_image|
       element = collection[0].class.find(id_image)
-      tmp_content = substitute_string(generate_tag(:A, generate_tag(:IMG, "", {:src=>"[path]"}) + generate_tag(:H3, "[title]") + generate_tag(:P, "[description]"), {:href=>"#", :class=>"thumbnail"}),element)
+      tmp_content = substitute_string(generate_tag(:A, generate_tag(:IMG, "", {:src=>"[path]"}) + generate_tag(:H3, "[title]") + generate_tag(:P, "[description]"), {:href=>"#", :class=>"thumbnail"}),element,["title","description"])
       html_text.gsub!("[#{id_image}]",tmp_content)
     end
     
@@ -101,14 +101,14 @@ module ApplicationHelper
 
 
   def generate_citation(citation)
-    return substitute_string(generate_tag(:P, "[title]") + generate_tag(:P, generate_tag(:blockquote, "[description]<BR>" + generate_tag(:small, "[reference]",{:class => "pull-right"}))),citation).html_safe 
+    return substitute_string(generate_tag(:P, "[title]") + generate_tag(:P, generate_tag(:blockquote, "[description]<BR>" + generate_tag(:small, "[reference]",{:class => "pull-right"}))),citation,["title","description","reference"]).html_safe 
   end
 
   def generate_video(video)
     return substitute_string(generate_tag(:DIV, "<iframe width='[width]' height='[height]' src='[path]' frameborder='0' allowfullscreen></iframe>", {:class => 'flex-video widescreen'}) ,video).html_safe 
   end
 
-  def substitute_string(text,instance=nil)
+  def substitute_string(text,instance=nil,fields_to_translate=[])
     list_word=[]
     text.split("[").each do |word|
       unless word.index("]").blank?
@@ -122,8 +122,9 @@ module ApplicationHelper
         when "setup"
           tmp_word_replaced=EsSetup.get_setup(word.split('.')[1..-1])
         end
-      else
-        tmp_word_replaced = instance.send(word) if instance.respond_to?(word) && !instance.send(word).blank?
+      elsif instance.respond_to?(word) && !instance.send(word).blank?
+        tmp_word_replaced = instance.send(word) 
+        tmp_word_replaced = tmp_word_replaced.trn if fields_to_translate.include?(word)
       end
       text.gsub!("[#{word}]",tmp_word_replaced.to_s)
     end unless list_word.blank?
@@ -420,14 +421,14 @@ module ApplicationHelper
             end
           end
           menu_param = "#" if menu_param.blank?
-          tmp_link = link_to(menu.name, menu_param, {:title => menu.description})
+          tmp_link = link_to(menu.name.trn, menu_param, {:title => menu.description.trn})
       when "link_sheet"
-          tmp_link = generate_tag("a", menu.name, {"data-toggle"=> "tab", "href"=> "#tab_#{menu.link_params}",:title => menu.description})
+          tmp_link = generate_tag("a", menu.name.trn, {"data-toggle"=> "tab", "href"=> "#tab_#{menu.link_params}",:title => menu.description.trn})
       when "submenu" 
-          tmp_link = generate_tag("a", menu.name , {:class => "dropdown-toggle", "data-toggle"=> "dropdown", "href"=> "#",:title => menu.description})
+          tmp_link = generate_tag("a", menu.name.trn , {:class => "dropdown-toggle", "data-toggle"=> "dropdown", "href"=> "#",:title => menu.description.trn})
 #          tmp_link = generate_tag("a", menu.name + generate_tag("B","",{:class => "caret"}), {:class => "dropdown-toggle", "data-toggle"=> "dropdown", "href"=> "#"})
       when "dropdown"
-          tmp_link = generate_tag("a", menu.name, {:class => "dropdown-toggle", "data-toggle"=> "dropdown", "href"=> "#",:title => menu.description})
+          tmp_link = generate_tag("a", menu.name.trn, {:class => "dropdown-toggle", "data-toggle"=> "dropdown", "href"=> "#",:title => menu.description.trn})
       end    
     end
     return tmp_link
@@ -458,7 +459,7 @@ module ApplicationHelper
         :url => { :params => param_merged }
     }
     html_options = {
-      :title => "Trié sur '#{text}'",
+      :title => "Trié sur '%{text}'".trn(:text => text),
       :href => url_for( :params => param_merged ),
       :remote => true
     }
@@ -471,22 +472,22 @@ module ApplicationHelper
     model_name = model_name.split(' ')[1..-1].join(' ') if model_name.split(' ')[0]=='es'
     html = ""
     unless object.errors.blank?
-      html << "<div id = 'errorExplanation' class='alert alert-error'>\n"
+      html << "<div id = 'errorExplanation' class='alert alert-danger'>\n"
       if message.blank?
         if object.new_record?
-          html << "<h4>#{object.errors.full_messages.length} erreur(s) pour '#{model_name}' </h4>"
-          html << "\t\t<p>Il y a un problème lors de la création de #{model_name}</p>\n"
+          html << "<h4>" + "%{nbr_error} erreur(s) pour '%{model_name}'".trn(:nbr_error => object.errors.full_messages.length, :model_name => model_name) + " </h4>"
+          html << "\t\t<p>" + "Il y a un problème lors de la création de %{model_name}".trn(:model_name => model_name) + "</p>\n"
         else
-          html << "<h4>#{object.errors.full_messages.length} erreur(s) pour '#{model_name}' </h4>"
-          html << "\t\t<p>Il y a un problème lors de la modification de #{model_name}</p>\n"
+          html << "<h4>" + "%{nbr_error} erreur(s) pour '%{model_name}'".trn(:nbr_error => object.errors.full_messages.length, :model_name => model_name) + " </h4>"
+          html << "\t\t<p>" + "Il y a un problème lors de la modification de %{model_name}".trn(:model_name => model_name) + "</p>\n"
         end    
       else
         if message == "delete"
-          html << "<h4>#{object.errors.full_messages.length} erreur(s) pour '#{model_name}' </h4>"
-          html << "\t\t<p>Il y a un problème lors de la suppression de #{model_name}</p>\n"
+          html << "<h4>" + "%{nbr_error} erreur(s) pour '%{model_name}'".trn(:nbr_error => object.errors.full_messages.length, :model_name => model_name) + " </h4>"
+          html << "\t\t<p>" + "Il y a un problème lors de la suppression de %{model_name}".trn(:model_name => model_name) + "</p>\n"
         else
-          html << "<h4>#{object.errors.full_messages.length} erreur(s) pour #{message} </h4>"
-          html << "<p>Détail :</p>"
+          html << "<h4>" + "%{nbr_error} erreur(s) pour %{message}".trn(:nbr_error => object.errors.full_messages.length, :message => message) + " </h4>"
+          html << "<p>" + "Détail".trn + " :</p>"
         end
       end  
       html << "\t\t<ul>\n"
@@ -505,8 +506,9 @@ module ApplicationHelper
   end  
 
   # Generate the description with the styles for the form fields of the new and edit screens
-  def field_description(text, mandatory = false)
+  def field_description(text, mandatory = false, bootstrap = false)
     ret = (mandatory ? "<span class=\"text-error\">*</span>" : "") + "<span class=\"text-error\">#{text}</span>"
+    ret = "<div class='col-sm-1'>#{ret}</div>" if bootstrap
     return ret.html_safe
   end
   
@@ -515,4 +517,21 @@ module ApplicationHelper
     charset = %w{ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z}
     (0...size).map{ charset.to_a[rand(charset.size)] }.join
   end
+
+
+  def page_entries_info(collection, options = {})
+    entry_name = options[:model] || (collection.empty?? 'item' : collection.first.class.name.split('::').last.titleize).trn
+    if collection.total_pages < 2
+      case collection.size
+      when 0
+        "Aucun %{element_paginate} trouvé".trn(:element_paginate => entry_name)
+      else
+        "Tous les %{element_paginate}".trn(:element_paginate => entry_name.pluralize)
+      end
+    else
+      "Affichage %{de} - %{vers} sur %{total} %{element_paginate}".trn(:de => collection.offset + 1, :vers => collection.offset + collection.length, :total => collection.total_entries, :element =>entry_name.pluralize)
+    end
+  
+  end
+
 end

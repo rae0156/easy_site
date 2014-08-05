@@ -1,6 +1,11 @@
 class AdminsController < ApplicationController
     self.before_filter :login_required 
 
+    def init_workspace
+      init_workspace_easysite      
+      redirect_to root_url 
+    end
+
     def config_template
       @template = Rails.application.config.current_template
     end

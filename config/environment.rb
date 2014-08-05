@@ -1,12 +1,19 @@
 # Load the rails application
+
 require File.expand_path('../application', __FILE__)
 
+
 # Initialize the rails application
+Rails.application.config.default_site             = 0
+Rails.application.config.current_template         = ""
+Rails.application.config.current_theme            = ""
+Rails.application.config.default_locale_easysite  = :fr
+Rails.application.config.translation_mode         = ''    
 EasySite::Application.initialize!
 
-Rails.application.config.default_site     = EsSite.first(:conditions=>{:set_as_default => 'Y'}).id
-Rails.application.config.current_template = ""
-Rails.application.config.current_theme    = ""
+
+init_workspace_easysite
+#keep also : init_workspace_easysite in es_utils
 
 
 #Ne pas bouger d'ici
@@ -22,3 +29,4 @@ Rails.application.config.current_theme    = ""
   }  
   
 
+require "#{Rails.root}/lib/modules/load_modules.rb" if File.exist?( "#{Rails.root}/lib/modules/load_modules.rb")

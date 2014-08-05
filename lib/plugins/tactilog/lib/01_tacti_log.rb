@@ -5,8 +5,14 @@ module Kernel
 end
 
 class String
-  def is_integer?
-    true if self.to_i rescue false
+  def is_integer?(length=99)
+    if Integer(self) && !self.include?(",") && !self.include?(".")
+      self.length <= length
+    else
+      false
+    end 
+    rescue 
+      return false
   end
 end
 

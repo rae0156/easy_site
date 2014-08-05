@@ -1,4 +1,4 @@
-<% @title = "Setup '#{@controller_setup[:instance_name]}'"%>
-<div>
+<% @title = "Setup '%{element}'".trn(:element =>@controller_setup[:instance_name])%>
+<div class="cadre bg-primary">
 	<%=@text_setup%>	
 </div>

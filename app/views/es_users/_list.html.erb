@@ -2,15 +2,15 @@
 <table cellpadding="4" width="100%" class='adminlist'>
   <tr>
     <th width="1"><%= check_box_tag("toggle_it", "", false, {:onclick => "checkAll('user_list_form');"}) %></th>
-	<th><%= sort_link_remote :text => "Nom", :column => "name", :controller =>  "es_users", :action => 'list'%></th>
-    <th><%= sort_link_remote :text => "Prénom", :column => "firstname", :controller => "es_users", :action => 'list' %></th>
-    <th><%= sort_link_remote :text => "Pseudo", :column => "pseudo", :controller => "es_users", :action => 'list' %></th>
-    <th><%= sort_link_remote :text => "Mail", :column => "mail", :controller => "es_users", :action => 'list' %></th>
-    <th>Activé/Invité</th>
+	<th><%= sort_link_remote :text => "Nom".trn, :column => "name", :controller =>  "es_users", :action => 'list'%></th>
+    <th><%= sort_link_remote :text => "Prénom".trn, :column => "firstname", :controller => "es_users", :action => 'list' %></th>
+    <th><%= sort_link_remote :text => "Pseudo".trn, :column => "pseudo", :controller => "es_users", :action => 'list' %></th>
+    <th><%= sort_link_remote :text => "Mail".trn, :column => "mail", :controller => "es_users", :action => 'list' %></th>
+    <th><%="Activé/Invité".trn%></th>
   </tr>
   <%= render :partial => 'list_item', :collection => @users %>
 </table>
 
-<%= will_paginate @users, :params => params, :previous_label => '<< Précédent', :next_label => 'Suivant >>' %>
-<%= page_entries_info @users, :model => 'utilisateur' %>
+<%= will_paginate @users, :params => params, :previous_label => '<< ' + "Précédent".trn, :next_label => "Suivant".trn + ' >>' %>
+<%= page_entries_info @users, :model => 'utilisateur'.trn %>
 

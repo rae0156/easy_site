@@ -1,59 +1,57 @@
-<% @title = "Nouvelle inscription" %>
-<div class="jumbotron">
+<% @title = "Nouvelle inscription".trn %>
+<div class="cadre bg-primary">
     <h2><%= image_tag('appli/user_48.png', {:alt => @title, :align => "middle"}) %> <%= @title %></h2>
 
 	<%= errors_for(@user) %>
 
 	<%= form_tag({:controller => 'users',:action => 'create'}, { :name => 'user_form', :class => 'form-horizontal' }) do %>
-		  <h4><%= field_description "Données obligatoires", true %></h4>
-		  <div class="control-group">
-		    <label for="user_pseudo" class="control-label">Speudo : </label>
-			<div class="controls">
-				<%= text_field "user", "pseudo", :size => 60, :maxlength => 60 %>
+		  <h4><%= field_description "Données obligatoires".trn, true %></h4>
+		  <div class="form-group">
+		    <label for="user_pseudo" class="col-sm-4 control-label"><%="Speudo".trn%> : </label>
+			<div class="col-sm-7">
+				<%= text_field "user", "pseudo", :maxlength => 60, :class => "form-control" %>
 		    </div>
 		  </div>
-		  <div class="control-group">
-		    <label for="user_name" class="control-label">Nom : </label>
-			<div class="controls">
-				<%= text_field "user", "name", :size => 60, :maxlength => 60 %>
-				<%= field_description "", true %>
+		  <div class="form-group">
+		    <label for="user_name" class="col-sm-4 control-label"><%= field_description "", true %> <%="Nom".trn%> : </label>
+			<div class="col-sm-7">
+				<%= text_field "user", "name", :maxlength => 60, :class => "form-control" %>
 		    </div>
 		  </div>
-		  <div class="control-group">
-		    <label for="user_firstname" class="control-label">Prénom : </label>
-			<div class="controls">
-				<%= text_field "user", "firstname", :size => 60, :maxlength => 60 %>
-				<%= field_description "", true %>
+		  <div class="form-group">
+		    <label for="user_firstname" class="col-sm-4 control-label"><%= field_description "", true %> <%="Prénom".trn%> : </label>
+			<div class="col-sm-7">
+				<%= text_field "user", "firstname", :maxlength => 60, :class => "form-control" %>
 		    </div>
 		  </div>
-		  <div class="control-group">
-		    <label for="user_mail" class="control-label">E-mail : </label>
-			<div class="controls">
-				<%= email_field "user", "mail", :size => 60, :maxlength => 60 %>
-				<%= field_description "", true %>
+		  <div class="form-group">
+		    <label for="user_mail" class="col-sm-4 control-label"><%= field_description "", true %> <%="E-mail".trn%> : </label>
+			<div class="col-sm-7">
+				<%= email_field "user", "mail", :maxlength => 60, :class => "form-control" %>
 		    </div>
 		  </div>
-		  <div class="control-group">
-		    <label for="user_password1" class="control-label">Mot de passe : </label>
-			<div class="controls">
-				<%= password_field "user", "password1", :size => 12, :maxlength => 12 %>
-				<%= field_description "", true %>
+		  <div class="form-group">
+		    <label for="user_password1" class="col-sm-4 control-label"><%= field_description "", true %> <%="Mot de passe".trn%> : </label>
+			<div class="col-sm-3">
+				<%= password_field "user", "password1", :maxlength => 12, :class => "form-control" %>
 		    </div>
 		  </div>
-		  <div class="control-group">
-		    <label for="user_password2" class="control-label">Mot de passe (validation) : </label>
-			<div class="controls">
-				<%= password_field "user", "password2", :size => 12, :maxlength => 12 %>
-				<%= field_description "", true %>
+		  <div class="form-group">
+		    <label for="user_password2" class="col-sm-4 control-label"><%= field_description "", true %> <%="Mot de passe (validation)".trn%> : </label>
+			<div class="col-sm-3">
+				<%= password_field "user", "password2", :maxlength => 12, :class => "form-control" %>
 		    </div>
 		  </div>
+
 
 
 	<% end %>
 
-	<ul>
-		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => { :controller => 'es_users',:action => 'create', :image => "appli/process_32.png", :text => "S'inscrire", :form => "user_form"}%></li>
-	</ul>
+	<div class="form-group ">  
+	    <div class="col-md-offset-4 btn btn-default">
+			<%= render :partial => 'shared/goto_menu_item', :locals => { :controller => 'es_users',:action => 'create', :image => "appli/process_32.png", :text => "S'inscrire".trn, :form => "user_form"}%>
+		</div>
+	</div>
 
 </div>
 

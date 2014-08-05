@@ -1,20 +1,23 @@
   <%tmp_readonly = params[:action]=='show' || (@controller_setup[:readonly_exists] && @instance["read_only"]=='Y')
     if @controller_setup[:mandatory_exists] && !tmp_readonly%>
-	  <h4><%= field_description "Données obligatoires", true %></h4>
+	  <h4><%= field_description "Données obligatoires".trn, true %></h4>
   <%end%>
 	<%@columns_screen.each do |column|
 		if column["display_#{params[:action]}".to_sym] && column[:name].split('.').count==1%>
-		  <div class="control-group">
+		  <div class="form-group">
 		
-		    <label for=<%="instance_#{column[:name]}"%> class="control-label">
+		    <label for=<%="instance_#{column[:name]}"%> class="col-sm-3 control-label">
+			  <%if column[:mandatory] && !tmp_readonly%>
+	  			  <%= field_description "", true %>
+	    	  <%end%>
 	    		<%=column[:column_name]%> :
 		    </label>
-  		    <div class="controls">
+  		    <div class="col-sm-8">
 			<%if column[:name] == 'sequence'%>
-				<%= text_field(:instance, column[:name],{:disabled => true,:readonly => tmp_readonly})%>
+				<%= text_field(:instance, column[:name],{:disabled => true,:readonly => tmp_readonly, :class => "form-control"})%>
 			<%elsif column[:name] == 'parent_id'%>
 				<%=hidden_field(:instance, column[:name],:value => (@parent.blank? ? 0 : @parent.id))%>
-				<%= text_field(:dummy, :parent,{:disabled => true,:readonly => tmp_readonly, :value => (@parent.blank? ? "Origine" : @parent.name)})%>
+				<%= text_field(:dummy, :parent,{:disabled => true,:readonly => tmp_readonly, :class => "form-control", :value => (@parent.blank? ? "Origine" : @parent.name)})%>
     		<%else%>
 			  <% case column[:type]
 		      	 when "integer" %>
@@ -27,34 +30,34 @@
 			             end		             
 			             unless column_name.nil?
 			             %>
-			            <%=  collection_select(:instance, column[:name], column_class.all, :id, column_name.to_sym, {:prompt => ""},:disabled => (tmp_readonly ? "disabled" : false)) %>
+			            <%=  collection_select(:instance, column[:name], column_class.all, :id, column_name.to_sym, {:prompt => ""},:disabled => (tmp_readonly ? "disabled" : false), :class => "form-control") %>
 			          <% else %>
-						<%= text_field :instance, column[:name],:class=>"input-sm inputmask","data-inputmask"=>"'alias': 'integer'",:readonly => tmp_readonly%>
+						<%= text_field :instance, column[:name],:class=>"input-sm inputmask","data-inputmask"=>"'alias': 'integer'",:readonly => tmp_readonly, :class => "form-control"%>
 			          <% end %>
 			        <% else %>
-						<%= text_field :instance, column[:name],:class=>"input-sm inputmask","data-inputmask"=>"'alias': 'integer'",:readonly => tmp_readonly%>
+						<%= text_field :instance, column[:name],:class=>"input-sm inputmask","data-inputmask"=>"'alias': 'integer'",:readonly => tmp_readonly, :class => "form-control"%>
 			        <% end %>
 		      <% when "list" %>
-	            <%=  select(:instance, column[:name], column[:value_list].split(","), {:prompt => ""},:disabled => (tmp_readonly ? "disabled" : false)) %>
+	            <%=  select(:instance, column[:name], column[:value_list].split(","), {:prompt => ""},:disabled => (tmp_readonly ? "disabled" : false), :class => "form-control") %>
 		      <% when "list_multi" %>
-	            <%=  select(:instance, column[:name], column[:value_list].split(","), {:selected => @instance[column[:name]].split(",")},:multiple=>true, :disabled => (tmp_readonly ? "disabled" : false)) %>
+	            <%=  select(:instance, column[:name], column[:value_list].split(","), {:selected => @instance[column[:name]].split(",")},:multiple=>true, :disabled => (tmp_readonly ? "disabled" : false), :class => "form-control") %>
 		      <% when "float", "decimal" %>
-				<%= text_field :instance, column[:name],:class=>"input-sm inputmask","data-inputmask"=>"'alias': 'decimal', 'groupSeparator': ',', 'autoGroup': true",:readonly => tmp_readonly%>
+				<%= text_field :instance, column[:name],:class=>"input-sm inputmask","data-inputmask"=>"'alias': 'decimal', 'groupSeparator': ',', 'autoGroup': true",:readonly => tmp_readonly, :class => "form-control"%>
 			  <% when "string" 
 			  		if column[:value_list].blank?%>
-						<%= text_field :instance, column[:name],:class=>"input-sm",:readonly => tmp_readonly,:size=>column[:length_field], :maxlength=>column[:length_value], :style=> "width:inherit;"%>
+						<%= text_field :instance, column[:name],:class=>"input-sm",:readonly => tmp_readonly,:size=>column[:length_field], :maxlength=>column[:length_value], :style=> "width:inherit;", :class => "form-control"%>
 					<%else%>	  
-					    <%=select(:instance, column[:name], column[:value_list].split(','), { include_blank: true},{:disabled => (tmp_readonly ? "disabled" : false),:style=> "width:inherit;" })%>
+					    <%=select(:instance, column[:name], column[:value_list].split(','), { include_blank: true},{:disabled => (tmp_readonly ? "disabled" : false),:style=> "width:inherit;", :class => "form-control" })%>
 					<%end%>	  
 			  <% when "text" %>
-		        <%= text_area :instance, column[:name],:readonly => tmp_readonly,:class=>"span_12",:rows=>5  %>
+		        <%= text_area :instance, column[:name],:readonly => tmp_readonly,:class=>"span_12",:rows=>5, :class => "form-control"  %>
 			  <% when "list_free" %>
-		        <%= text_area :instance, column[:name],:readonly => tmp_readonly,:class=>"span_12",:rows=>5,:value=>@instance[column[:name]].gsub(',',"\r")  %>
+		        <%= text_area :instance, column[:name],:readonly => tmp_readonly,:class=>"span_12",:rows=>5,:value=>@instance[column[:name]].gsub(',',"\r"), :class => "form-control"  %>
 		      <% when "datetime","date","time" 
 		        value = @instance.send(column[:name])
 		        value = value.strftime("%d/%m/%Y %H:%M:%S") unless value.blank?
 		        if tmp_readonly%>				
-					<%= text_field :instance, column[:name],:class=>"col-md-2",:readonly => tmp_readonly%>
+					<%= text_field :instance, column[:name],:class=>"col-md-2",:readonly => tmp_readonly, :class => "form-control" %>
 				<%else%>
 				    <div class="input-group date" data-behaviour='datetimepicker' data-date="<%=value%>">
 					    <input id="instance_<%=column[:name]%>" name="instance[<%=column[:name]%>]" class="col-md-2" type="text" value="<%=value%>" readonly>
@@ -62,19 +65,24 @@
 					</div>
 				<%end%>
 		      <% when "boolean" %>
-		        <%= check_box :instance, column[:name],{:readonly => tmp_readonly}, column[:checked_value]||"1", column[:unchecked_value]||"0" %>
+		        <%= check_box :instance, column[:name],{:readonly => tmp_readonly, :class => ""}, column[:checked_value]||"1", column[:unchecked_value]||"0" %>
 		      <% else %>
 				<span class="uneditable-input"><%=@instance.send(column[:name])%></span>		      	
 		      <% end %>		
-			  <%if column[:mandatory] && !tmp_readonly%>
-	  			  <%= field_description "", true %>
-	    	  <%end%>
-			  <%unless column[:column_text].blank?%>
-	  			  <%= column[:column_text]	%>
-	    	  <%end%>
 	    	  
     		<%end%>
+			<%unless ['sequence','parent_id'].include?(column[:name])%>
+			  <%unless column[:column_text].blank?%>
+			  	<span class='help-block'>
+	  			  <%= column[:column_text]	%>
+			  	</span>
+	    	  <%end%>
+    		<%end%>
 		    </div>
+		    
+
+		    
+		    
   		  </div>
 	  <%end
      end%>

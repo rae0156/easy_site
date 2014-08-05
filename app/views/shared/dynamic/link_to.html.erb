@@ -5,32 +5,31 @@
 	<h3><%=@link_to[:description]%></h3>
 <%end%>
 
-<div class="container">
 
 <%= form_tag({ :action => 'link_with' }, { :name => 'link_form',:id => 'link_form'}) do%>
   <div class="row">
-	<div class="col-md-6">
-		<%=@link_to[:title_left]%> 
+	<div class="col-md-6 ">
+		<h4><%=@link_to[:title_left]%></h4> 
 		
 		<%= render :partial => 'shared/dynamic/link_to' %>
 		
 	</div>
 	<div class="col-md-6">
 		<%if @link_to[:association_type]!='NA' && !@model_link.blank? %>
-			<%=@link_to[:title_right]%> 
+			<h4><%=@link_to[:title_right]%></h4>
 			<BR>
-			<%=@link_to[:model_name]%> '<%=@model_link[@link_to[:column].split(',')[0]]%>' : 
+			<span class="help-block">
+				<%=@link_to[:model_name]%> '<%=@model_link[@link_to[:column].split(',')[0]]%>' : 
+			</span>
 			<%= render :partial => 'shared/dynamic/link_to_model' %>
 			<br>
 			<%unless @controller_setup[:readonly_exists] && @model_link["read_only"]=='Y'%>
-				<ul>
-					<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver",:image => "appli/save_32.png", :action => "link_to_model", :id => @model_link.id,:form => "link_form", :param_goto => {:link => @link_to[:model_linked].name}}%></li>
-				</ul>
+				<div class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/save_32.png", :action => "link_to_model", :id => @model_link.id,:form => "link_form", :param_goto => {:link => @link_to[:model_linked].name}}%></div>
 			<%end%>
 		<%elsif @model_link.blank?%>
-			Selectionnez un '<%=@link_to[:model_name]%>' pour choisir un <%=( ['has_and_belongs_to_many','has_many'].include?(@link_to[:association_type]) ? ' ou plusieurs' : '')%> '<%=@link_to[:model_name_linked]%>' 
+			<%=("Selectionnez un '%{model_name}' pour choisir un " + ( ['has_and_belongs_to_many','has_many'].include?(@link_to[:association_type]) ? ' ou plusieurs' : '') + " '%{model_name_linked}'").trn(:model_name => @link_to[:model_name], :model_name_linked => @link_to[:model_name_linked])%>			 
 		<%end%>
 	</div>
   </div><!--/row-->
 <% end %>
-</div> <!-- /container -->
+

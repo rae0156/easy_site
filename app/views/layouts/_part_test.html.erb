@@ -7,6 +7,22 @@
 </div>
 <BR>
 	
+<div class="row">
+	<div class="col-md-2 alert alert-info">
+		Language&nbsp;
+		<%= get_template_part("part_language") %> 
+	</div>
+	<div class="col-md-10 drag_drop_template">
+		<h3>La langue est  : <%=Rails.application.config.default_locale_easysite.to_s%></h3>
+		<p><kbd>Texte existant</kbd> : <%='Texte existant'.trn%></p>
+		<p><kbd>Texte manquant</kbd> : <%='Texte manquant'.trn%></p>
+		<p><kbd>Texte manquant avec défaut</kbd> : <%='Texte manquant'.trn({:default => 'voici un texte par défaut'})%></p>
+		<p><kbd>Texte FR manquant</kbd> : <%='Texte FR manquant'.trn%></p>
+		<p><kbd>Texte EN manquant</kbd> : <%='Texte EN manquant'.trn%></p>
+		<p><kbd>Texte existant avec paramètre</kbd> : <%="Bonjour".trn({:param1 => 'toto'})%></p>
+		<p><kbd>Texte manquant avec paramètre</kbd> : <%="Bonsoir".trn({:param1 => 'toto'})%></p>
+	</div>
+</div>
 	
 <div class="row">
 	<div class="col-md-2 alert alert-info">
@@ -14,7 +30,7 @@
 	</div>
 
 
-	<div class="col-md-10 row drag_drop_template">
+	<div class="col-md-10  drag_drop_template">
 
 		<div class="col-md-4">
 			<div id='template_part1'>

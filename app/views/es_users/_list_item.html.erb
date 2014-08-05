@@ -6,6 +6,6 @@
   <td><%= link_to list_item.mail, :controller => 'es_users', :action => 'edit', :id => list_item.id%></td>
   <td><%= link_to(image_tag(list_item.active == 'N' ? "appli/invite_32.png" : "appli/ok_32.png",
 						    {:alt => "", :align => "middle", :border => "0",
-						    :class => "app_tooltip", :title => list_item.active == 'N' ? "Activation et envoie d'un mail" : "Désactivation", "data-placement" => "left"}) + "", 
+						    :class => "app_tooltip", :title => list_item.active == 'N' ? "Activation et envoie d'un mail".trn : "Désactivation".trn, "data-placement" => "left"}) + "", 
 							{:controller => "es_users", :action => "activation", :id => list_item.id}) %></td>    
 </tr>

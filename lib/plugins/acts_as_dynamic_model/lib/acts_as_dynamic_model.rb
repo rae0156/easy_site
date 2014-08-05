@@ -134,7 +134,7 @@ module ActsAsDynamicModel
 
           validates_inclusion_of(column[:name].to_sym, 
                                  :in => (column[:value_list].is_a?(Array) ? column[:value_list] : column[:value_list].split(",")), 
-                                 :message => "is not included in the list '#{column[:value_list]}'") if !column[:value_list].blank? && !column[:type] == 'list_multi'  
+                                 :message => "n'est pas inclus dans la liste '%{liste}'".trn(:liste => column[:value_list])) if !column[:value_list].blank? && !column[:type] == 'list_multi'  
           
           if column[:field_key]
             scope = column[:field_key_scope].blank? ? nil : (column[:field_key_scope].split(",").map{|elem| elem.to_sym})  

@@ -1,0 +1,22 @@
+interface:
+  models: /
+  controllers: / 
+
+version: 0.0.0.0
+
+
+setup:
+  admin:
+    title: module test <<string-Y-Titre du module>>
+    specific:
+      text: Test  <<string>>
+      integer: 1  <<integer>>
+      long_string: Test  <<long_string>>
+      list: test2  <<list-Y-list-test1,test2,test3,test4>>
+      multiple_list: test1,test4  <<multiple_list-Y-multiple_list-test1,test2,test3,test4>>
+      decimal: 1.2  <<decimal>>
+      time: 18:00:00  <<time>>
+      date: 01/02/2014  <<date>>
+      date_time: 01/02/2014 18:00:00 <<date_time>>
+      radio_button: test3  <<radio_button-Y-radio_button-test1,test2,test3,test4>>
+

@@ -12,9 +12,9 @@ module EasyHelper
               :mandatory        => ["label","-Options html","class","style"], 
               :integer          => ["--Ne pas oublier le javascript 'init_inputmask();'","instance","field","value","-Options html","class","style","read_only","bootstrap","-Options additionnelles","with_label","ajax_action","mandatory"], 
               :decimal          => ["--Ne pas oublier le javascript 'init_inputmask();'","instance","field","value","-Options html","class","style","read_only","bootstrap","-Options additionnelles","with_label","ajax_action","mandatory"], 
-              :date             => ["--Ne pas oublier le javascript 'init_datepicker();'","instance","field","value","-Options html","class","style","read_only","bootstrap","-Options additionnelles","with_label","ajax_action","mandatory"], 
-              :time             => ["--Ne pas oublier le javascript 'init_datepicker();'","instance","field","value","-Options html","class","style","read_only","bootstrap","-Options additionnelles","with_label","ajax_action","mandatory"], 
-              :date_time        => ["--Ne pas oublier le javascript 'init_datepicker();'","instance","field","value","-Options html","class","style","read_only","bootstrap","-Options additionnelles","with_label","ajax_action","mandatory"], 
+              :date             => ["--Ne pas oublier le javascript 'init_datepicker();'","instance","field","value","-Options html","class","style","read_only","bootstrap","bootstrap_length","-Options additionnelles","with_label","ajax_action","mandatory"], 
+              :time             => ["--Ne pas oublier le javascript 'init_datepicker();'","instance","field","value","-Options html","class","style","read_only","bootstrap","bootstrap_length","-Options additionnelles","with_label","ajax_action","mandatory"], 
+              :date_time        => ["--Ne pas oublier le javascript 'init_datepicker();'","instance","field","value","-Options html","class","style","read_only","bootstrap","bootstrap_length","-Options additionnelles","with_label","ajax_action","mandatory"], 
               :hidden           => ["instance","field","value","-Options html","class"]
               }
     OPTIONS = {
@@ -43,6 +43,7 @@ module EasyHelper
                 :cols               => {:mandatory => false , :html_option => true , :description => "Nombre de colonnes (Ne marche pas avec Bootstrap)", :default_value => 40}, 
                 :rows               => {:mandatory => false , :html_option => true , :description => "Nombre de lignes", :default_value => 5}, 
                 :bootstrap          => {:mandatory => false , :html_option => false, :description => "Activer boostrap", :default_value => true}, 
+                :bootstrap_length   => {:mandatory => false , :html_option => false, :description => "Activer la longueur pour boostrap", :default_value => true}, 
                 :with_label         => {:mandatory => false , :html_option => false, :description => "Ajoute un libellé"}
               }
               
@@ -59,16 +60,17 @@ module EasyHelper
     end
     
     
-    
 private
 
     def gererate_easy_tag(method,options)
       field_options={}
       html_options=get_html_options(method, options)
+      bootstrap = options[:bootstrap].nil? ? true : options[:bootstrap] 
+      bootstrap_length = options[:bootstrap_length].nil? ? true : options[:bootstrap_length] 
       label_result = options[:with_label].present? ? generate_label(options[:with_label],options[:instance].presence,options[:field].presence) : ""
       field_mandatory = (options[:mandatory].presence || false) ? "<span class=\"text-error\">*</span>".html_safe : ""
       html_options[:class]             = "" unless html_options[:class].present?
-      html_options[:class]            += (options[:bootstap].presence||true ? " form-control" : "") 
+      html_options[:class]            += (bootstrap ? " form-control" : "") unless method == "radio_button" 
 
       field_result = ""
       case method
@@ -91,17 +93,17 @@ private
         field_result = text_field(options[:instance].presence, options[:field].presence,html_options)
       when "date_time"
         html_options[:readonly]=options[:read_only].presence||false
-        field_result = "<div class='input-group date col-md-3' data-behaviour='datetimepicker' data-date='#{options[:value].presence}'>".html_safe +
+        field_result = "<div class='input-group date #{bootstrap_length ? 'col-md-3' : ''}' data-behaviour='datetimepicker' data-date='#{options[:value].presence}'>".html_safe +
                        text_field(options[:instance].presence, options[:field].presence,html_options) +
                        "<span class='input-group-addon'><i class='glyphicon glyphicon-th'></i></span></div>".html_safe
       when "date"
         html_options[:readonly]=options[:read_only].presence||false
-        field_result = "<div class='input-group date col-md-2' data-behaviour='datepicker' data-date='#{options[:value].presence}'>".html_safe +
+        field_result = "<div class='input-group date #{bootstrap_length ? 'col-md-2' : ''}' data-behaviour='datepicker' data-date='#{options[:value].presence}'>".html_safe +
                        text_field(options[:instance].presence, options[:field].presence,html_options) +
                        "<span class='input-group-addon'><i class='glyphicon glyphicon-th'></i></span></div>".html_safe
       when "time"
         html_options[:readonly]=options[:read_only].presence||false
-        field_result = "<div class='input-group date col-md-2' data-behaviour='timepicker' data-date='#{options[:value].presence}'>".html_safe +
+        field_result = "<div class='input-group date #{bootstrap_length ? 'col-md-2' : ''}' data-behaviour='timepicker' data-date='#{options[:value].presence}'>".html_safe +
                        text_field(options[:instance].presence, options[:field].presence,html_options) +
                        "<span class='input-group-addon'><i class='glyphicon glyphicon-th'></i></span></div>".html_safe
       when "long_text"
@@ -132,11 +134,12 @@ private
       when "radio_button"
         html_options[:disabled]=options[:read_only].presence||false
         field_result="".html_safe
-        options[:labels] = [options[:labels]] unless options[:labels].presence.is_a?(Array)
+        options[:labels] = [] if options[:labels].blank?
+        options[:labels] = [options[:labels]] unless options[:labels].is_a?(Array)
         options[:labels].each do |label|
           html_option_one = html_options.clone
           html_option_one[:checked] = "checked" if options[:value]==label
-          field_result += label_tag("#{options[:instance].presence}_#{options[:field].presence}_#{label.gsub(' ','_')}", label ) + "&nbsp;".html_safe + radio_button(options[:instance].presence, options[:field].presence, label, html_option_one) + "&nbsp;".html_safe
+          field_result += label_tag("#{options[:instance].presence}_#{options[:field].presence}_#{label.gsub(' ','_')}", radio_button(options[:instance].presence, options[:field].presence, label, html_option_one)  + " " + label,{:class => "radio-inline"} ).html_safe 
         end
       end
       

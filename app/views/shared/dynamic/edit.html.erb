@@ -1,16 +1,15 @@
 
-<% @title = "Modification d'un élément '#{@controller_setup[:instance_name]}'" %>
+<% @title = "Modification d'un élément '%{element}'".trn(:element =>@controller_setup[:instance_name]) %>
 <h2><%=@title%></h2>
-<!--% form_for(@new, :html => {:name => 'new_form'}) do |f| %>-->
 
 
 <%= form_tag({}, { :name => 'update_form', :class => 'form-horizontal' }) do%>
 
 	<ul>
 		<%unless (@controller_setup[:readonly_exists] && @instance["read_only"]=='Y')%>
-			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver",:image => "appli/save_32.png", :action => "update", :id => @instance.id,  :form => "update_form"}%></li>
+			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/save_32.png", :action => "update", :id => @instance.id,  :form => "update_form"}%></li>
 		<%end%>
-		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:back => true, :text => "Retour",:image => "appli/back_32.png", :action => "list", :param_goto => {:parent_id => (@parent.blank? ? "" : @parent.id)}}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:back => true, :text => "Retour".trn,:image => "appli/back_32.png", :action => "list", :param_goto => {:parent_id => (@parent.blank? ? "" : @parent.id)}}%></li>
 	</ul>
 	<!-- Error messages -->
 	<%= errors_for(@instance) %>

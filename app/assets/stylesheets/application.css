@@ -40,3 +40,34 @@ tr.inactive_row {
     list-style: none outside none;
     margin-left: -20px;
 }
+
+.cadre {
+  padding: 30px;
+  margin-bottom: 30px;
+  color: inherit;
+  border-radius: 6px;
+}
+
+div#spinner img{
+	margin-bottom: 10px;
+}
+
+div#spinner {
+    background-color: white;
+    text-align: center;
+    border: #75bdd4 2px solid;
+    position: absolute;
+    z-index: 999999 !important;
+    width: 250px;
+	left: 50%; 
+	margin-left: -125px;
+	top: 50%
+}
+
+p#spinner_text {
+	margin: 10px;
+    font-family: Arial;
+    color: #ff6600;
+    font-size: 8pt;
+    font-weight: bold;
+}

@@ -1,10 +1,10 @@
-Bonjour <%=@name%>,
-Vous venez de changer votre mot de passe pour le site <%=@web_site_name%>.
-Voici votre identifiant :
-Utilisateur/mail : <%= @user %>
-Nouveau mot de passe : <%= @password %>
+<%="Bonjour".trn%> <%=@name%>,
+<%="Vous venez de changer votre mot de passe pour le site".trn%> <%=@web_site_name%>.
+<%="Voici votre identifiant".trn%> :
+<%="Utilisateur/mail".trn%> : <%= @user %>
+<%="Nouveau mot de passe".trn%> : <%= @password %>
 
-Veuillez conserver ce mail.
+<%="Veuillez conserver ce mail".trn%>.
 
-Bien à vous,
-  L'équipe <%=@web_site_name%>.
+<%="Bien à vous".trn%>,
+  <%="L'équipe".trn%> <%=@web_site_name%>.

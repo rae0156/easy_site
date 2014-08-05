@@ -3,12 +3,10 @@
 class EsSite < ActiveRecord::Base
   acts_as_dynamic_model 
   
+  cattr_accessor  :current_site_id
+  
   def complete_name
     "#{self.code} - #{self.description}"
-  end
-  
-  def self.current
-    self.find (Rails.application.config.default_site)
   end
   
 end

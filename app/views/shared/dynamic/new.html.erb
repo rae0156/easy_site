@@ -1,9 +1,9 @@
-<% @title = "Nouvel élément '#{@controller_setup[:instance_name]}'" %>
+<% @title = "Nouvel élément '%{element}'".trn(:element =>@controller_setup[:instance_name]) %>
 <h2><%=@title%></h2>
 <%= form_tag({}, { :name => 'create_form', :class => 'form-horizontal' }) do%>
     <ul>
-		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver",:image => "appli/save_32.png", :action => "create",  :form => "create_form"}%></li>
-		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:back => true, :text => "Retour",:image => "appli/back_32.png", :action => "list", :param_goto => {:parent_id => @back_to_parent}}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/save_32.png", :action => "create",  :form => "create_form"}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:back => true, :text => "Retour".trn,:image => "appli/back_32.png", :action => "list", :param_goto => {:parent_id => @back_to_parent}}%></li>
     </ul>
 	
 	<!-- Error messages -->

@@ -1,10 +1,10 @@
 <!--DRAFT_3_1_0_0 - E6406 - 05.02.2014 - Dynamic crud-->
-<% @title = "Voir un élément '#{@controller_setup[:instance_name]}'" %>
+<% @title = "Voir un élément '%{element}'".trn(:element =>@controller_setup[:instance_name]) %>
 <h2><%=@title%></h2>
 <%= form_tag({}, { :name => 'update_form', :class => 'form-horizontal' }) do%>
 
 	<ul>
-		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:back => true, :text => "Retour",:image => "appli/back_32.png", :action => "list", :param_goto => {:parent_id => (@parent.blank? ? "" : @parent.id)}}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:back => true, :text => "Retour".trn,:image => "appli/back_32.png", :action => "list", :param_goto => {:parent_id => (@parent.blank? ? "" : @parent.id)}}%></li>
 	</ul>
 	
 	<div>

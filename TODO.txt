@@ -1,21 +1,5 @@
-bootstrap 3
-	http://okgwon.tistory.com/27 -> ok
-	http://bassjobsen.weblogs.fm/migrate-your-templates-from-twitter-bootstrap-2-x-to-twitter-bootstrap-3/ 
-	http://upgrade-bootstrap.bootply.com/ 
-	http://stackoverflow.com/questions/17974998/updating-bootstrap-to-version-3-what-do-i-have-to-do 
 
-	model user
-
-		
-Design à uniformiser : bootstrap partout comme le model user
-	-> dynamique
-	-> admins
-	-> es_seup
-	-> sites
-	
-
-	  
-Définir les modules :
+Définir les modules : un premier module pourrait être "post-it"
 	- la partie admin est figée et contient le paramètrage des modules de la partie 'user' et 'invité'
 	- les autres parties (user et invité) sont administré par le module admin et sont entièrement dynamique
 	Il faut donc penser à faire un squelette admin/user
@@ -24,23 +8,47 @@ Définir les modules :
 		type de menu : horizontal, en haut, côté, dropdown,etc..
 		ajout automatique de la gestion du module menu dans la gestion des modules (A voir)
 
+
+	1) partie installation et load des modules : OK
+	2) partie interfacage : ok
+	3) creer la table es_module : id, es_site_id, path_setup, setup_name, value, type_setup ok	    
+	4)	ajouter la version dans le yml et tester si la version existe
+		si pas encore de setup dans module ou version ancienne, alors on ne vide pas, on recharge en modifiant la partie module du yml ds la table es_module ok
+	5) test de la structure des tables ok
+	6) préparer la recherche de setup   ok
+			recherche de un
+			recherche de plusieurs sous forme de tableau
+			recherche de plusieurs sous forme de Hash
+		
+		
+	7) dans la partie admin on retrouvera le setup du module dans le menu des modules
+		a) ajouter dynamiquement le setup du module dans menu de la partie admin
+		b) on pourra y paramétrer ce qu'il y a dans la table es_module (path_setup=setup/admin). Exemple : Titre à l'écran  
+			faire l'écran de setuup des modules
+			
+	8) dans la partie user, on trouvera les points d'entrée que l'on pourra ajouter dans les part des templates
+			- peut être un before_filter dans le act_as_interface pour vérifier si on a l'action est accessible
+			- les actions dispo sont dans es_module (path_setup=actions)
+			- permettre de placer le module avec le point d'entrée dans une partie du template
+
+	d'autres paramétrages conditionneront le fonctionnement 
 	
+===========================
 
-
-Commencer à planifier chaque module
-
-
-modification des partie du template 
+modification des parties du template 
 	par partie, mettre dans une table les attributs suivants
 		image
 		class prédéfinie
 		margin, padding
 		ect...
 		
+		
+==========================
 
 
-traduction
+Commencer à planifier d'autres modules
+	exemple: module 'todolist/checklist/postit' avec workflow avec status et role/user
 
 
 
-Todo list sur "D:\EasySite - Todo"
+

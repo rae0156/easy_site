@@ -7,32 +7,33 @@
     <h2><%= titre %></h2>
 	
 	<ul>
-		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Rapport",:image => "appli/pdf_32.png", :action => "export_pdf", :form => "list_form"}%></li>
-		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Exporter",:image => "appli/excel_32.png", :action => "export_csv", :form => "list_form"}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Rapport".trn,:image => "appli/pdf_32.png", :action => "export_pdf", :form => "list_form"}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Exporter".trn,:image => "appli/excel_32.png", :action => "export_csv", :form => "list_form"}%></li>
 		<%if !@controller_setup[:table_field_active] && @controller_setup[:delete_multi]%>
-			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Effacer",:image => "appli/delete_32.png", :action => "destroy", :form => "list_form", :checkbox => "true", :check => "true"}%></li>
+			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Effacer".trn,:image => "appli/delete_32.png", :action => "destroy", :form => "list_form", :checkbox => "true", :check => "true"}%></li>
 		<%end%>
-		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Nouveau",:image => "appli/new_32.png", :action => "new", :param_goto => {:parent_id => (@parent.blank? ? 0 : @parent.id)}} %></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Nouveau".trn,:image => "appli/new_32.png", :action => "new", :param_goto => {:parent_id => (@parent.blank? ? 0 : @parent.id)}} %></li>
 	</ul>
 	
 
-    <ul class="nav nav-tabs navbar-nav">
+    <ul class="nav nav-tabs">
 	    <%active=false%>
 	    <%if @controller_setup[:search_exists] %>
-	    <li class='<%=active ? '' : 'active'%>'><a href="#tab_search" data-toggle="tab">Recherche globale</a></li>
+	    <li class='<%=active ? '' : 'active'%>'><a href="#tab_search" data-toggle="tab"><%="Recherche globale".trn%></a></li>
 	    <%  active=true
-	      end%>
+	    end%>
 	    <%if @controller_setup[:dynamic_search_exists] %>
-	    <li class='<%=active ? '' : 'active'%>'><a href="#tab_dynamic_search" data-toggle="tab">Recherche détaillée</a></li>
+	    <li class='<%=active ? '' : 'active'%>'><a href="#tab_dynamic_search" data-toggle="tab"><%="Recherche détaillée".trn%></a></li>
 	    <%  active=true
-	      end%>
+	    end%>
 	    <%if @controller_setup[:parent_exists] %>
-	    <li class='<%=active ? '' : 'active'%>'><a href="#tab_parent_search" data-toggle="tab">Recherche par parent</a></li>
+	    <li class='<%=active ? '' : 'active'%>'><a href="#tab_parent_search" data-toggle="tab"><%="Recherche par parent".trn%></a></li>
 	    <%  active=true
-	      end%>
+        end%>
 
     </ul>
     <%if active%>
+    <br>
     <div class="tab-content">
 		<div class="tab-pane active" id="tab_search">
 			<%= render :partial => 'shared/search' %>				
@@ -45,7 +46,7 @@
 	    <%if @controller_setup[:parent_exists] %>
 		<div class="tab-pane" id="tab_parent_search">
 			<%= form_tag({ :action => 'list' }, { :name => 'list_form_category'}) do%>
-			    <button type="button" id="view_hide" >Choisir un '<%=@controller_setup[:instance_name]%>'</button>
+			    <button type="button" id="view_hide" class="btn btn-default"><%="Choisir un".trn%> '<%=@controller_setup[:instance_name]%>'</button>
 				<div id="fileTree_element"></div>
 			<% end %>
 		    <%= render :partial => 'shared/dynamic/script_category_search' %>

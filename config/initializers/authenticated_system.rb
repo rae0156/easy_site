@@ -58,9 +58,9 @@ module AuthenticatedSystem
         accepts.html do
           session[:return_to] = request.url
           if Rails.env.downcase == 'development' 
-            flash[:error] = "Vous devez être connecté pour atteindre cette page : #{request.url}"
+            flash[:error] = "Vous devez être connecté pour atteindre cette page".trn + " : #{request.url}"
           else
-            flash[:error] = "Vous devez être connecté pour atteindre cette page"
+            flash[:error] = "Vous devez être connecté pour atteindre cette page".trn
           end
           redirect_to :controller => "es_users", :action => "login"
         end
@@ -114,7 +114,7 @@ module AuthenticatedSystem
         user.remember_me
         self.current_user = user
         cookies[:auth_token] = { :value => self.current_user.remember_token , :expires => self.current_user.remember_token_expires_at }
-        flash[:notice] = "Connecté avec succès"
+        flash[:notice] = "Connecté avec succès".trn
         redirect_to root_url
       end
     end

@@ -4,7 +4,7 @@ class UserMailer < ActionMailer::Base
   WEB_SITE_NAME  = EsSetup.get_setup("site_web")   
    
     def password_reset_instructions(user,newpassword)
-      tmp_subject = WEB_SITE_NAME + " : Instructions pour la réinitialisation de votre mot de passe"
+      tmp_subject = WEB_SITE_NAME + " : " + "Instructions pour la réinitialisation de votre mot de passe".trn
       @name = user.firstname + ' ' + user.name
       @newpassword = newpassword
       @web_site_name = WEB_SITE_NAME
@@ -17,7 +17,7 @@ class UserMailer < ActionMailer::Base
     end
 
     def new_psw_user(user)
-      tmp_subject = WEB_SITE_NAME + " : Changement de mot de passe"
+      tmp_subject = WEB_SITE_NAME + " : " + "Changement de mot de passe".trn
       @name = user.firstname + ' ' + user.name
       @user = user.mail
       @password = user.tempo_password
@@ -31,7 +31,7 @@ class UserMailer < ActionMailer::Base
     end
 
     def confirm_new_user(user)
-      tmp_subject = WEB_SITE_NAME + " : Confirmation de votre inscription"
+      tmp_subject = WEB_SITE_NAME + " : " + "Confirmation de votre inscription".trn
       @name = user.firstname + ' ' + user.name
       @user = user.mail
       @password = user.tempo_password
@@ -45,7 +45,7 @@ class UserMailer < ActionMailer::Base
     end
 
     def validation_new_user(user,adrweb)
-      tmp_subject = WEB_SITE_NAME + " : Instructions pour la validation de inscription"
+      tmp_subject = WEB_SITE_NAME + " : " + "Instructions pour la validation de inscription".trn
       @name = user.firstname + ' ' + user.name
       @confirm_new_user = adrweb + "/es_users/confirm/" + user.active
       @web_site_name = WEB_SITE_NAME
@@ -58,7 +58,7 @@ class UserMailer < ActionMailer::Base
     end
 
     def activation_new_mail(user,to)
-      tmp_subject = WEB_SITE_NAME + " : Confirmation de votre activation de mail"
+      tmp_subject = WEB_SITE_NAME + " : " + "Confirmation de votre activation de mail".trn
       @name = user.firstname + ' ' + user.name
       @old_mail = user.mail
       @new_mail = user.newmail
@@ -71,7 +71,7 @@ class UserMailer < ActionMailer::Base
     end
 
     def mail_change_instructions(user,adrweb='')
-      tmp_subject = adrweb.blank? ? (WEB_SITE_NAME + " : Changement d'adresse mail") : (WEB_SITE_NAME + " : Instructions pour le changement d'adresse mail")
+      tmp_subject = adrweb.blank? ? (WEB_SITE_NAME + " : " + "Changement d'adresse mail".trn) : (WEB_SITE_NAME + " : " + "Instructions pour le changement d'adresse mail".trn)
       @name = user.firstname + ' ' + user.name
       @new_mail = user.newmail
       @confirm_new_mail = adrweb.blank? ? '' : adrweb + "/es_users/confirm_mail/" + user.activemail
@@ -85,7 +85,7 @@ class UserMailer < ActionMailer::Base
     end
 
     def activation_user(user,password)
-      tmp_subject = WEB_SITE_NAME + " : Activation de votre utilisateur"
+      tmp_subject = WEB_SITE_NAME + " : " + "Activation de votre utilisateur".trn
       @name = user.firstname + ' ' + user.name
       @mail = user.mail
       @web_site_name = WEB_SITE_NAME

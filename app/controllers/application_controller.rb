@@ -13,11 +13,11 @@ class ApplicationController < ActionController::Base
 
   authorize_resource :class => false #pour les controller sans model
 
-  before_filter :set_current_user , :check_page
+  before_filter  :set_current_site,:set_current_user , :check_page, :set_language
   
 
   rescue_from CanCan::AccessDenied do |exception|
-    flash[:error] = "Vous n'êtes pas autorisé à accéder à cette page"
+    flash[:error] = "Vous n'êtes pas autorisé à accéder à cette page".trn
     redirect_to root_url 
   end
 
@@ -25,6 +25,10 @@ class ApplicationController < ActionController::Base
 
   def current_ability
     @current_ability ||= Ability.new(current_user)
+  end
+
+  def set_language
+    Rails.application.config.default_locale_easysite = params[:language] if params[:language].present?
   end
 
   def check_page
@@ -41,7 +45,7 @@ class ApplicationController < ActionController::Base
       session[:flag_admin]                      = false
       session[:flag_connection]                 = false
       return if url_for(:controller => controller_name,:action => action_name)==root_url
-      flash[:error] = "Cette page n'est pas accessible"
+      flash[:error] = "Cette page n'est pas accessible".trn
       redirect_to root_url
     end
   end
@@ -90,6 +94,10 @@ class ApplicationController < ActionController::Base
 
   def set_current_user
     EsUser.current_user = self.current_user
+  end
+
+  def set_current_site
+    EsSite.current_site_id = session[:current_site_id]||Rails.application.config.default_site
   end
 
 end

@@ -1,16 +1,16 @@
 
-<div class="container">
+<div>
 
 	<div class="jumbotron center alert alert-warning">
-		<h1>Erreur d'exécution de l'application</h1>
+		<h1><%="Erreur d'exécution de l'application".trn%></h1>
 		<BR>
 		<h2><%=details[:name]%></h2>
 	
 	</div>
 	
-	<ul class="nav nav-tabs navbar-nav" id="myTab">
-	    <li class="active"><a href="#description" data-toggle="tab">Message</a></li>
-	    <li><a href="#detail" data-toggle="tab">Detail</a></li>
+	<ul class="nav nav-tabs " id="myTab">
+	    <li class="active"><a href="#description" data-toggle="tab"><%="Message".trn%></a></li>
+	    <li><a href="#detail" data-toggle="tab"><%="Detail".trn%></a></li>
 	</ul>
 	<div class="tab-content">
 	    <div class="tab-pane fade in active" id="description">

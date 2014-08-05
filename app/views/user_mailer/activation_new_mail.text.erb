@@ -1,9 +1,9 @@
-Bonjour <%=@name%>,
-Vous venez d'activer votre nouvelle adresse mail sur le site <%=@web_site_name%>.
-Ancienne adresse désactivée : <%= @old_mail %>
-Nouvelle adresse à utilisée : <%= @new_mail %>
+<%="Bonjour".trn%> <%=@name%>,
+<%="Vous venez d'activer votre nouvelle adresse mail sur le site".trn%> <%=@web_site_name%>.
+<%="Ancienne adresse désactivée".trn%> : <%= @old_mail %>
+<%="Nouvelle adresse à utilisée".trn%> : <%= @new_mail %>
 
-Veuillez conserver ce mail.
+<%="Veuillez conserver ce mail".trn%>.
 
-Bien à vous,
-  L'équipe <%=@web_site_name%>.
+<%="Bien à vous".trn%>,
+  <%="L'équipe".trn%> <%=@web_site_name%>.

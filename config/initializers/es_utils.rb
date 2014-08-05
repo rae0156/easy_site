@@ -2,6 +2,14 @@
   WillPaginate.per_page = 20
   
   require 'lorem'
+
+  def init_workspace_easysite
+    Rails.application.config.default_site             = EsSite.first(:conditions=>{:set_as_default => 'Y'}).id
+    Rails.application.config.current_template         = ""
+    Rails.application.config.current_theme            = ""
+    Rails.application.config.default_locale_easysite  = :fr
+    Rails.application.config.translation_mode         = EsSetup.get_setup("translation_mode","") #debug / with / [empty] = without    
+  end
   
   def get_lorem
     Lorem::Base.new('words', 100).output
@@ -81,10 +89,26 @@
         end  
         tmp_value
     end
+    
   end    
 
 
 class String
+
+  def is_numeric?
+    true if Float(self) rescue false
+  end
+  def is_integer?(length=99)
+    if Integer(self) && !self.include?(",") && !self.include?(".")
+      self.length <= length
+    else
+      false
+    end 
+    rescue 
+      return false
+  end
+
+
   def limit(nbr,types='text')
     if self.length>nbr
       text = self[0..nbr-4]
@@ -95,6 +119,15 @@ class String
     else
       self
     end
+  end
+
+  def trn(options={})
+    text_traduct = EsLanguage.trn(self,(Rails.application.config.default_locale_easysite||:fr),options)
+#    text_code = self
+#    default = Rails.env.downcase == 'development' ? "#{text_code} <<<PAS DE TRADUCTION" : text_code
+#    options[:default]||=default
+#    text_traduct = I18n.t(text_code,options)
+    return text_traduct
   end
 end
 

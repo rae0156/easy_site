@@ -1,0 +1,15 @@
+<div id="spinner" class="spinner" style="display:none;"> 
+        <p id="spinner_text"><%="Action en cours, veuillez attendre svp".trn%> ...</p> 
+    <%= image_tag("appli/spinner.gif", :border=> 0) %> 
+</div> 
+
+
+<script>
+	$(document).ajaxStart(function() { 
+	    $("#spinner").show(); 
+	});
+	
+	$(document).ajaxStop(function(){
+		$("#spinner").fadeOut();
+	});
+</script>

@@ -136,6 +136,19 @@ class DynamicController < ApplicationController
     @controller_setup[:readonly_exists]        ||= @columns_screen.collect{ |col| col[:name]}.include?("read_only")
     @controller_setup[:search_exists]          ||= @columns_screen.select{ |col| col[:search]}.count > 0
 
+    #traduction
+    @controller_setup[:instance_name]=@controller_setup[:instance_name].trn
+    @columns_screen.each do |column|
+      [:column_name,:column_text,:label_name].each do |attr|
+         column[attr] = column[attr].trn unless column[attr].blank?
+      end
+    end
+    @controller_link_to.each do |k,v|
+      [:title,:description,:title_left,:title_right].each do |attr|
+        @controller_link_to[k][attr]        =v[attr].trn unless v[attr].blank?     
+      end
+    end
+
     super
   end
 
@@ -178,7 +191,8 @@ class DynamicController < ApplicationController
       else
         tmp_search[:parent_id]=parent_id
       end
-#      session[:parent_id] = parent_id unless parent_id.blank?
+      #ne pas mettre en commentaire, car les filtres et recherches ne fonctionnent plus
+      session[:parent_id] = parent_id unless parent_id.blank?
     end
     conditions = DynamicSearch.new(@controller_setup[:model],tmp_search).build_conditions #.accessible_by(current_ability)
     ####################################### init info ####################################### 
@@ -273,7 +287,7 @@ class DynamicController < ApplicationController
 
       initial_sequence_for(@instance.parent_id) if @controller_setup[:sequence_exists]
 
-      flash[:notice] = "'#{@controller_setup[:instance_name]}' créé avec succès."
+      flash[:notice] = "'%{element_dynamique}' créé avec succès.".trn(:element_dynamique => @controller_setup[:instance_name])
 
       if @controller_setup[:parent_exists]
         redirect_to :action => "list", :parent_id => params[:instance][:parent_id]
@@ -293,7 +307,7 @@ class DynamicController < ApplicationController
   def update
     transform_list(params[:instance])
     if @instance.update_attributes(params[:instance])
-      flash[:notice] = "'#{@controller_setup[:instance_name]}' a été correctement modifié."
+      flash[:notice] = "'%{element_dynamique}' a été correctement modifié".trn(:element_dynamique => @controller_setup[:instance_name]) +"."
       if @controller_setup[:parent_exists]
         redirect_to :action => "list", :parent_id => params[:instance][:parent_id]
       else
@@ -310,13 +324,13 @@ class DynamicController < ApplicationController
 
     if @instance.active=='N'
       @instance.update_attribute('active','Y')    
-      flash[:notice] = "#{@controller_setup[:instance_name]} a été activé."
+      flash[:notice] = "%{element_dynamique} a été activé.".trn(:element_dynamique=> @controller_setup[:instance_name])
       redirect_to :action => "list",:page=> params[:page]
     else
       destroy = !detect_association(@instance).blank? ? @controller_setup[:delete_if_used] : @controller_setup[:delete_if_inactive]
       unless destroy 
         @instance.update_attribute('active',@instance.active=='Y' ? 'N' : 'Y')    
-        flash[:notice] = "#{@controller_setup[:instance_name]} a été #{@instance.active=='Y' ? 'activé' : 'désactivé'}."
+        flash[:notice] = "%{element_dynamique} a été #{@instance.active=='Y' ? 'activé' : 'désactivé'}.".trn(:element_dynamique=> @controller_setup[:instance_name])
         redirect_to :action => "list",:page=> params[:page]
       else
         redirect_to :action => "destroy",:id=> params[:id]      
@@ -332,9 +346,9 @@ class DynamicController < ApplicationController
       back_to_parent = @controller_setup[:parent_exists] && tmp.ancestors.count > 0 ? (tmp.ancestors[0].children.count > 1 ? tmp.parent_id : tmp.ancestors[0].parent_id) : ""      
       
       if @controller_setup[:readonly_exists] && tmp["read_only"]=='Y'
-        tmp_element_error.errors.add(:base, "La suppresison de '#{@setup_controller[:model_name].singularize}' ne peut être faite, cet élément est en lecture seule.")
+        tmp_element_error.errors.add(:base, "La suppresison de '%{element_dynamique}' ne peut être faite, cet élément est en lecture seule.".trn(:element_dynamique => @setup_controller[:model_name].singularize))
       elsif !@controller_setup[:delete_if_used] && !detect_association(@instance).blank?
-        tmp_element_error.errors.add(:base, "La suppresison de '#{@setup_controller[:model_name].singularize}' ne peut être faite, car des liaisons existent.")
+        tmp_element_error.errors.add(:base, "La suppresison de '%{element_dynamique}' ne peut être faite, car des liaisons existent.".trn(:element_dynamique => @setup_controller[:model_name].singularize))
       elsif check_children_before_delete(tmp) || !tmp.destroy
         tmp.errors.full_messages.each do |tmp_error| 
           tmp_element_error.errors.add(:base, "'#{@controller_setup[:instance_name]} - #{tmp.name}' : #{tmp_error}")
@@ -350,12 +364,12 @@ class DynamicController < ApplicationController
       if detect_association(@instance).blank? || @controller_setup[:delete_if_used]
         @instance.destroy unless @instance.blank?
       else
-        tmp_element_error.errors.add(:base, "La suppresison de '#{@controller_setup[:instance_name].humanize}' ne peut être faite, car des liaisons existent. (#{detect.join(', ')})")
+        tmp_element_error.errors.add(:base, "La suppresison de '%{element_dynamique}' ne peut être faite, car des liaisons existent".trn(:element_dynamique => @controller_setup[:instance_name].humanize) + ". (#{detect.join(', ')})")
       end
     end    
     
     if tmp_element_error.errors.empty? 
-      flash[:notice] = "'#{@controller_setup[:instance_name]}' correctement supprimé(s)."
+      flash[:notice] = "'%{element_dynamique}' correctement supprimé(s).".trn(:element_dynamique => @controller_setup[:instance_name]) 
     else
       flash[:errors_destroy] = tmp_element_error
     end
@@ -372,7 +386,7 @@ class DynamicController < ApplicationController
     pdf = Prawn::Document.new
 
     #Create the first page
-    create_title_page(pdf, "Liste - #{@controller_setup[:instance_name]}","Date et Heure : #{Time.zone.now.strftime("%d/%m/%Y %H:%M:%S")}" ) 
+    create_title_page(pdf, "Liste".trn + " - #{@controller_setup[:instance_name]}","Date et Heure".trn + " : #{Time.zone.now.strftime("%d/%m/%Y %H:%M:%S")}" ) 
     
     pdf.start_new_page()
     pdf.font_size 12
@@ -490,7 +504,7 @@ class DynamicController < ApplicationController
     parent_id = param_dir.end_with?('/') ? param_dir[0...-1] : param_dir unless param_dir.blank?
 
     if parent_id.blank?
-      conditions = ["(#{@controller_setup[:model].table_name}.parent_id IS NULL)"]
+      conditions = ["(#{@controller_setup[:model].table_name}.parent_id IS NULL OR #{@controller_setup[:model].table_name}.parent_id = 0)"]
     else
       conditions = ["(#{@controller_setup[:model].table_name}.parent_id = ?)","#{parent_id}"]
     end
@@ -573,12 +587,12 @@ private
     link_to = @controller_link_to[link.to_sym].presence||{}
     link_to[:model_name]          = @controller_setup[:instance_name]
     link_to[:model_linked]        = model_name_linked.constantize
-    link_to[:model_name_linked]   = model_name_linked.underscore.gsub("es_","").humanize.singularize
+    link_to[:model_name_linked]   = model_name_linked.underscore.gsub("es_","").humanize.singularize.trn
     link_to[:association_type]    = get_model_assoc_type(model_name_linked)
-    link_to[:title]             ||= "Liaison entre #{link_to[:model_name]} et #{link_to[:model_name_linked]}"
+    link_to[:title]             ||= "Liaison entre %{model_1} et %{model_2}".trn(:model_1 => link_to[:model_name], :model_2 =>link_to[:model_name_linked])
     link_to[:title_left]        ||= link_to[:model_name]
     link_to[:title_right]       ||= link_to[:model_name_linked]
-    link_to[:description]       ||= "Veuillez faire une liaison entre #{link_to[:model_name]} et #{link_to[:model_name_linked]}"
+    link_to[:description]       ||= "Veuillez faire une liaison entre %{model_1} et %{model_2}".trn(:model_1 => link_to[:model_name], :model_2 =>link_to[:model_name_linked])
     link_to[:query]             ||= ""
     link_to[:query_link]        ||= ""
     link_to[:query_enabled_ids] ||= ""
@@ -615,7 +629,7 @@ private
   
   def check_children_before_delete(element)
     if element.children.count > 0
-      element.errors.add(:base, "Impossible de supprimer si des enfants existent")      
+      element.errors.add(:base, "Impossible de supprimer si des enfants existent".trn)      
     end    
     element.children.count > 0
   end
@@ -641,9 +655,9 @@ private
   def init_info_for_list(parent_id)
     if @controller_setup[:parent_exists]
       @parent = @controller_setup[:model].find_by_id(parent_id)
-      @parent_info = "#{@controller_setup[:instance_name]} : " + (@parent.blank? ? "Origine" : "")
+      @parent_info = "#{@controller_setup[:instance_name]} : " + (@parent.blank? ? "Origine".trn : "")
       unless @parent.blank? 
-        @breadcrumb = [["Début",url_for(:action=>'list')]]
+        @breadcrumb = [["Début".trn,url_for(:action=>'list')]]
         @parent.ancestors.reverse.each do |elem|
           @breadcrumb << [elem.send(@controller_setup[:column_name_exists] ? "name" : "id"),url_for(:action=>'list',:parent_id=>elem.id)]
         end 

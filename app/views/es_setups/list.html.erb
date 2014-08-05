@@ -1,10 +1,10 @@
-<% @title = "Préférences" %>
+<% @title = "Préférences".trn %>
 
 <div class="center-menu">
     <h2><%= image_tag("appli/setup_48.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
 	
 	<ul>
-		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Exporter",:image => "appli/excel_32.png", :action => "export_csv", :form => "setup_list_form"}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Exporter".trn,:image => "appli/excel_32.png", :action => "export_csv", :form => "setup_list_form"}%></li>
 	</ul>
 	
 	
@@ -18,7 +18,7 @@
 <%= errors_for(flash[:errors_destroy], "delete").html_safe if flash[:errors_destroy] %>
 
 <%= form_tag({ :action => 'new' }, { :name => 'setup_list_form'}) do%>
-    <button type="button" id="view_hide" >Choisir une catégorie</button>
+    <button type="button" id="view_hide", class = "btn btn-default" ><%="Choisir une catégorie".trn%></button>
 
 
 	<div id="fileTree_element">

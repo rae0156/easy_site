@@ -13,7 +13,7 @@
     <%end%>
     
     <%if @controller_setup[:parent_exists] %>
-    	<th>Enfants</th>
+    	<th><%="Enfants".trn%></th>
     <%end%>
 
     <%@columns_screen.each do |column|
@@ -36,7 +36,7 @@
 		    <%end%>		
     <%	end
      end%>
-     <th>Options</th> 
+     <th><%="Options".trn%></th> 
   </tr>
   <%if @controller_setup[:dynamic_filter_exists] %>
     <%= render :partial => "shared/dynamic/dynamic_filter"%> 
@@ -45,5 +45,5 @@
   <%= render :partial => 'shared/dynamic/list_item', :collection => @instances %>
 </table>
 
-<%= will_paginate @instances, :params => params, :previous_label => '<< Précédent', :next_label => 'Suivant >>' %>
+<%= will_paginate @instances, :params => params, :previous_label => '<< ' + 'Précédent'.trn, :next_label => 'Suivant'.trn + ' >>' %>
 <%= page_entries_info @instances, :model => @controller_setup[:instance_name] %>

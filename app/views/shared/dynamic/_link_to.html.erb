@@ -1,12 +1,15 @@
-<table cellpadding="4" width="100%" class='adminlist'>
-  <tr>
-    <%@link_to[:column].split(',').each do |column_name|%>
-		<th><%=  @columns_screen.select{|col| col[:name]==column_name}[0][:column_name]%></th>
-     <%end%>
-  </tr>
-  
+<table cellpadding="4" width="100%" class='table table-hover'>
+  <thead>
+	  <tr>
+	    <%@link_to[:column].split(',').each do |column_name|%>
+			<th><%=  @columns_screen.select{|col| col[:name]==column_name}[0][:column_name]%></th>
+	     <%end%>
+	  </tr>
+  </thead>  
+  </tbody>  
   <%= render :partial => 'shared/dynamic/link_to_item', :collection => @instances %>
+  </tbody>  
 </table>
 
-<%= will_paginate @instances, :params => params, :previous_label => '<< Précédent', :next_label => 'Suivant >>' %>
+<%= will_paginate @instances, :params => params, :previous_label => '<< ' + 'Précédent'.trn, :next_label => 'Suivant'.trn + ' >>' %>
 <%= page_entries_info @instances, :model => @controller_setup[:instance_name] %>

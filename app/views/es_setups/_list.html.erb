@@ -1,16 +1,16 @@
 <!-- Data table header and content -->
 <table cellpadding="4" width="100%" class='adminlist'>
   <tr>
-    <th width="200">Chemin</th>
-	<th><%= sort_link_remote :text => "Nom", :column => "name", :controller =>  "setups", :action => 'list'%></th>
-    <th><%= sort_link_remote :text => "Valeur", :column => "value", :controller => "setups", :action => 'list' %></th>
-    <th>Type</th>
+    <th width="200"><%="Chemin".trn%></th>
+	<th><%= sort_link_remote :text => "Nom".trn, :column => "name", :controller =>  "setups", :action => 'list'%></th>
+    <th><%= sort_link_remote :text => "Valeur".trn, :column => "value", :controller => "setups", :action => 'list' %></th>
+    <th><%="Type".trn%></th>
   </tr>
   <%= render :partial => 'es_setups/list_item', :collection => @setups %>
 </table>
 
-<%= will_paginate @setups, :params => params, :previous_label => '<< Précédent', :next_label => 'Suivant >>' %>
-<%= page_entries_info @setups, :model => 'prérérence' %>
+<%= will_paginate @setups, :params => params, :previous_label => '<< ' + "Précédent".trn, :next_label => "Suivant".trn + ' >>' %>
+<%= page_entries_info @setups, :model => "préférence".trn %>
 
 
 <%unless @branch.blank?%>

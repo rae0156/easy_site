@@ -45,7 +45,7 @@ class EsSetupsController < ApplicationController
   def create
     @setup = EsSetup.new(params[:setup])
     if @setup.save
-      flash[:notice] = 'Ce paramétrage a été correctement créé.'
+      flash[:notice] = 'Ce paramétrage a été correctement créé.'.trn
       redirect_to :action => "list"
     else
       render :action => 'new'
@@ -63,7 +63,7 @@ class EsSetupsController < ApplicationController
   def update
     @setup = EsSetup.find_by_id(params[:id])
     if @setup.update_attributes(params[:setup])
-      flash[:notice] = 'Ce paramétrage a été correctement modifié.'
+      flash[:notice] = 'Ce paramétrage a été correctement modifié.'.trn
       redirect_to :action => "list", :code_action => "back"
     else
       render :action => 'edit'
@@ -78,13 +78,13 @@ class EsSetupsController < ApplicationController
       tmp = EsSetup.find(id)
       unless tmp.destroy
         tmp.errors.full_messages.each do |tmp_error| 
-          tmp_element_error.errors.add(:base, "Paramétrage #{tmp.path} #{tmp.name} : #{tmp_error}.")
+          tmp_element_error.errors.add(:base, "Paramétrage".trn + " #{tmp.path} #{tmp.name} : #{tmp_error}.")
         end
       end
     end
     
     if tmp_element_error.errors.empty? 
-      flash[:notice] = 'Paramétrage(s) correctement supprimée(s).'
+      flash[:notice] = 'Paramétrage(s) correctement supprimée(s).'.trn
     else
       flash[:errors_destroy] = tmp_element_error
     end
@@ -100,7 +100,7 @@ class EsSetupsController < ApplicationController
     file_name = "setups_export_" + current_user.id.to_s + ".csv"
     
     csv_string = CSV.generate({:col_sep => ';', :encoding => "ISO-8859-15" }) do |csv|
-       csv << ["Chemin","Nom","Valeur","Type", "Lecture seule"]
+       csv << ["Chemin".trn,"Nom".trn,"Valeur".trn,"Type".trn, "Lecture seule".trn]
        setups.each do |t|
           csv << [t.path,t.name,t.value,t.type_data,(t.read_only ? 'V' : '')]
         end

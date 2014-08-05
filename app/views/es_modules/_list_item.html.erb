@@ -1,0 +1,9 @@
+<tr class="<%= cycle("row0", "row1") %>">
+  <td>
+  	<%= link_to list_item.module_name, :controller => 'es_modules', :action => 'setup', :name => list_item.module_name%>
+  </td>
+  <td>
+	<%= EsModule.version(list_item.module_name) %>  
+  </td>
+  
+</tr>

@@ -1,7 +1,14 @@
-<%= form_tag({:action => 'list'}, :id => 'search_form', :remote => true) do %>
-  <%= label_tag('global_search', 'Recherche : ') %>
-  <%= text_field_tag("global_search", params[:global_search], :size => 50) %>
-  <%= submit_tag "Trouver"%>
+<%= form_tag({:action => 'list'}, :id => 'search_form', :class => 'form-horizontal', :remote => true) do %>
+	  <div class="form-group">
+	    <label for="global_search" class="col-sm-2 control-label"><%="Recherche".trn%> : </label>
+		<div class="col-sm-3">
+			<%= text_field_tag("global_search", params[:global_search], :size => 50, :class => "form-control") %>
+	    </div>
+		<div class="col-sm-1">
+		  <%= submit_tag "Trouver".trn, :class => "btn btn-default"%>
+	    </div>
+	  </div>
+  
 
 <% end %>
 

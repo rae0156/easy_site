@@ -1,14 +1,14 @@
-Bonjour <%=@name%>,
-Une inscription au site <%=@web_site_name%> vient d'être faite.
+<%="Bonjour".trn%> <%=@name%>,
+<%="Une inscription au site %{web_site} vient d'être faite".trn(:web_site => @web_site_name)%>.
 
-Si vous n'avez pas effectué cette inscription, vous pouvez ignorer cet email.
+<%="Si vous n'avez pas effectué cette inscription, vous pouvez ignorer cet email".trn%>.
 
-Si vous avez effectué cette inscription, il vous suffit de cliquer sur le lien ci-dessous pour indiquer votre nouveau mot de passe.
+<%="Si vous avez effectué cette inscription, il vous suffit de cliquer sur le lien ci-dessous pour indiquer votre nouveau mot de passe".trn%>.
 <%= @confirm_new_user %>
 
-Si le lien ci-dessus ne fonctionne pas, tentez de le copier / coller directement dans votre navigateur.
-Si vous rencontrez un problème, n'hésitez pas à nous contacter.
+<%="Si le lien ci-dessus ne fonctionne pas, tentez de le copier / coller directement dans votre navigateur".trn%>.
+<%="Si vous rencontrez un problème, n'hésitez pas à nous contacter".trn%>.
 
-Bien à vous,
-  L'équipe <%=@web_site_name%>.
+<%="Bien à vous".trn%>,
+  <%="L'équipe".trn%> <%=@web_site_name%>.
 

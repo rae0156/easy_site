@@ -1,8 +1,14 @@
-<h1>Changement de thème</h1>
-<%= form_tag({}, { :name => 'admin_form'}) do%>
+<h1><%="Changement de thème".trn%></h1>
+<%= form_tag({}, { :name => 'admin_form',:class => 'form-horizontal'}) do%>
 
-	<label>Thème : </label>
-    <%=  collection_select(:admin, :theme, EsTheme.all.sort_by{|t| t.code}, :code, :code, {:selected => @theme}) %>
-	<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver", :action => "save_theme",  :form => "admin_form"}%></li>
+	  <div class="form-group">
+	    <label for="admin_template" class="col-sm-2 control-label"><%="Thème".trn%> : </label>
+		<div class="col-sm-5">
+		    <%=  collection_select(:admin, :theme, EsTheme.all.sort_by{|t| t.code}, :code, :code, {:selected => @theme},{ :class => "form-control"}) %>
+	    </div>
+		<div class="col-sm-1 btn btn-default">
+			<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver", :action => "save_theme",  :form => "admin_form"}%>
+	    </div>
+	  </div>
 
 <% end %>

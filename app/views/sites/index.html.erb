@@ -1,6 +1,6 @@
 
 
 <div class="alert alert-info">
-	<h2>Template '<%=Rails.application.config.current_template%>' - Thème '<%=Rails.application.config.current_theme%>'</h2>
+	<h2><%="Template '%{template}' - Thème '%{theme}'".trn(:template => Rails.application.config.current_template, :theme => Rails.application.config.current_theme)%></h2>
 	<%= get_content_detail("principal")%>
 </div>

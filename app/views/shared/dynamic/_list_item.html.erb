@@ -13,9 +13,9 @@ tmp_update = !(@controller_setup[:table_field_active] && list_item[:active]== 'N
 		<td>
 			<%if tmp_update%>
 				<%if list_item.children.count==0%>
-					<%= link_to "<i class='glyphicon glyphicon-plus-sign'></i>".html_safe,  {:action => 'new', :parent_id => list_item.id}, {:title => "Créer un enfant"} %>
+					<%= link_to "<i class='glyphicon glyphicon-plus-sign'></i>".html_safe,  {:action => 'new'.trn, :parent_id => list_item.id}, {:title => "Créer un enfant".trn} %>
 				<%else%>
-					<%= link_to "<i class='glyphicon glyphicon-indent-left'></i>".html_safe,  {:action => 'list', :parent_id => list_item.id}, {:title => "Afficher #{@controller_setup[:column_name_exists] ? list_item.name : 'l''enfant'}"} %>
+					<%= link_to "<i class='glyphicon glyphicon-indent-left'></i>".html_safe,  {:action => 'list'.trn, :parent_id => list_item.id}, {:title => "Afficher %{element}".trn(:element => (@controller_setup[:column_name_exists] ? list_item.name : "l'enfant".trn))} %> 
 				<%end%>
 			<%end%>
 		</td>  
@@ -71,7 +71,7 @@ tmp_update = !(@controller_setup[:table_field_active] && list_item[:active]== 'N
 	<td>
 		<%tmp_value = link_to("<i class='glyphicon glyphicon-book'></i>".html_safe, 
 							url_for(:action => "show", :id => list_item['id']),
-							:title =>"Visualiser")%>
+							:title =>"Visualiser".trn)%>
 		<%= (tmp_value.to_s||"").html_safe %>
 		<%
 		unless (@controller_setup[:readonly_exists] && list_item["read_only"]=='Y')
@@ -80,13 +80,13 @@ tmp_update = !(@controller_setup[:table_field_active] && list_item[:active]== 'N
 					tmp_value = list_item[:active]
 					tmp_value = link_to(tmp_value=='Y' ? "<i class='glyphicon glyphicon-ok-sign'></i>".html_safe : "<i class='glyphicon glyphicon-remove-sign'></i>".html_safe, 
 										url_for(:action => "activate", :id => list_item['id'], :page => params[:page]), 
-										:confirm =>"Voulez vous vraiment #{(tmp_value=='Y' ? 'désactiver/supprimer' : 'activer')} '#{@controller_setup[:instance_name].downcase}' ?",
-										:title => (tmp_value=='Y' ? "Désactiver" : "Activer")) 
+										:confirm =>"Voulez vous vraiment #{(tmp_value=='Y' ? 'désactiver/supprimer' : 'activer')} '%{element}' ?".trn(:element => @controller_setup[:instance_name].downcase),
+										:title => (tmp_value=='Y' ? "Désactiver" : "Activer").trn) 
 				else
 					tmp_value = link_to("<i class='glyphicon glyphicon-remove-sign'></i>".html_safe, 
 										url_for(:action => "destroy", :id => list_item['id']), 
-										:confirm =>"Voulez vous vraiment supprimer '#{@controller_setup[:instance_name].downcase}' ?",
-										:title =>"Supprimer")
+										:confirm =>"Voulez vous vraiment supprimer '%{element}' ?".trn(:element => @controller_setup[:instance_name].downcase),
+										:title =>"Supprimer".trn)
 				end
 		%>
 

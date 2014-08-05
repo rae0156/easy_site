@@ -3,7 +3,8 @@
 class EsSitesController < ApplicationController
   
   def change_default_site
-    Rails.application.config.default_site =params[:site][:id]
+    session[:current_site_id] =params[:site][:id]
+    EsSite.current_site_id=session[:current_site_id]
     reset_session unless current_user.blank?
     self.current_user = nil
 

@@ -1,24 +1,24 @@
-<% @title = "Connexion" %>
-<div class="jumbotron">
+<% @title = "Connexion".trn %>
+<div class="cadre bg-primary">
 	    <h2><%= image_tag('appli/padlock_32.png', {:alt => @title, :align => "middle"}) %> <%= @title %></h2>
 
 	<%= form_tag({}, { :name => 'login_form', :class => "form-horizontal" }) do %>
 
-		<div class="control-group">
-		    <label class="control-label" for="user_mail">Mail/Pseuso : </label>
-		    <div class="controls">
-				<%= text_field "user", "mail", :size => 50, :maxlength => 50 %>
+		<div class="form-group">
+		    <label class="col-sm-4 control-label" for="user_mail"><%="Mail/Pseuso".trn%> : </label>
+		    <div class="col-sm-4">
+				<%= text_field "user", "mail", :maxlength => 50 ,:class => "form-control"%>
 			</div>
 		</div>
-		<div class="control-group">  
-		    <label class="control-label" for="user_password">Mot de passe : </label>
-		    <div class="controls">
-				<%= password_field "user", "password", :size => 50, :maxlength => 50 %>
+		<div class="form-group">  
+		    <label class="col-sm-4 control-label" for="user_password"><%="Mot de passe".trn%> : </label>
+		    <div class="col-sm-4">
+				<%= password_field "user", "password", :maxlength => 50, :class => "form-control" %>
 			</div>
 		</div>
-		<div class="control-group">  
-		    <div class="controls btn btn-default">
-				<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Se connecter",:image => "appli/padlock_32.png", :controller => 'es_users',:action => 'login_connect', :form => "login_form"}%>
+		<div class="form-group ">  
+		    <div class=" col-md-offset-4 btn btn-default">
+				<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Se connecter".trn,:image => "appli/padlock_32.png", :controller => 'es_users',:action => 'login_connect', :form => "login_form"}%>
 			</div>
 		</div>
 

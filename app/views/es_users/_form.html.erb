@@ -9,33 +9,37 @@
 
       <%if admin%>	
       	  <%unless @user.mail == EsUser.current_user.mail%>
-		    <div class="control-group">
-		      <label for="roles_es_role_ids" class="control-label">Rôles à assigner : </label>
-			  <div class="controls">
-		      	<%= select("user", :es_role_ids, @roles.map {|u| [u.description, u.id]}, {}, :multiple => "multiple", :size => 3) %>
+		    <div class="form-group">
+		      <label for="roles_es_role_ids" class="col-sm-4 control-label"><%="Rôles à assigner".trn%> : </label>
+			  <div class="col-sm-8">
+		      	<%= select("user", :es_role_ids, @roles.map {|u| [u.description, u.id]}, {}, :multiple => "multiple", :size => 3, :class => "form-control") %>
 			  </div>
   			</div>
         	<%if @user.active.length == 1%>
-		      <div class="control-group">
-			    <label for="user_active" class="control-label">Activé : </label>
-			    <div class="controls">
-				    <%= check_box "user", "active", {}, "Y", "N" %>
-				    <span><%="(Un mail sera envoyé si vous l'activez)" if @user.active == "N"%></span>
+		      <div class="form-group">
+			    <label for="user_active" class="col-sm-4 control-label"><%="Activé".trn%> : </label>
+			    <div class="col-sm-1">
+			    	<div class=''>			    		
+					    <%= check_box "user", "active", {:class => "form-control"}, "Y", "N" %>
+					</div>
+				</div>
+			    <div class="col-sm-6">
+			    	<p class="form-control-static"><%=("(" + "Un mail sera envoyé si vous l'activez".trn + ")") if @user.active == "Y"%></p>
 				</div>
   			  </div>
   		    <%end%>
 		  <%end%>
 	  	  <%if @user.active.length == 1%>
-		    <div class="control-group">
-			    <label for="user_password1" class="control-label">Nouveau mot de passe : </label>
-				<div class="controls">
-					<%= password_field "user", "password1", :size => 12, :maxlength => 12 %>
+		    <div class="form-group">
+			    <label for="user_password1" class="col-sm-4 control-label"><%="Nouveau mot de passe".trn%> : </label>
+				<div class="col-sm-4">
+					<%= password_field "user", "password1", :maxlength => 12, :class => "form-control" %>
 				</div>
   			</div>
-		    <div class="control-group">
-			    <label for="user_password2" class="control-label">Validation : </label>
-				<div class="controls">
-					<%= password_field "user", "password2", :size => 12, :maxlength => 12 %>
+		    <div class="form-group">
+			    <label for="user_password2" class="col-sm-4 control-label"><%="Validation".trn%> : </label>
+				<div class="col-sm-4">
+					<%= password_field "user", "password2", :maxlength => 12, :class => "form-control" %>
 				</div>
   			</div>
 		  <%end%>		
@@ -43,88 +47,84 @@
 
 
 	  <h4><%= field_description "Données obligatoires", true %></h4>
-	  <div class="control-group">
-	    <label for="user_pseudo" class="control-label">Speudo : </label>
-		<div class="controls">
-			<%= text_field "user", "pseudo", :size => 60, :maxlength => 60 %>
+	  <div class="form-group">
+	    <label for="user_pseudo" class="col-sm-4 control-label"><%="Speudo".trn%> : </label>
+		<div class="col-sm-8">
+			<%= text_field "user", "pseudo", :maxlength => 60, :class => "form-control" %>
 	    </div>
 	  </div>
-	  <div class="control-group">
-	    <label for="user_name" class="control-label">Nom : </label>
-	    <div class="controls">
-			<%= text_field "user", "name", :size => 60, :maxlength => 60 %>
-			<%= field_description "", true %>
+	  <div class="form-group">
+	    <label for="user_name" class="col-sm-4 control-label"><%= field_description "", true %> <%="Nom".trn%> : </label>
+	    <div class="col-sm-7">
+			<%= text_field "user", "name", :maxlength => 60, :class => "form-control" %>
 		</div>
+		
 	  </div>
-	  <div class="control-group">
-	    <label for="user_firstname" class="control-label">Prénom : </label>
-	    <div class="controls">
-			<%= text_field "user", "firstname", :size => 60, :maxlength => 60 %>
-			<%= field_description "", true %>
+	  <div class="form-group">
+	    <label for="user_firstname" class="col-sm-4 control-label"><%= field_description "", true %> <%="Prénom".trn%> : </label>
+	    <div class="col-sm-7">
+			<%= text_field "user", "firstname", :maxlength => 60, :class => "form-control" %>
 		</div>
 	  </div>
 	  <%if complete%>	
-		  <div class="control-group">
-		    <label for="user_mail" class="control-label">E-mail : </label>
-		    <div class="controls">
-				<%= email_field "user", "mail", :size => 60, :maxlength => 60 %>
-				<%= field_description "", true %>
+		  <div class="form-group">
+		    <label for="user_mail" class="col-sm-4 control-label"><%= field_description "", true %> <%="E-mail".trn%> : </label>
+		    <div class="col-sm-7">
+				<%= email_field "user", "mail", :maxlength => 60, :class => "form-control" %>
 			</div>
 		  </div>
-		  <div class="control-group">
-		    <label for="user_password1" class="control-label">Mot de passe : </label>
-		    <div class="controls">
-				<%= password_field "user", "password1", :size => 12, :maxlength => 12 %>
-				<%= field_description "", true %>
+		  <div class="form-group">
+		    <label for="user_password1" class="col-sm-4 control-label"><%= field_description "", true %> <%="Mot de passe".trn%> : </label>
+		    <div class="col-sm-4">
+				<%= password_field "user", "password1", :maxlength => 12, :class => "form-control" %>
 			</div>
 		  </div>
-		  <div class="control-group">
-		    <label for="user_password2" class="control-label">Validation : </label>
-		    <div class="controls">
-				<%= password_field "user", "password2", :size => 12, :maxlength => 12 %>
-				<%= field_description "", true %>
+		  <div class="form-group">
+		    <label for="user_password2" class="col-sm-4 control-label"><%= field_description "", true %> <%="Validation".trn%> : </label>
+		    <div class="col-sm-4">
+				<%= password_field "user", "password2", :maxlength => 12, :class => "form-control" %>
 			</div>
 		  </div>
 	  <%end%>		
-	  <div class="control-group">
-	    <label for="user_address1" class="control-label">Adresse : </label>
-	    <div class="controls">
-			<%= text_field "user", "address1", :size => 60, :maxlength => 60 %>
+	  <div class="form-group">
+	    <label for="user_address1" class="col-sm-4 control-label"><%="Adresse".trn%> : </label>
+	    <div class="col-sm-8">
+			<%= text_field "user", "address1", :maxlength => 60, :class => "form-control" %>
 		</div>
 	  </div>
-	  <div class="control-group">
-	    <label for="user_address2" class="control-label">Adresse (suite) : </label>
-	    <div class="controls">
-			<%= text_field "user", "address2", :size => 60, :maxlength => 60 %>
+	  <div class="form-group">
+	    <label for="user_address2" class="col-sm-4 control-label"><%="Adresse (suite)".trn%> : </label>
+	    <div class="col-sm-8">
+			<%= text_field "user", "address2", :maxlength => 60, :class => "form-control" %>
 		</div>
 	  </div>
-	  <div class="control-group">
-	    <label for="user_zip" class="control-label">Code postal : </label>
-	    <div class="controls">
-			<%= text_field "user", "zip", :size => 10, :maxlength => 10 %>
+	  <div class="form-group">
+	    <label for="user_zip" class="col-sm-4 control-label"><%="Code postal".trn%> : </label>
+	    <div class="col-sm-4">
+			<%= text_field "user", "zip", :maxlength => 10, :class => "form-control" %>
 		</div>
 	  </div>
-	  <div class="control-group">
-	    <label for="user_city" class="control-label">Localité : </label>
-	    <div class="controls">
-			<%= text_field "user", "city", :size => 30, :maxlength => 30 %>
+	  <div class="form-group">
+	    <label for="user_city" class="col-sm-4 control-label"><%="Localité".trn%> : </label>
+	    <div class="col-sm-8">
+			<%= text_field "user", "city", :maxlength => 30, :class => "form-control" %>
 		</div>
 	  </div>
-	  <div class="control-group">
-	    <label for="user_country" class="control-label">Pays : </label>
-	    <div class="controls">
-			<%= text_field "user", "country", :size => 30, :maxlength => 30 %>
+	  <div class="form-group">
+	    <label for="user_country" class="col-sm-4 control-label"><%="Pays".trn%> : </label>
+	    <div class="col-sm-8">
+			<%= text_field "user", "country", :maxlength => 30, :class => "form-control" %>
 		</div>
 	  </div>
-	  <div class="control-group">
-	    <label for="user_tel" class="control-label">Téléphone : </label>
-	    <div class="controls">
-			<%= text_field "user", "tel", :size => 20, :maxlength => 20 %>
+	  <div class="form-group">
+	    <label for="user_tel" class="col-sm-4 control-label"><%="Téléphone".trn%> : </label>
+	    <div class="col-sm-5">
+			<%= text_field "user", "tel", :maxlength => 20, :class => "form-control" %>
 		</div>
 	  </div>
-	  <div class="control-group">
-	    <label for="user_gsm" class="control-label">GSM : </label>
-	    <div class="controls">
-			<%= text_field "user", "gsm", :size => 20, :maxlength => 20 %>
+	  <div class="form-group">
+	    <label for="user_gsm" class="col-sm-4 control-label"><%="GSM".trn%> : </label>
+	    <div class="col-sm-5">
+			<%= text_field "user", "gsm", :maxlength => 20, :class => "form-control" %>
 		</div>
 	  </div>
