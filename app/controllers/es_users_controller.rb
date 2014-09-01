@@ -125,7 +125,7 @@ class EsUsersController < ApplicationController
     file_name = "users_export_" + current_user.id.to_s + ".csv"
     
     csv_string = CSV.generate({:col_sep => ';', :encoding => "ISO-8859-15" }) do |csv|
-       csv << ["Activé","Nom","Prénom","Mail"]
+       csv << ["Activé".trn,"Nom".trn,"Prénom".trn,"Mail".trn]
        users.each do |t|
           csv << [t.active,t.name,t.firstname,t.mail]
         end
@@ -146,6 +146,10 @@ class EsUsersController < ApplicationController
     else
       render :action  => 'profile'
     end     
+  end
+  
+  def login
+    session.delete(:return_to) unless flash[:return_to].present?
   end
   
   def login_connect

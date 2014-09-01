@@ -1,0 +1,36 @@
+<table class="table">
+	<tr>
+		<%(1..6).each do |i| %>
+			<th><%="Colonne n° %{col}".trn(:col => i)%></th>
+		<%end%>
+	</tr>
+	<tr>
+		<%(1..6).each do |i| %>
+			<td>
+				<%=easy_tag('integer',:instance => "template_line", :field => "column_#{i}", :value => @template_line_value["column_#{i}"].presence )%>
+			</td>
+		<%end%>
+		<td rowspan="2">
+			<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-plus-sign'></i>", 
+																		:action => "add_line", :id => @template.id,
+																		:form => "template_form_line",
+																		:html_option => {:title =>"Ajouter cette ligne au template".trn}}%>
+		</td>
+	</tr>
+	<tr>
+		<%(1..6).each do |i| %>
+			<th><%="Description n° %{col}".trn(:col => i)%></th>
+		<%end%>
+	</tr>
+	<tr>
+		<%(1..6).each do |i| %>
+			<td>
+				<%=easy_tag('text',:instance => "template_line", :field => "columntext_#{i}", :value => @template_line_value["columntext_#{i}"].presence)%>
+			</td>
+		<%end%>
+	</tr>
+</table>	
+
+<script>
+	init_inputmask();
+</script>

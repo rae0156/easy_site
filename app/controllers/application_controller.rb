@@ -2,6 +2,8 @@
 require 'iconv'
 
 class ApplicationController < ActionController::Base
+  
+  
   before_filter :debug_param if Rails.env.downcase == 'development'
       
   
@@ -58,13 +60,16 @@ class ApplicationController < ActionController::Base
       mdata = params[:sort].scan(/(?:(\S+)(_reverse)$)|(?:(\S+)$)/) # applying the regexp
       unless mdata.nil?                                             # if it returned something
         mdata = mdata[0]                                            # we retrieving the match items array
-        @sort = (mdata[0].nil? ? mdata[2] : "#{mdata[0]} DESC")     # and it initializes @sort with what has matched
+        @sort = (mdata[0].nil? ? mdata[2] : mdata[0].split(',').map{|f| "#{f} DESC"}.join(",") )     # and it initializes @sort with what has matched
       end
     end                                                             # if ever it hasn't been initialized
     @sort ||= options[:default]                                     # @sort is filled with the default value
     
 
   end
+
+
+
 
 
   # ----------------------------
@@ -86,6 +91,7 @@ class ApplicationController < ActionController::Base
     puts "========================="
     puts " params  : #{params.inspect}"   
     puts " session : #{session.inspect}"   
+    puts " flash   : #{flash.inspect}"   
     puts "========================="
     puts " "
   end

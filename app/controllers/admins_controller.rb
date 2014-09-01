@@ -1,6 +1,10 @@
 class AdminsController < ApplicationController
     self.before_filter :login_required 
 
+    def reset
+      redirect_to :action => "save_template", :admin => {:template => 'admin'},:method=> "post"   
+    end
+
     def init_workspace
       init_workspace_easysite      
       redirect_to root_url 

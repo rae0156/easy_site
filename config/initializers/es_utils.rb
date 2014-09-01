@@ -21,7 +21,20 @@
     return es_content_detail.blank? ? "" : get_template_part(es_content_detail.id)
   end
 
-  def get_template_part(part_name)
+  def generate_template_render(template_name)
+    template = EsTemplate.find_by_name(template_name)
+    if template  
+      parts_containt = {}
+      template.es_parts.each do |p|
+        parts_containt[p.name] = get_template_part(p.name)
+      end
+      return render(:inline => template.generate_template_for_render(parts_containt))
+    else
+      return render(:inline => "<p>" + "Le template %{name} n'existe pas".trn(:name=> template_name) +"</p>")
+    end
+  end
+
+  def get_template_part(part_name,directory = "parts")
     
     if part_name.is_a?(Integer)
         es_content_detail = EsContentDetail.find_by_id(part_name)
@@ -31,11 +44,11 @@
         else
           #from setup part
           es_content_details = es_content_detail.content
-          #return render(:partial => "layouts/part_from_setup", :locals => {:content => es_content_details})
           
           return render(:inline => es_content_details)
         end
     else
+      
       if caller.first.split('/')[-2] == "templates"
         template_name = caller.first.split('/').last.split('.').first[1..-1]
         #create template and part if does not exist    
@@ -47,7 +60,7 @@
         template_name=Rails.application.config.current_template
       end
   
-      tmp_layout = 'layouts/_' + part_name
+      tmp_layout = directory + '/_' + part_name
       if lookup_context.find_all(tmp_layout).any?
         #find existing part
         return render tmp_layout.gsub('/_','/')
@@ -65,7 +78,6 @@
         else
           #from setup part
           es_content_details = es_content_details.collect(&:content).join
-          #return render(:partial => "layouts/part_from_setup", :locals => {:content => es_content_details})
           
           return render(:inline => es_content_details)
         end
@@ -81,16 +93,35 @@
     FileUtils.mkdir_p(tmp_dirs)
   end      
 
-  class Object
-    def multi_send(send_string)
-        tmp_value=self
-        send_string.split('.').each do |to_send|
-          tmp_value=tmp_value.send(to_send)
-        end  
-        tmp_value
+
+  def generate_tag(tag,content,options={})
+    
+    options={} if options.blank? #for nil object
+    tmp_options=""
+    options.each do |key,value|
+      tmp_options += " #{key}=" + '"' + "#{value}" + '"'
     end
     
-  end    
+    if ["img"].include?(tag.to_s.downcase)
+      tmp_text = "<#{tag}#{tmp_options} #{content}>"
+    else
+      tmp_text = "<#{tag}#{tmp_options}>#{content}</#{tag}>"
+    end
+    
+    return tmp_text
+  end
+
+
+class Object
+  def multi_send(send_string)
+      tmp_value=self
+      send_string.split('.').each do |to_send|
+        tmp_value=tmp_value.send(to_send)
+      end  
+      tmp_value
+  end
+  
+end    
 
 
 class String
@@ -129,5 +160,8 @@ class String
 #    text_traduct = I18n.t(text_code,options)
     return text_traduct
   end
+  
+  
+  
 end
 

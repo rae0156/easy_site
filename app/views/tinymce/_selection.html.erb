@@ -1,20 +1,36 @@
-  <div class="container">
-      <div class="row">
-		<form class="form-inline">
-		  <div class="form-group">
-			<label class="control-label" for="selection_es_template_id"><%="Template".trn%> :</label>
+  <div class="row">
+	<form class="form-inline">
+	  <div class="form-group">
+		<%if @from_template%>
+		  <input type="hidden" name="from_template" id="from_template" value="true" ajax_action="config_content">
+		<%end%>
+	  	
+	  	
+	  	
+		<label class="control-label" for="selection_es_template_id"><%="Template".trn%> :</label>
+		<%unless @from_template%>
 	        <%=  collection_select(:selection, :es_template_id, @template_list, :id, :description, {:prompt => "",:selected => @template_id},{:size=>5, :ajax_action => "config_content", :class => "form-control"}) %>
-		  </div>
-		  <div class="form-group">
-			<label class="control-label" for="selection_es_part_id"><%="Partie".trn%> :</label>
-	        <%=  collection_select(:selection, :es_part_id, @part_list, :id, :description, {:prompt => "",:selected => @part_id}, {:size=>5, :ajax_action => "config_content", :class => "form-control"}) %>
-		  </div>
-		  <div class="form-group">
-			<label class="control-label" for="selection_es_content_detail_id"><%="Contenu".trn%> :</label>
-	        <%=  collection_select(:selection, :es_content_detail_id, @content_detail_list, :id, :sequence, {:prompt => "",:selected => @content_detail_id},{:size=>5, :ajax_action => "config_content", :class => "form-control"}) %>
-		  </div>
-		</form>
-      </div>
+		<%else%>
+			<%=easy_tag('label',:label => EsTemplate.find(@template_id).description)%>
+			<input type="hidden" name="selection[es_template_id]" id="selection_es_template_id" value="<%=@template_id%>" ajax_action="config_content">
+			&nbsp;
+		<%end%>
+	  </div>
+	  <div class="form-group">
+		<label class="control-label" for="selection_es_part_id"><%="Partie".trn%> :</label>
+		<%unless @from_template%>
+    	    <%=  collection_select(:selection, :es_part_id, @part_list, :id, :description, {:prompt => "",:selected => @part_id}, {:size=>5, :ajax_action => "config_content", :class => "form-control"}) %>
+		<%else%>
+			<%=easy_tag('label',:label => EsPart.find(@part_id).description)%>
+			<input type="hidden" name="selection[es_part_id]" id="selection_es_part_id" value="<%=@part_id%>" ajax_action="config_content">
+			&nbsp;
+		<%end%>
+	  </div>
+	  <div class="form-group">
+		<label class="control-label" for="selection_es_content_detail_id"><%="Contenu".trn%> :</label>
+        <%=  collection_select(:selection, :es_content_detail_id, @content_detail_list, :id, :content_detail_name, {:prompt => "",:selected => @content_detail_id},{:size=>5, :ajax_action => "config_content", :class => "form-control"}) %>
+	  </div>
+	</form>
   </div>
 
 	<script>

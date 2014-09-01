@@ -24,8 +24,8 @@ class EsUser < ActiveRecord::Base
   validates_presence_of :name, :message => '#' + 'Le nom est obligatoire'.trn
   validates_presence_of :firstname, :message => '#' + 'Le prenom est obligatoire'.trn
   validates_presence_of :mail, :message => '#' + 'Le mail est obligatoire'.trn
-  validates_uniqueness_of :mail, :case_sensitive => false, :message => "#" + "Ce mail existe déjà".trn
-  validates_uniqueness_of :pseudo, :case_sensitive => false, :message => "#" + "Ce pseudo existe déjà".trn, :allow_blank => true, :allow_nil => true
+  validates_uniqueness_of :mail, :case_sensitive => false, :message => "#" + "Ce mail existe déjà".trn, :scope => :es_site_id
+  validates_uniqueness_of :pseudo, :case_sensitive => false, :message => "#" + "Ce pseudo existe déjà".trn, :allow_blank => true, :allow_nil => true, :scope => :es_site_id
   validates :mail, :format => { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i, :if => Proc.new { |user| !user.mail.blank?}, :message => "#" + "Le format du mail n'est pas valide".trn}
   validates :newmail, :format => { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i, :if => Proc.new { |user| !user.newmail.blank?}, :message => "#" + "Le format du nouveau mail n'est pas valide".trn}
 
@@ -34,8 +34,8 @@ class EsUser < ActiveRecord::Base
   before_destroy :check_dependances
   
   def check_dependances
-    unless self.roles.empty?
-      errors.add_to_base "Impossible de supprimer l'utilisateur, parce qu'il est déjà associé à un rôle".trn
+    unless self.es_roles.empty?
+      errors.add "base", "Impossible de supprimer l'utilisateur, parce qu'il est déjà associé à un rôle".trn
     end
     return (self.errors.empty?)
   end

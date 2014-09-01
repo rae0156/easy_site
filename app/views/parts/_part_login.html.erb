@@ -1,6 +1,8 @@
-    <div class="navbar navbar-default navbar-fluid-top">
-        <div class="container ">
-		  	<div class="pull-right">
+<% return unless session[:flag_connection] %>
+
+    <div class="navbar navbar-default " role="navigation">
+        <div class="container-fluid ">
+	  	    <div class="navbar-right">
 				<% if self.logged_in? %>
 				  <span><%= current_user.pseudo.blank? ? current_user.mail : current_user.pseudo %></span> <%="est connecté".trn%>.&nbsp;
 				  <%= link_to 'Modifier son profile'.trn, {:controller => 'es_users', :action => 'profile'}, :class => 'navbar-link' %> |
@@ -12,6 +14,7 @@
 				  <%= link_to 'Mot de passe perdu'.trn, {:controller => 'es_users', :action => 'password_lost'}, :class => 'navbar-link' %> |
 				  <%= link_to "Se connecter".trn, {:controller => 'es_users', :action => 'login'}, :class => 'navbar-link'  %>
 				<% end %>
+				&nbsp;
 	        </div>
         </div>
     </div>

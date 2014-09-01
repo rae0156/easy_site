@@ -1,0 +1,68 @@
+<% 
+	edit =  ["update","edit"].include?(params[:action]) 
+	from_action = @from_action||""
+%>
+
+	  <h4><%= field_description "Données obligatoires", true %></h4>
+	  
+	  <div class="form-group">
+	    <label for="content_name" class="col-sm-4 control-label"><%= field_description "", true %> <%="Nom du contenu".trn%> : </label>
+		<div class="col-sm-8">
+			<%= easy_tag('text',:instance => "content", :field => "name", :read_only => from_action=="add") %>
+	    </div>
+	  </div>
+	  <div class="form-group">
+	    <label for="content_sequence" class="col-sm-4 control-label"><%= field_description "", true %> <%="Séquence".trn%> : </label>
+	    <div class="col-sm-1">
+			<%= easy_tag('text',:instance => "content", :field => "sequence",:read_only => true, :value => @content.sequence.to_i) %>		
+		</div>
+	  </div>
+	  <%if edit%>
+		  <div class="form-group">
+		    <label for="content_editable" class="col-sm-4 control-label"><%= field_description "", true %> <%="Modifiable".trn%> : </label>
+		    <div class="col-sm-1">
+				<%= easy_tag('check_box',:instance => "content", :field => "editable",:read_only => true) %>		
+			</div>
+		  </div>
+	  <%end%>
+	  <div class="form-group">
+	    <label for="content_content_type" class="col-sm-4 control-label"><%= field_description "", true %> <%="Type du contenu".trn%> : </label>
+	    <div class="col-sm-3">
+			<%if edit%>
+				<%= easy_tag('text',:instance => "content", :field => "content_type",:read_only => true)%>
+			<%else%>
+				<%= easy_tag('list',:instance => "content", :field => "content_type",:value_list_array => EsContent::CONTENT_TYPES,:number_of_line=>1,:multiple => false)%>
+			<%end%>
+		</div>
+	  </div>
+
+	  <div class="form-group" id="option_module">
+	    <label for="content_content_type" class="col-sm-4 control-label"><%= field_description "", true %> <%="Nom de l'action du module".trn%> : </label>
+	    <div class="col-sm-8">
+			<%if edit && @content.es_content_detail_params.size != 0 %>
+				<%= easy_tag('text',:instance => "content", :field => "module_action_name",:read_only => true)%>
+			<%else%>
+				<%= easy_tag('list',:instance => "content", :field => "module_action_name",:value_list_array => EsModule.get_module_action_list,:number_of_line=>1,:multiple => false)%>
+			<%end%>
+		</div>
+	  </div>
+
+<%unless edit%>
+	<script>
+		$( document ).ready(function() {
+		    show_options(); 
+			$('#content_content_type').change(function(){
+		        show_options();
+		    });
+		});
+	
+		function show_options() { 
+			select_text = $( "#content_content_type option:selected" ).text()
+			if (select_text=='module')
+			   $( "#option_module" ).show();
+			else 
+			   $( "#option_module" ).hide();
+	    }; 
+	
+	</script>
+<%end%>

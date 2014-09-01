@@ -18,4 +18,15 @@ class EsCategory < ActiveRecord::Base
     return cat.blank? ? 0 : cat.id
   end
 
+
+  def self.get_categories(cat_type)
+    tmp_cats = self.find(:all, :conditions => ["category_type = ?",  cat_type],:order => "name" )
+    cats = []
+    tmp_cats.each do |c|
+      cats << c if c.children.empty?
+    end
+    return cats
+  end
+
+
 end

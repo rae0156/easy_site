@@ -50,7 +50,7 @@ class EsSetup < ActiveRecord::Base
           end
         end        
     end
-    errors.add_to_base "La valeur doit être de type '%{type_donnee}'".trn(:type_donnee =>"#{self.type_data}#{tmp_complement}") if tmp_err
+    errors.add "base", "La valeur doit être de type '%{type_donnee}'".trn(:type_donnee =>"#{self.type_data}#{tmp_complement}") if tmp_err
   end
 
   def self.arbo(dir)

@@ -673,7 +673,8 @@ private
       mdata = params[:sort].scan(/(?:(\S+)(_reverse)$)|(?:(\S+)$)/) # applying the regexp
       unless mdata.nil?                                             # if it returned something
         mdata = mdata[0]                                            # we retrieving the match items array
-        tmp_sort = (mdata[0].nil? ? mdata[2] : "#{mdata[0]} DESC")
+#        tmp_sort = (mdata[0].nil? ? mdata[2] : "#{mdata[0]} DESC")
+        tmp_sort = (mdata[0].nil? ? mdata[2] : mdata[0].split(',').map{|f| "#{f} DESC"}.join(",") )
         @sort=[]
         @sort << (tmp_sort.split('.').count > 1 ? (tmp_sort.split('.')[-2].pluralize + ".") : "") + tmp_sort.split('.').last
         list_table = tmp_sort.split('.').count <= 1 ? "" : tmp_sort.split('.')[0..-2].join('.')

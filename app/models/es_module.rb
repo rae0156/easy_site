@@ -3,6 +3,44 @@
 class EsModule < ActiveRecord::Base
   acts_as_dynamic_model 
   
+  def self.get_module_params(controller_name,action_name)
+    module_params=[]
+    EsModule.all(:conditions => ["path_setup like ?","controllers/contents/#{controller_name}/#{action_name}/params"]).each do |s|
+      module_params << s
+    end
+    return module_params
+  end
+  
+  
+  def self.get_module_params_from_content_detail(content_detail_id)
+    tab = {}
+    content_detail = EsContentDetail.find(content_detail_id)
+    if !content_detail.blank? && !content_detail.module_action_name.blank?
+      module_action_name = content_detail.module_action_name.split(" ") 
+      tmp_module = EsModule.find_by_path_setup("controllers/contents/#{module_action_name[0]}/#{module_action_name[1]}")
+      tab[:title_1] = "Paramétrages du module #{tmp_module.module_name}".trn
+      tmp_setup = []
+      content_detail.es_content_detail_params.each_with_index do |setup,i| 
+        tmp_setup << add_setup(setup.setup_name, setup.value  , :description => setup.description, :format => setup.type_setup, :read_only => (setup.updatable=='N' ? 'Y' : 'N'), :value_list => (setup.value_list || "").split(','))
+      end
+      tab[:group_1] = tmp_setup
+    end
+    return [tab]
+  end
+  
+  
+  def self.get_module_action_list
+    action_list=[]
+    EsModule.all(:conditions => ["path_setup like ?","controllers/contents/%"]).each do |s|
+      path_setup = s.path_setup.split('/')
+      next unless path_setup.size == 4
+      action = "#{path_setup[2]} #{path_setup[3]}"
+      action_list << action unless action_list.include?(action)
+    end
+    
+    return action_list    
+  end
+  
   def self.get_module(module_name)
     return  EsModule.new({:module_name => module_name})
   end
@@ -18,6 +56,7 @@ class EsModule < ActiveRecord::Base
     tabs << get_main_setup
     tabs << get_main_admin
     tabs << get_entry_points
+    tabs << get_contents
     return tabs
   end  
   
@@ -26,6 +65,7 @@ class EsModule < ActiveRecord::Base
     return unless module_name==options_to_save[:module_name].presence
     save_main_setup(options_to_save)
     save_main_admin(options_to_save)
+    save_content_setup(options_to_save)
   end
   
 private 
@@ -54,11 +94,11 @@ private
     tmp_setup << add_setup("title"   , find_or_create_setup("setup/admin/title",self.module_name)  , :description=>"Titre du module")
     tab[:group_1] = tmp_setup
 
-    tab[:title_2] = "Paramétrages spécifiques au module #{self.module_name}".trn
+    tab[:title_2] = "Paramétrages spécifiques au module %{module}".trn(:module => self.module_name)
     tmp_setup = []
     setups = EsModule.find(:all,:conditions => ["path_setup = ? AND module_name = ?","setup/admin/specific",self.module_name])
     setups.each_with_index do |setup,i| 
-      tmp_setup << add_setup("admin_#{setup.setup_name}"   , setup.value  , :description => setup.description, :format => setup.type_setup, :read_only => (setup.updatable=='N' ? 'Y' : 'N'), :value_list => setup.value_list.split(','))
+      tmp_setup << add_setup("admin_#{setup.setup_name}"   , setup.value  , :description => setup.description, :format => setup.type_setup, :read_only => (setup.updatable=='N' ? 'Y' : 'N'), :value_list => (setup.value_list || "").split(','))
     end
     tab[:group_2] = tmp_setup
     return tab
@@ -74,15 +114,36 @@ private
       setups.each_with_index do |setup,j| 
         tmp_setup << add_setup("entry_points_#{j}"    , setup.setup_name             , :description=>setup.value       , :read_only => "Y")
       end
-      tab["title_#{i+1}".to_sym]   = "Contrôleur #{sc.value}".trn + " (#{sc.setup_name})"
+      tab["title_#{i+1}".to_sym]   = "Contrôleur %{controller}".trn(:controller => sc.value) + " (#{sc.setup_name})"
       tab["group_#{i+1}".to_sym] = tmp_setup
     end
 
     return tab
   end
 
-   
+  def get_contents
+    tab = {}
+    tab[:title]   = "Contenus".trn
+    
+    self.class.get_module_action_list.each_with_index do |action,i|
+      tmp_setup = []
+      setups = EsModule.find(:all,:conditions => ["path_setup = ? AND module_name = ?","controllers/contents/#{action.gsub(' ','/')}/params",self.module_name])
+      setups.each_with_index do |setup,j| 
+        tmp_setup << add_setup("content_#{setup.id}"   , setup.value  , :description => setup.description, :format => setup.type_setup, :read_only => (setup.updatable=='N' ? 'Y' : 'N'), :value_list => (setup.value_list || "").split(','))
+      end
+      tab["title_#{i+1}".to_sym]   = "Contenu '%{action}'".trn(:action => action)
+      tab["group_#{i+1}".to_sym] = tmp_setup
+    end
+
+    return tab
+  end
+ 
+
   def add_setup(name, value = "",options = {})
+    return self.class.add_setup(name, value, options)
+  end  
+   
+  def self.add_setup(name, value = "",options = {})
     options[:description] ||= ""
     options[:format]      ||= "string"
     options[:mandatory]   ||= "N"
@@ -113,9 +174,20 @@ private
     end    
   end
   
-  def self.save_one_setup(value,full_path_name="")
-    path,name=split_full_path_name(full_path_name)
-    setup = EsModule.find(:first,:conditions=> {:path_setup => path, :setup_name => name, :module_name => @module_name})
+  def self.save_content_setup(options_to_save={})
+    options_to_save.select{|k,v| k.to_s.start_with?("content_")}.each do |k,v|
+      save_one_setup(v,k.to_s[8..-1].to_i) 
+    end    
+  end
+
+  
+  def self.save_one_setup(value,ident="")
+    if ident.is_a?(Integer)
+      setup = EsModule.find_by_id(ident)
+    else
+      path,name=split_full_path_name(ident)
+      setup = EsModule.find(:first,:conditions=> {:path_setup => path, :setup_name => name, :module_name => @module_name})
+    end
     if setup && setup.updatable=='Y'      
       if setup.type_setup == 'multiple_list'
         tmp_value = []

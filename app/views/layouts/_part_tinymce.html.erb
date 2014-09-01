@@ -1,16 +1,22 @@
 
   <div class="row">
 
-	<div class="col-md-6">
+	<div class="col-md-12">
+		<div class="alert alert-warning">
+			<%="Dessin".trn%> : 
+		</div>
 		<%= form_tag({ :action => 'test_tinymce' },{:id => "form_tinymce"}) do%>
 			<textarea name="tinymce_exemple" id="tinymce_exemple" class='tinymce' rows="10"><%=@content_tiny%></textarea> 		
 			<a href="#" class="btn btn-primary btn_tinymce" id="tester_tinymce"><%="Tester".trn%></a>
 			<a href="#" class="btn btn-primary btn_tinymce" id="sauver_tinymce"><%="Sauver".trn%></a>
 		<% end %>
 	</div>
-	<div class="col-md-6">
+  </div><!--/row-->
+  <BR>
+  <div class="row">
+	<div class="col-md-12">
 		<div class="alert alert-warning">
-			Résultat : 
+			<%="Résultat".trn%> : 
 		</div>
 		<div id="test_tinymce">
 			<%= get_template_part(@content_detail_id.to_i)%>

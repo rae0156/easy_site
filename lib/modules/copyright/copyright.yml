@@ -1,0 +1,30 @@
+interface:
+  models: /
+  controllers: 
+    - CopyrightController
+
+version: 0.0.0.1
+
+
+setup:
+  admin:
+    title: module Copyright <<string-Y-Titre du module>>
+    specific:
+      credit_text: |
+        Le module Copyright a été créé par ANDRE Régis.
+        Il permet l'affichage des droits ainsi que les crédits.
+        <<long_string-Y-A propos de>>
+controllers: 
+  entry_point_names:
+    CopyrightController: Gestion des droits d'auteur
+  entry_points:
+    CopyrightController:    
+        get_credit: Crédits
+  contents:
+    CopyrightController:    
+        get_right: 
+          description: Droits d'auteurs
+          params:
+            start_year: 2014<<integer-Y-Année de début>>
+            company_name: <<string-Y-Nom de la compagnie>>
+            message: Tous droits réservés.<<string-Y-Mention légale>>

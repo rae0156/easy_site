@@ -1,0 +1,21 @@
+
+	  <h4><%= field_description "Données obligatoires", true %></h4>
+	  
+	  <div class="form-group">
+	    <label for="template_name" class="col-sm-4 control-label"><%= field_description "", true %> <%="Nom du template".trn%> : </label>
+		<div class="col-sm-8">
+			<%= text_field "template", "name", :maxlength => 200, :class => "form-control" %>
+	    </div>
+	  </div>
+	  <div class="form-group">
+	    <label for="template_description" class="col-sm-4 control-label"><%= field_description "", true %> <%="Description".trn%> : </label>
+	    <div class="col-sm-8">
+			<%= text_field "template", "description", :maxlength => 4000, :class => "form-control" %>
+		</div>
+	  </div>
+	  <div class="form-group">
+	    <label for="template_es_category_id" class="col-sm-4 control-label"><%= field_description "", true %> <%="Catégorie".trn%> : </label>
+	    <div class="col-sm-8">
+	      	<%= select("template", :es_category_id, @categories.map {|c| [c.name, c.id]}, {}, :class => "form-control") %>
+		</div>
+	  </div>

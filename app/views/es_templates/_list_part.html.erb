@@ -1,0 +1,13 @@
+<!-- Data table header and content -->
+<table cellpadding="4" width="100%" class='table'>
+  <tr>
+	<th><%= sort_link_remote :text => "Nom de la partie".trn, :column => "name", :controller =>  "es_templates", :action => 'parts'%></th>
+    <th><%="Sorte".trn%></th>
+    <th><%="Description".trn%></th>
+    <th><%="Placé".trn%></th>
+    <th><%="Contenu".trn%></th>
+    <th></th>
+  </tr>
+  <%= render :partial => 'es_templates/list_part_item', :collection => @template_parts %>
+</table>
+

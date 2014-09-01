@@ -21,16 +21,16 @@ class Ability
         es_abilities = EsRole.find_by_id(role_id).es_abilities
       end
       es_abilities.each do |ability|
-        if ability.controller=="all"
-          controllers = [:all]
+        if ability.model=="all"
+          models = [:all]
         else
-#          controllers = ability.controller.split(',').select {|m| Object.const_defined?(m)}.collect{|c| c.constantize}  
-          controllers = ability.controller.split(',').collect{|c| c.to_sym} 
+#          models = ability.model.split(',').select {|m| Object.const_defined?(m)}.collect{|c| c.constantize}  
+          models = ability.model.split(',').collect{|c| c.to_sym} 
         end
-        unless controllers.blank?
+        unless models.blank?
           actions = ability.action.split(',').collect{|a| a.to_sym}
-          controllers.each do |c|
-            can actions, c
+          models.each do |m|
+            can actions, m
           end
         end
       end

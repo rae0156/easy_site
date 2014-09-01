@@ -1,0 +1,17 @@
+# encoding: UTF-8
+<!-- Data table header and content -->
+<table cellpadding="4" width="100%" class='table'>
+  <tr>
+	<th><%= sort_link_remote :text => "Nom du contenu".trn, :column => "es_contents.name,es_content_details.sequence", :controller =>  "es_contents", :action => 'list'%></th>
+    <th><%="Séquence".trn%></th>
+    <th><%="Editable".trn%></th>
+    <th><%="Type de contenu".trn%></th>
+    <th><%="Utilisé".trn%></th>
+    <th><%="Options".trn%></th>
+  </tr>
+  <%= render :partial => 'es_contents/list_item', :collection => @contents %>
+</table>
+
+<%= will_paginate @contents, :params => params, :previous_label => '<< ' + "Précédent".trn, :next_label => "Suivant".trn + ' >>' %>
+<%= page_entries_info @contents, :model => "contenu".trn %>
+

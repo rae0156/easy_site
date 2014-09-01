@@ -57,8 +57,9 @@ module AuthenticatedSystem
       respond_to do |accepts|
         accepts.html do
           session[:return_to] = request.url
+          flash[:return_to] = true
           if Rails.env.downcase == 'development' 
-            flash[:error] = "Vous devez être connecté pour atteindre cette page".trn + " : #{request.url}"
+            flash[:error] = "Vous devez être connecté pour atteindre cette page".trn + " : #{request.url} - " + "voir table 'es_pages'".trn
           else
             flash[:error] = "Vous devez être connecté pour atteindre cette page".trn
           end

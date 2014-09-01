@@ -1,0 +1,36 @@
+<tr class="<%= cycle("row0", "row1") %>">
+  <td>
+  	<%= link_to list_part_item.name, :controller => 'es_templates', :action => 'edit_part', :id => list_part_item.id%>
+  </td>
+  <td>
+	<%= list_part_item.type_of_part %>  
+  </td>
+  <td>
+	<%= list_part_item.description.limit(50) %>  
+  </td>
+  <td>
+	<%= list_part_item.placed ||  image_tag("appli/cancel_32.png",
+						    {:alt => "", :align => "middle", :border => "0",
+						    :class => "app_tooltip", :title => "Cette partie n'est pas placée".trn, "data-placement" => "left"}) %>  
+  </td>
+  <td>
+	<%= image_tag(list_part_item.content ? "appli/ok_32.png" : "appli/cancel_32.png",
+						    {:alt => "", :align => "middle", :border => "0",
+						    :class => "app_tooltip", :title => list_part_item.content ? "Contenu existant".trn : "Pas de contenu".trn, "data-placement" => "left"}) %>  
+	
+  </td>
+  <td>
+	<%= link_to("<i class='glyphicon glyphicon-remove-sign'></i>".html_safe, 
+				url_for(:action => "destroy_part", :id => list_part_item['id']), 
+				:confirm =>"Voulez vous vraiment supprimer cette partie ?".trn,
+				:title =>"Supprimer".trn)
+	%>					
+  	<%if list_part_item.is_dynamic && list_part_item.is_editable %>
+		<%= link_to("<i class='glyphicon glyphicon-pencil'></i>".html_safe, 
+					url_for(:action => "design_content", :id => list_part_item['id']),
+					:title =>"Modifier le contenu".trn)
+		%>					
+  	<%end%>
+  </td>
+  
+</tr>

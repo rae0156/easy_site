@@ -1,6 +1,15 @@
 # encoding: UTF-8
 module SetupModule
   
+    def get_module_name
+      return @module_name
+    end
+
+    def is_module_actif?
+      setup = EsModule.find(:first,:conditions => {:path_setup => "",:setup_name => "activated", :module_name => @module_name})
+      return !setup.blank? && setup.value=="Y" 
+    end
+  
     def get_module_setup(path,name,default=nil)
       esmodule = EsModule.find(:first,:conditions => {:path_setup => path,:setup_name => name, :module_name => @module_name})
       return esmodule.present? ? esmodule.value : default       
@@ -38,7 +47,8 @@ module InterfaceModels
     end
   
   
-    def has_es_interface_models
+    def has_es_interface_models(module_name="")
+      @module_name=module_name unless module_name.blank? #manage module_name without lib/modules/
       extend AddActAsMethods::ClassMethods
       extend SetupModule
       include AddActAsMethods::InstanceMethods
@@ -76,10 +86,14 @@ module InterfaceControllers
     end
   
   
-    def has_es_interface_controllers
+    def has_es_interface_controllers(module_name="")
+      @module_name=module_name unless module_name.blank? #manage module_name without lib/modules/
       extend AddActAsMethods::ClassMethods
       extend SetupModule
       include AddActAsMethods::InstanceMethods
+      
+      before_filter :check_actif_module
+      
     end
   
   
@@ -91,9 +105,38 @@ module InterfaceControllers
         prepend_view_path File.join(Rails.root,'lib','modules',@module_name,'/views')
         # puts "ici : #{self.view_paths.inspect}"
       end
+      
     end
     
     module InstanceMethods
+
+      def check_actif_module
+        unless self.class.is_module_actif?
+          redirect_to :controller => "sites", :action => "error", :error => "Le module '%{module}' est désactivé".trn(:module => self.class.get_module_name)
+        end 
+      end
+
+      def generate_part(part_name,content_detail_id)
+        return "" unless self.class.is_module_actif?
+        result = ""
+        if self.class.private_instance_methods(false).include?(part_name.to_sym)
+          part_params={}
+          cd = EsContentDetail.find_by_id(content_detail_id)
+          cd.es_content_detail_params.each do |param|
+            part_params[param.setup_name]=param.value
+          end unless cd.blank?
+
+          begin
+            result = self.send(part_name,part_params)
+          rescue ArgumentError => ex
+            result = "Method '#{part_name}' in '#{self.class.name}' : #{ex.message}" 
+          end    
+        else
+          result = "This private method '#{part_name}' does not exist"
+        end
+        return result
+      end
+
     end
   
   

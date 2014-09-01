@@ -152,11 +152,15 @@ class ModuleLoader
     param_setup= nil
     type_setup = nil
     updatable = 'N'
+    value = value.strip
     if value.ends_with?(">>")
       tmp_find = value.rindex('<<')
       if !tmp_find.blank? && tmp_find>0
         param_setup = value[tmp_find+2..-3].split('-')
         value = value[0..tmp_find-1].rstrip
+      else
+        param_setup = value.strip[2..-3].split('-')
+        value = ""
       end  
     end
     
@@ -183,12 +187,12 @@ class ModuleLoader
         @interface["interface"][element].each do |class_name|
           if class_exists?(class_name)
             classe = class_name.constantize
-            if classe.respond_to?("has_es_interface_#{element}")              
+            if classe.respond_to?("init_interface")              
               classe.init_interface(@module)
               puts "interface installé et initialisé pour la class '#{element}' - '#{class_name}'."
             else
               error = true
-              puts "Erreur dans le module '#{@module}' : l'interface '#{element}' n'a pas été implémenté dans la class '#{class_name}'. 'has_es_interface_#{element}' n'est pas une fonction de cette class"  
+              puts "Erreur dans le module '#{@module}' : l'interface '#{element}' n'a pas été implémenté dans la class '#{class_name}'. 'has_es_interface_#{element}' n'existe pas dans cette class"  
             end
           else
             error = true

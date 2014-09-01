@@ -1,3 +1,5 @@
+<% return unless session[:flag_admin] %>
+
     <div class="navbar navbar-default navbar-fluid-top">
         <div class="container pull-left form-horizontal">
 		  <%= label_tag('site_id', 'Sélectionner un site'.trn + ' : ',{:class=> "col-sm-2 control-label"}) %>

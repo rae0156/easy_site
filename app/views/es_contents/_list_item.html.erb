@@ -1,0 +1,56 @@
+<tr class="<%= cycle("row0", "row1") %>">
+  <td>
+  	<%unless list_item.content_type=="system" %>
+	  	<%= link_to list_item.es_content.name, :controller => 'es_contents', :action => 'edit', :id => list_item.id%>
+  	<%else%>
+	  	<%= list_item.es_content.name%>
+  	<%end%>
+  </td>
+  <td>
+	<%= list_item.sequence.to_i %>  
+  </td>
+  <td>
+	<%= image_tag(list_item.editable=="Y" ? "appli/ok_32.png" : "appli/cancel_32.png", 
+						    {:alt => "", :align => "middle", :border => "0",
+						    :class => "app_tooltip", :title => list_item.editable=="Y" ? "Ce contenu est modifiable".trn : "Ce contenu n'est pas modifiable".trn, "data-placement" => "left"}) %>  
+  </td>
+  <td>
+	<%= list_item.content_type %>  
+  </td>
+  <td>
+	<%= image_tag(list_item.used? ? "appli/ok_32.png" : "appli/cancel_32.png", 
+						    {:alt => "", :align => "middle", :border => "0",
+						    :class => "app_tooltip", :title => list_item.used? ? "Ce contenu est utilisé dans une partie".trn : "Ce contenu n'est pas encore utilisé".trn, "data-placement" => "left"}) %>  
+  </td>
+  <td>
+	
+	<%
+		tmp_links = []
+		if list_item.editable=="Y"
+			 tmp_links << link_to("<i class='glyphicon glyphicon-pencil'></i>".html_safe, { :action => 'design_content', :id => list_item.id},:title => "Modifier le contenu".trn)
+		elsif list_item.content_type == EsContent::CONTENT_TYPES_MODULE && EsModule.get_module_action_list.include?(list_item.module_action_name)
+			 tmp_links << link_to("<i class='glyphicon glyphicon-wrench'></i>".html_safe, { :action => 'setup_module', :id => list_item.id},:title => "Paramétrer le module".trn)
+		end
+
+		if list_item.content_type != "system" && !list_item.used?
+			tmp_links << link_to("<i class='glyphicon glyphicon-remove-sign'></i>".html_safe, 
+						url_for(:action => "destroy", :id => list_item['id']), 
+						:confirm =>"Voulez vous vraiment supprimer ce contenu ?".trn,
+						:title =>"Supprimer ce contenu".trn)
+		end			
+
+	    if list_item.sequence > 1
+			 tmp_links << link_to("<i class='glyphicon glyphicon-arrow-up'></i>".html_safe, { :action => 'move_up', :id => list_item.id},:title => "Remonter ce contenu".trn)
+		end
+		if list_item.sequence < list_item.es_content.es_content_details.count 
+			 tmp_links << link_to("<i class='glyphicon glyphicon-arrow-down'></i>".html_safe, { :action => 'move_down', :id => list_item.id},:title => "Descendre ce contenu".trn)
+		end
+		if list_item.sequence == list_item.es_content.es_content_details.count && !list_item.used?
+			 tmp_links << link_to("<i class='glyphicon glyphicon-plus'></i>".html_safe, { :action => 'add', :id => list_item.id},:title => "Ajouter un contenu après celui-ci".trn)
+		end
+	%>
+	<%=tmp_links.join('&nbsp;').html_safe%>
+
+  </td>
+  
+</tr>

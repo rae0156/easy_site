@@ -6,7 +6,7 @@
 	</div>
 <%end%>
 
-<table cellpadding="4" width="100%" class='adminlist'>
+<table cellpadding="4" width="100%" class='table'>
   <tr>
 	<%if !@controller_setup[:table_field_active] && @controller_setup[:delete_multi]%>
 	    <th width="1"><%= check_box_tag("toggle_it", "", false, {:onclick => "checkAll('list_form');"}) %></th>

@@ -128,7 +128,7 @@ private
       when "hidden"
         field_result = hidden_field(options[:instance].presence, options[:field].presence, html_options)
       when "check_box"
-        html_options[:readonly]=options[:read_only].presence||false
+        html_options[:disabled]=options[:read_only].presence||false
         html_options[:checked] = "checked" if options[:value]==(options[:checked_value]||"Y")
         field_result = check_box(options[:instance].presence, options[:field].presence,html_options, options[:checked_value]||"Y", options[:unchecked_value]||"N")
       when "radio_button"

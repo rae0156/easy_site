@@ -11,6 +11,7 @@ $(document).ready(function() {
 				connectWith: ".drag_drop",
 //				handle: ".templet-header",
 //				cancel: ".templet-toggle",
+				items: "div.templet",
 				cursor: "move",
 				opacity: 0.5,
 				revert: true,
@@ -37,14 +38,14 @@ var template_parts=[];
 
 function set_id_grag_drop(){
 	template_parts=[];
-	$( ".drag_drop" ).each(function(index_col){
+	$( ".drag_drop" ).each(function(index_part){
 		var template_part = {};
 		$column = $(this);
-		$column.attr('num_col',index_col+1);
+		$column.attr('num_part',index_part+1);
 		$column.find('.templet').each(function(index_row){
 			$row = $(this);
 			temp_attr = {
-							num_col: index_col + 1,
+							num_part: index_part + 1,
 							num_row: index_row + 1
 						}; 
 			$row.attr(temp_attr);
@@ -52,10 +53,11 @@ function set_id_grag_drop(){
 		});
 		template_parts.push(template_part);
 	});
-	get_template_parts();
+	//get_template_parts();
 };
 
 function get_template_parts(){
+/*
 	result="";
 	template_parts.forEach(function(elem){
 		$.each(elem,function( key, prop ) {
@@ -66,6 +68,8 @@ function get_template_parts(){
 			result += p_text + '\n';
 		});
 	});
-//	alert(result);
+	alert(result);
+*/	
+	return template_parts;
 };
 

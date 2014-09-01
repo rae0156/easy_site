@@ -1,0 +1,36 @@
+<%empty = list_line_item.content_empty? %>
+<tr class="<%= cycle("row0", "row1") %>">
+  <td>
+  	<%= list_line_item.num.to_i%>
+  </td>
+  <td>
+	<%= list_line_item.column_detail %>  
+  </td>
+  <td>
+	<%= image_tag(empty ? "appli/ok_32.png" : "appli/cancel_32.png", 
+						    {:alt => "", :align => "middle", :border => "0",
+						    :class => "app_tooltip", :title => empty ? "Aucune partie dans cette ligne".trn : "Des parties composent cette ligne".trn, "data-placement" => "left"}) %>  
+  </td>
+  <td>
+	
+	<%
+		tmp_links = []
+		if empty 
+			tmp_links << link_to("<i class='glyphicon glyphicon-remove-sign'></i>".html_safe, 
+						url_for(:action => "destroy_line", :id => list_line_item['id']), 
+						:confirm =>"Voulez vous vraiment supprimer cette ligne de template ?".trn,
+						:title =>"Supprimer cette ligne".trn)
+		end			
+
+	    if list_line_item.num > 1
+			 tmp_links << link_to("<i class='glyphicon glyphicon-arrow-up'></i>".html_safe, { :action => 'line_up', :id => list_line_item.id},:title => "Remonter cette ligne".trn)
+		end
+		if list_line_item.num < list_line_item.es_template.es_template_lines.count 
+			 tmp_links << link_to("<i class='glyphicon glyphicon-arrow-down'></i>".html_safe, { :action => 'line_down', :id => list_line_item.id},:title => "Descendre cette ligne".trn)
+		end
+	%>
+	<%=tmp_links.join('&nbsp;').html_safe%>
+
+  </td>
+  
+</tr>

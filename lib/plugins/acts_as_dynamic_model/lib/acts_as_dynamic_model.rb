@@ -105,6 +105,7 @@ module ActsAsDynamicModel
       end
 
       def dynamic_validation
+        multi_site = self.column_names.include?('es_site_id')  && self.respond_to?("acts_as_multi_site")
         @columns_setup.each do |column|
           attr_accessible column[:name].to_sym 
 
@@ -136,8 +137,11 @@ module ActsAsDynamicModel
                                  :in => (column[:value_list].is_a?(Array) ? column[:value_list] : column[:value_list].split(",")), 
                                  :message => "n'est pas inclus dans la liste '%{liste}'".trn(:liste => column[:value_list])) if !column[:value_list].blank? && !column[:type] == 'list_multi'  
           
+          
           if column[:field_key]
-            scope = column[:field_key_scope].blank? ? nil : (column[:field_key_scope].split(",").map{|elem| elem.to_sym})  
+            scope = column[:field_key_scope].blank? ? [] : (column[:field_key_scope].split(",").map{|elem| elem.to_sym})  
+            scope << :es_site_id if multi_site
+            scope = nil if scope.size == 0
             validates_uniqueness_of(column[:name].to_sym, :case_sensitive => false, :scope => scope)  
           end
         end

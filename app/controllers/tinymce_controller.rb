@@ -2,6 +2,7 @@ class TinymceController < ApplicationController
     self.before_filter :login_required 
   
   def config_content 
+    @from_template = params[:from_template].presence || (params[:ajax_param].present? && params[:ajax_param][:from_template].present?)
     init_selection(params[:ajax_param] && params[:ajax_param][:selection] ? params[:ajax_param][:selection] : {})
     @content_tiny = @content_detail_id.blank? ? "" : EsContentDetail.find_by_id(@content_detail_id.to_i).content.html_safe
     respond_to do |format|
@@ -49,6 +50,8 @@ private
       if part.es_content && part.es_content.es_content_details.length>0
         @content_detail_list = part.es_content.es_content_details.where({:editable => 'Y'}).order("sequence")
         @content_detail_id = options[:es_content_detail_id] if @content_detail_list.collect(&:id).include?(options[:es_content_detail_id].to_i)
+        
+        @content_detail_id = @content_detail_list.first.id if @content_detail_id.blank? && @content_detail_list.size == 1
       end
     end
     

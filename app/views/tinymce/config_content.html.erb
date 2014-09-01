@@ -1,3 +1,15 @@
+<%if @from_template%>
+	<% @title = "Gestion des contenus".trn %>
+	
+	<div class="center-menu">
+	    <h2><%= image_tag("appli/setup_48.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
+		<ul>
+			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour".trn,:image => "appli/back_32.png", :action => "parts", :controller => "es_templates", :id => @template_id}%></li>
+		</ul>
+		<div class="clearer"></div>	
+	</div>	
+<%end%>
+
     <div id='selection_div'>
 		<%= render :partial => 'selection' %>
     </div>

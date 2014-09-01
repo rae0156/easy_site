@@ -1,5 +1,5 @@
 <!-- Data table header and content -->
-<table cellpadding="4" width="100%" class='adminlist'>
+<table cellpadding="4" width="100%" class='table'>
   <tr>
     <th width="1"><%= check_box_tag("toggle_it", "", false, {:onclick => "checkAll('user_list_form');"}) %></th>
 	<th><%= sort_link_remote :text => "Nom".trn, :column => "name", :controller =>  "es_users", :action => 'list'%></th>

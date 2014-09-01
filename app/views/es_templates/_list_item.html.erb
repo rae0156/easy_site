@@ -1,0 +1,58 @@
+<tr class="<%= cycle("row0", "row1") %>">
+  <td>
+  	<%= link_to list_item.name, :controller => 'es_templates', :action => 'edit', :id => list_item.id%>
+  </td>
+  <td>
+	<%= list_item.description.limit(50) %>  
+  </td>
+  <td>
+	<%= list_item.es_category.blank? ? "" : list_item.es_category.name %>  
+  </td>
+  <td>
+	
+	<%if list_item.name == Rails.application.config.current_template%>
+		<%= image_tag(list_item.validated == 'N' ? "appli/cancel_32.png" : "appli/ok_32.png",
+							    {:alt => "", :align => "middle", :border => "0",
+							    :class => "app_tooltip", :title => list_item.validated == 'Y' ? "Template validé".trn : "Template non validé".trn, "data-placement" => "left"}) %>  
+	<%else%>
+		<%image = image_tag(list_item.validated == 'N' ? "appli/cancel_32.png" : "appli/ok_32.png",
+							    {:alt => "", :align => "middle", :border => "0",
+							    :class => "app_tooltip", :title => list_item.validated == 'N' ? "Cliquer pour valider".trn : "Cliquer pour dévalider".trn, "data-placement" => "left"}) %>  
+		<%= link_to(image.html_safe, 
+					url_for(:action => "validation", :id => list_item['id']))
+		%>					
+	<%end%>				
+  </td>
+  <td>
+  	
+	<%if list_item.name == Rails.application.config.current_template %>
+		<%= image_tag("appli/cancel_32.png",
+							    {:alt => "", :align => "middle", :border => "0",
+							    :class => "app_tooltip", :title => "Template en cours d'utilisation".trn, "data-placement" => "left"}) %>  
+  	<%elsif list_item.is_dynamic %>
+		<%= link_to("<i class='glyphicon glyphicon-picture'></i>".html_safe, 
+					url_for(:action => "design", :id => list_item['id']), 
+					:title =>"Dessiner le template".trn)
+		%>					
+	
+		<%= link_to("<i class='glyphicon glyphicon-list'></i>".html_safe, 
+					url_for(:action => "parts", :id => list_item['id']), 
+					:title =>"Définir les parties".trn)
+		%>					
+	  	
+		<%= link_to("<i class='glyphicon glyphicon-list-alt'></i>".html_safe, 
+					url_for(:action => "design_parts", :id => list_item['id']), 
+					:title =>"Placer les parties".trn)
+		%>					
+	  	
+		<%= link_to("<i class='glyphicon glyphicon-remove-sign'></i>".html_safe, 
+					url_for(:action => "destroy", :id => list_item['id']), 
+					:confirm =>"Voulez vous vraiment supprimer ce template ?".trn,
+					:title =>"Supprimer".trn)
+		%>					
+	<%else%>
+		<%= "Fichier template".trn %>  
+	<%end%>				
+  </td>
+  
+</tr>

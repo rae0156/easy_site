@@ -1,0 +1,33 @@
+<% @title = "Placer les parties dans le template %{name}".trn(:name=>@template.name)%>
+
+<div class="cadre bg-primary">
+	<h2><%= image_tag("appli/setup_48.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
+    <ul>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/save_32.png", :action => "#",:html_option => {:id => "save_design"}}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour".trn,:image => "appli/back_32.png", :action => "list"}%></li>
+    </ul>
+	<%= errors_for(@template) %>
+
+	<div id="message_ajax">
+		  <%= render :partial => 'layouts/part_message_ajax' %>
+	</div>
+	
+	<%= form_tag({ :action => 'create_complete'}, { :name => 'template_form', :class => 'form-horizontal' }) do%>
+		
+		  <%= render :partial => 'form_design_parts' %>
+	
+	<% end %>
+</div>
+
+<script>
+	$(document).ready(function() {
+		$( "#save_design" ).click(function() {
+			$.ajax({
+		        url: "/es_templates/update_design_parts/<%=@template.id%>",
+		        data: { parts: get_template_parts() },
+		        dataType: 'script'
+		    });	    
+			return false;
+		});		
+	});
+</script>

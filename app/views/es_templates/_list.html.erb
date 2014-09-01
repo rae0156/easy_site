@@ -1,0 +1,15 @@
+<!-- Data table header and content -->
+<table cellpadding="4" width="100%" class='table'>
+  <tr>
+	<th><%= sort_link_remote :text => "Nom du template".trn, :column => "name", :controller =>  "es_templates", :action => 'list'%></th>
+    <th><%="Description".trn%></th>
+    <th><%="Catégorie".trn%></th>
+    <th><%="Validé".trn%></th>
+    <th><%="Options".trn%></th>
+  </tr>
+  <%= render :partial => 'es_templates/list_item', :collection => @templates %>
+</table>
+
+<%= will_paginate @templates, :params => params, :previous_label => '<< ' + "Précédent".trn, :next_label => "Suivant".trn + ' >>' %>
+<%= page_entries_info @templates, :model => "template".trn %>
+

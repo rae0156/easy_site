@@ -30,12 +30,17 @@
   <body>
   	
   	<%= render :partial => "shared/spinner" %>
-	<%= (render "layouts/part_site") if session[:flag_admin] %>
-	<%= (render "layouts/part_login") if session[:flag_connection] %>
 	<%= render "layouts/part_message" %>
 	
-    <%unless Rails.application.config.current_template.blank?%>
-		<%= render "templates/#{Rails.application.config.current_template}" %>
+    <%if session[:custom_error].presence==true
+    	session.delete(:custom_error)	%>
+		<%= render "templates/basic" %>
+    <%elsif !Rails.application.config.current_template.blank?%>
+    	<%if EsTemplate.is_dynamic(Rails.application.config.current_template)%>
+    		<%= generate_template_render(Rails.application.config.current_template)  %>
+		<%else%>
+			<%= render "templates/#{Rails.application.config.current_template}" %>
+		<%end%>
 	<%else%>
 		<%= yield %>
 	<%end%>

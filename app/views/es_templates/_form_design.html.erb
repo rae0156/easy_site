@@ -1,0 +1,26 @@
+<div>
+	<h3><%="Dessin du template".trn%></h3>
+	<%= @template.generate_design_empty %>
+</div>
+
+<!-- Error messages -->	
+<%= errors_for(flash[:errors_destroy], "la suppression d'une ligne de template".trn).html_safe if flash[:errors_destroy] %>
+<%= errors_for(flash[:errors_add], "l'ajout d'une ligne de template".trn).html_safe if flash[:errors_add] %>
+
+<div>
+	<h3><%="Lignes existantes".trn%></h3>
+	<%= form_tag({ :action => 'new' }, { :name => 'template_line_list_form'}) do%>
+	  <%= render :partial => 'list_line' %>
+	<% end %>
+</div>
+
+<br>
+
+<div>
+	<h3><%="Ajouter une nouvelle ligne".trn%></h3>
+	<%= form_tag({ :action => 'create'}, { :name => 'template_form_line', :class => 'form-horizontal' }) do%>
+	  <%= render :partial => 'form_line' %>
+	<% end %>
+</div>
+
+

@@ -1,4 +1,9 @@
 class SitesController < ApplicationController
+  def error
+    flash[:error] = params[:error]
+    redirect_to :action => "index"
+  end
+  
 
     
   def refresh_page

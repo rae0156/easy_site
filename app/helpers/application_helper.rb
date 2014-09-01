@@ -2,6 +2,19 @@
 
 module ApplicationHelper
 
+  def generate_module_part(module_name,part_name,content_id)
+    result = ""
+    begin
+      ctrl = module_name.constantize.new
+    rescue => ex
+      ctrl = nil
+    end    
+    if ctrl.respond_to?('generate_part')
+      result = ctrl.generate_part(part_name,content_id)
+    end
+    return result.html_safe
+  end
+
   def generate_collapse(collection)
       id_rand = "accordion_" + rand(100000..999999).to_s 
       tmp_list = generate_list(collection,{:options => [:all_div],:UL => {:class => "panel-group",:id=> id_rand},:LI => {:class => "panel panel-default"}})
@@ -386,22 +399,6 @@ module ApplicationHelper
     return [temp_ul] + tab_element
   end
 
-  def generate_tag(tag,content,options={})
-    
-    options={} if options.blank? #for nil object
-    tmp_options=""
-    options.each do |key,value|
-      tmp_options += " #{key}=" + '"' + "#{value}" + '"'
-    end
-    
-    if ["img"].include?(tag.to_s.downcase)
-      tmp_text = "<#{tag}#{tmp_options} #{content}>"
-    else
-      tmp_text = "<#{tag}#{tmp_options}>#{content}</#{tag}>"
-    end
-    
-    return tmp_text
-  end
 
   def generate_link(menu)
     tmp_link=""
@@ -529,7 +526,7 @@ module ApplicationHelper
         "Tous les %{element_paginate}".trn(:element_paginate => entry_name.pluralize)
       end
     else
-      "Affichage %{de} - %{vers} sur %{total} %{element_paginate}".trn(:de => collection.offset + 1, :vers => collection.offset + collection.length, :total => collection.total_entries, :element =>entry_name.pluralize)
+      "Affichage %{de} - %{vers} sur %{total} %{element_paginate}".trn(:de => collection.offset + 1, :vers => collection.offset + collection.length, :total => collection.total_entries, :element_paginate =>entry_name.pluralize)
     end
   
   end

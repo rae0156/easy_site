@@ -1,7 +1,16 @@
 <%
 	back = false if back.nil?  
 	image = "" if image.nil?  
-	text = "back" if text.nil?
+	
+	text_html = "" if text_html.nil?
+	text_html = text_html.html_safe unless text_html.blank?
+	if text_html.blank?
+		text = "back" if text.nil?
+	else
+		text = text_html
+	end
+	
+
 	form = "" if form.nil?   
 	controller = "" if controller.nil?  
 	action = "index" if action.nil? && !form.blank? && !controller.blank?
@@ -11,6 +20,7 @@
 	class_btn = "goto_btn" if class_btn.nil?
 	id_btn = "" if id_btn.nil?
 	param_goto = {} if param_goto.nil?
+	html_option = {} if html_option.nil?
 
 	if back
 		controller 	= session[:back_controller] 
@@ -18,7 +28,6 @@
 		id 			= session[:back_id] 		
 		param_goto 	= session[:back_params] 	
 	end
-
 	
 	url_hash = {}
 	url_hash[:controller] = controller unless controller.blank?  
@@ -27,7 +36,7 @@
 	url_hash = url_hash.merge(param_goto) unless param_goto.blank?
 	
 	url_hash = "#" if action == "#"
-	option_hash = {}
+	option_hash = html_option
 	option_hash = option_hash.merge({:confirm => "Voulez vous vraiment réaliser cette action ?".trn}) if check == 'true' && form.blank?	
 	
 	if image.blank?
@@ -52,6 +61,6 @@
 	<%if form.blank? && controller.blank? && action.blank? %>
 		<%= submit_tag text %>
 	<%else%>
-		<%= !form.blank? ? link_to_function(link, javascript ) : link_to(link, url_hash, option_hash) %>
+		<%= !form.blank? ? link_to_function(link, javascript,option_hash ) : link_to(link, url_hash, option_hash) %>
 	<%end%>
 </div>
