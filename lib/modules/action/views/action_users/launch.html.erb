@@ -1,0 +1,29 @@
+
+<div class="container">
+	<div class="alert alert-info">
+		<h2><%="Executer une de vos actions".trn%></h2>
+		<%if current_user %>
+	      <div class="row">
+	        <div class="col-md-10">
+
+				<form class="form-horizontal" role="form" id="action_form">
+				  <div class="form-group">
+				    <label for="action_user_name" class="col-sm-2 control-label"><%="Action".trn%> : </label>
+				    <div class="col-sm-10">
+						<%= easy_tag('list_collection',:instance => "action_user", :field => "id",:collection => ActionUser.all(:order => "name",:conditions=>["user_id in (?)", [current_user.id,0]]),:value_method => "id",:text_method => "name",:selected_value=> @action_name) %>				    
+					</div>
+				  </div>				
+				</form>
+
+	        </div>
+			<div class="col-sm-2">
+				<div  class="btn btn-default">
+					<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Executer".trn, :action => "execute",  :form => "action_form"}%>					
+				</div>
+		    </div>
+	      </div>
+		<%else%>
+			<p><%="Vous devez être connecté".trn%></p>
+		<%end%>
+	</div>
+</div>

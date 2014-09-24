@@ -1,0 +1,16 @@
+<% @title = "Nouvelle action".trn %>
+
+<div class="cadre bg-primary">
+	<h2><%= image_tag("appli/setup_48.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
+    <ul>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/save_32.png", :action => "create",  :form => "action_form", :param_goto => {:from_action => @from_action}}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour".trn,:image => "appli/back_32.png", :action => "list"}%></li>
+    </ul>
+	<%= errors_for(@action_user) %>
+
+	<%= form_tag({ :action => 'create'}, { :name => 'action_form', :class => 'form-horizontal' }) do%>
+		
+		  <%= render :partial => 'form' %>
+	
+	<% end %>
+</div>

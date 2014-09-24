@@ -34,7 +34,7 @@
 	
     <%if session[:custom_error].presence==true
     	session.delete(:custom_error)	%>
-		<%= render "templates/basic" %>
+		<%= render "layouts/basic" %>
     <%elsif !Rails.application.config.current_template.blank?%>
     	<%if EsTemplate.is_dynamic(Rails.application.config.current_template)%>
     		<%= generate_template_render(Rails.application.config.current_template)  %>

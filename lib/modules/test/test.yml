@@ -1,6 +1,7 @@
 interface:
   models: /
   controllers: / 
+  mailers: / 
 
 version: 0.0.0.0
 

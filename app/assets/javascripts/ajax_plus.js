@@ -1,5 +1,10 @@
 /*use with jquery_ui*/
 
+
+/*******************/
+/* use ajax_action */
+/*******************/
+
   function initajax(selector){ 
     var arr_obj = []; 
 

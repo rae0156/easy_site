@@ -1,0 +1,11 @@
+	      <div class="row">
+		    <div class="col-sm-12" id="droppable_custom" style="height:500px;">
+
+			<%ActionUser.all(:order => "name",:conditions=>["user_id in (?)",[0,current_user.id]]).each do |a| 
+				screen = a.action_screens.first(:conditions => {:user_id => current_user.id})
+				unless screen.blank?%>
+					<%=generate_action(a.id,{:link_x => screen.x, :link_y => screen.y, :link_class => "draggable_custom btn btn-default", :no_link => (@setup==true ? "Y" : "N")})%>
+			<%  end
+			  end%>
+		    </div>
+		  </div>

@@ -18,7 +18,7 @@
 
 class DynAttributeType < ActiveRecord::Base 
   has_many :dyn_attributes, :class_name => "DynAttribute", :foreign_key => "dyn_attribute_type_id" 
-  attr_accessible :name, :attribute_type, :type_data, :mandatory, :default_value, :comments, :length, :decimal_nbr, :choices, :order_seq
+  attr_accessible :name, :attribute_type, :type_data, :mandatory, :default_value, :comments, :length, :decimal_nbr, :choices, :order_seq, :category, :type_param
 
   
   
@@ -67,7 +67,7 @@ module ActsAsDynAttr
       attr_from_db=[] 
       DynAttributeType.find(:all,:conditions => ["attribute_type = ?",self.name], :order => 'order_seq').each do |attr| 
 
-        attr_from_db << {:name => attr.name,:type_data => attr.type_data, :mandatory => attr.mandatory, :default_value => attr.default_value, :comments => attr.comments, :length => attr.length, :decimal_nbr => attr.decimal_nbr, :choices => attr.choices, :order_seq => attr.order_seq}
+        attr_from_db << {:name => attr.name,:type_data => attr.type_data, :mandatory => attr.mandatory, :default_value => attr.default_value, :comments => attr.comments, :length => attr.length, :decimal_nbr => attr.decimal_nbr, :choices => attr.choices, :order_seq => attr.order_seq, :category => attr.category, :type_param => attr.type_param}
 
   
       end 
@@ -83,6 +83,7 @@ module ActsAsDynAttr
       
       after_initialize :get_dynamic_attributes_from_db if self.respond_to?('after_initialize') #rails 3 
       after_save :dynamic_attributes_save_to_db 
+      after_destroy :delete_dynamic_attributes
   
     end 
     
@@ -190,7 +191,7 @@ module DynAttr
       "The goal is to declare new attribute as field table without change the table structure", 
       "You need two tables :", 
       "  - DYN_ATTRIBUTE_TYPES : 'id' 'name' 'attribute_type' 'type_data' 'mandatory' 'default_value'", 
-      "                          'comments' 'length' 'decimal_nbr' 'choices' 'order_seq'", 
+      "                          'comments' 'length' 'decimal_nbr' 'choices' 'order_seq' 'category' 'type_param'", 
       "     Each dynamic attribute created to a model must have a record into the table DYN_ATTRIBUTE_TYPES", 
       "  - DYN_ATTRIBUTES      : 'id' 'attributable_id' 'attributable_type' 'dyn_attribute_type_id'", 
       "                          'value' 'created_at' 'created_by' 'updated_at' 'updated_by'", 
@@ -212,6 +213,8 @@ module DynAttr
       "        :length        : Max length of value", 
       "        :decimal_nbr   : Number of decimal for 'decimal' type", 
       "        :choices       : list of valid values", 
+      "        :category      : category", 
+      "        :type_param    : Additional type parameter (eg : for type file)", 
       "  ", 
       "  ", 
       "  Class attributes", 
@@ -228,7 +231,6 @@ module DynAttr
       "    - help_dyn_attr     : Model.help_dyn_attr", 
       "                          Get help for dynamic attributes plugin. Receive it in an array of lines", 
       "    - define_attributes : Model.define_attributes([{:name => 'prenom', :length => 50, :type_data => 'string'},{:name => 'age', :length => 3, :type_data => 'integer'}])",
-
       "                          Create new dynamic attributes", 
       "    - delete_attributes : Model.delete_attributes(['prenom','age'])", 
       "                          Delete dynamic attributes", 
@@ -259,8 +261,17 @@ private
         if !attr[:name].nil? && attr[:name].is_a?(String) 
           attr[:type_data] ||= 'string' 
           case attr[:type_data] 
+            when 'list' 
+              attr[:length] ||= 50 
+              attr[:decimal_nbr]  = nil 
             when 'string' 
               attr[:length] ||= 50 
+              attr[:decimal_nbr]  = nil 
+            when 'color' 
+              attr[:length] ||= 7
+              attr[:decimal_nbr]  = nil 
+            when 'file' 
+              attr[:length] ||= 200 
               attr[:decimal_nbr]  = nil 
             when 'integer' 
               attr[:length] ||= 10 
@@ -383,18 +394,17 @@ private
         tmp_name = attr_name.to_sym 
         tmp_value = self[tmp_name] 
         tmp_attr_type  = self.class.dynamic_attribute_details[attr_name.to_sym] 
-        errors.add(tmp_name,"est obligatoire".trn) if tmp_attr_type[:mandatory]=='Y' && tmp_value.blank? 
+        description = tmp_attr_type[:comments].trn || tmp_name
+        errors.add(description,"est obligatoire".trn) if tmp_attr_type[:mandatory]=='Y' && tmp_value.blank? 
         txt_type =  tmp_attr_type[:type_data] 
         txt_type += tmp_attr_type[:type_data] == 'decimal' ? " (#{tmp_attr_type[:length]},#{tmp_attr_type[:decimal_nbr]}})" : " (#{tmp_attr_type[:length]})" 
 
+        errors.add(description," n'est pas un type de donnée '%{txt_type}'".trn(:txt_type =>txt_type)) if !tmp_value.nil? && !is_valid_value_for_type?(tmp_value.to_s,tmp_attr_type[:type_data],tmp_attr_type[:length],tmp_attr_type[:decimal_nbr])
   
-        errors.add(tmp_name," n'est pas un type de donnée '%{txt_type}'".trn(:txt_type =>txt_type)) if !tmp_value.nil? && !is_valid_value_for_type?(tmp_value.to_s,tmp_attr_type[:type_data],tmp_attr_type[:length],tmp_attr_type[:decimal_nbr])
+        choices_list = tmp_attr_type[:choices].nil? ? nil : tmp_attr_type[:choices].split(',').map{|e| "'#{e}'"}.join(',')  
+        
+        errors.add(description," n'est pas valide.'%{value}' n'est pas dans la liste %{value_list}".trn(:value=> tmp_value,:value_list =>choices_list)) if !tmp_attr_type[:choices].nil? && !tmp_attr_type[:choices].split(',').include?(tmp_value || '')
 
-  
-        choices_list = tmp_attr_type[:choices].split(',').map{|e| "'#{e}'"}.join(',')  
-        errors.add(tmp_name,"n'est pas valide.'%{value}' n'est pas dans la liste %{value_list}".trn(:value=> tmp_value,:value_list =>choices_list)) if !tmp_attr_type[:choices].nil? && !tmp_attr_type[:choices].split(',').include?(tmp_value)
-
-           
       end 
   
     end 
@@ -415,6 +425,11 @@ private
       end 
       return hash_dyn_attributes 
     end 
+
+    def has_dyn_attributes? 
+      return self.dyn_attributes.size > 0
+    end 
+
   
 private 
     
@@ -422,12 +437,17 @@ private
       if value.length <= (length||0) 
         is_number = value.match(/\A[+-]?\d+?(\.\d+)?\Z/) == nil ? false : true 
         case type_data 
+          when 'color' 
+            error_type =  (value.blank? || !value.match(/^#(([0-9a-fA-F]{2}){3}|([0-9a-fA-F]){3})$/).nil?) ? false : true  
+          when 'file' 
+            error_type = false 
+          when 'list' 
+            error_type = false 
           when 'integer' 
             error_type  = !((is_number && value.to_i == value.to_f) || value.blank?) 
           when 'decimal' 
             value_array       = value.split('.') 
             error_type  = !( (is_number && (value_array.length < 2 || value_array[1].length <= decimal_nbr)) || value.blank?)
-
           when 'string' 
             error_type = false 
           when 'date' 
@@ -463,27 +483,34 @@ private
     def get_dynamic_attributes_from_db 
       self.dyn_attributes.each do |dyn_attr| 
         if !dyn_attr.dyn_attribute_type.blank? && self.class.dynamic_attribute_list.include?(dyn_attr.dyn_attribute_type.name)
-
-  
           self[dyn_attr.dyn_attribute_type.name.to_sym]=dyn_attr.value 
         end 
       end 
     end 
+  
+    def delete_dynamic_attributes
+      self.dyn_attributes.destroy_all
+    end
   
     def dynamic_attributes_save_to_db 
       self.attributes.each do |attr_name,attr_value| 
         if self.class.dynamic_attribute_list.include?(attr_name) 
           attr_type = DynAttributeType.first(:conditions => ["name = ? and attribute_type = ?",attr_name,self.class.name])
 
-  
           unless attr_type.blank? 
             tmp_dyn_attr = self.dyn_attributes.find(:first,:conditions => ["dyn_attribute_type_id = ?",attr_type.id]) 
-            if tmp_dyn_attr.blank? 
-              tmp_dyn_attr = DynAttribute.new({:value => attr_value,:dyn_attribute_type_id => attr_type.id}) 
-              self.dyn_attributes << tmp_dyn_attr 
-            else 
-              tmp_dyn_attr.update_attribute('value',attr_value) 
-            end 
+            if attr_value.nil?
+              if !tmp_dyn_attr.blank?
+                tmp_dyn_attr.destroy 
+              end              
+            else
+              if tmp_dyn_attr.blank? 
+                tmp_dyn_attr = DynAttribute.new({:value => attr_value,:dyn_attribute_type_id => attr_type.id}) 
+                self.dyn_attributes << tmp_dyn_attr 
+              else 
+                tmp_dyn_attr.update_attribute('value',attr_value) 
+              end 
+            end
           end          
         end        
       end 

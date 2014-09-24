@@ -15,6 +15,9 @@ module EasyHelper
               :date             => ["--Ne pas oublier le javascript 'init_datepicker();'","instance","field","value","-Options html","class","style","read_only","bootstrap","bootstrap_length","-Options additionnelles","with_label","ajax_action","mandatory"], 
               :time             => ["--Ne pas oublier le javascript 'init_datepicker();'","instance","field","value","-Options html","class","style","read_only","bootstrap","bootstrap_length","-Options additionnelles","with_label","ajax_action","mandatory"], 
               :date_time        => ["--Ne pas oublier le javascript 'init_datepicker();'","instance","field","value","-Options html","class","style","read_only","bootstrap","bootstrap_length","-Options additionnelles","with_label","ajax_action","mandatory"], 
+              :file             => ["instance","field","value","-Options html","class","style","read_only","bootstrap","-Options pour fichier","option_file","-Options additionnelles","with_label","ajax_action","mandatory"], 
+              :font             => ["instance","field","value","-Options html","class","style","read_only","bootstrap","bootstrap_length","-Options additionnelles","with_label","ajax_action","mandatory"], 
+              :color            => ["instance","field","value","-Options html","class","style","read_only","bootstrap","bootstrap_length","-Options additionnelles","with_label","ajax_action","mandatory"], 
               :hidden           => ["instance","field","value","-Options html","class"]
               }
     OPTIONS = {
@@ -44,7 +47,8 @@ module EasyHelper
                 :rows               => {:mandatory => false , :html_option => true , :description => "Nombre de lignes", :default_value => 5}, 
                 :bootstrap          => {:mandatory => false , :html_option => false, :description => "Activer boostrap", :default_value => true}, 
                 :bootstrap_length   => {:mandatory => false , :html_option => false, :description => "Activer la longueur pour boostrap", :default_value => true}, 
-                :with_label         => {:mandatory => false , :html_option => false, :description => "Ajoute un libellé"}
+                :with_label         => {:mandatory => false , :html_option => false, :description => "Ajoute un libellé"},
+                :option_file        => {:mandatory => false , :html_option => false, :description => "Options du javascript 'filepicker.js' :<BR>Liste de 4 éléments séparés par des ';'.<BR>1) Répertoire du serveur<BR>2) Controlleur et action à exécuter<BR>3) Liste des extentions<BR>4) Autres options "}
               }
               
               
@@ -112,7 +116,7 @@ private
       when "list", "list_collection"
         html_options[:disabled]=((options[:read_only].presence||false) ? "disabled" : false)
         html_options[:size]= options[:number_of_line] || 1
-        field_options[:include_blank] = options[:include_blank].presence||true
+        field_options[:include_blank] = options[:include_blank].present? ? options[:include_blank] : true
         field_options[:selected] = options[:selected_value] if options[:selected_value].present?
         if method== "list"
           field_result = select(options[:instance].presence, options[:field].presence, options[:value_list_array].presence||[], 
@@ -141,6 +145,23 @@ private
           html_option_one[:checked] = "checked" if options[:value]==label
           field_result += label_tag("#{options[:instance].presence}_#{options[:field].presence}_#{label.gsub(' ','_')}", radio_button(options[:instance].presence, options[:field].presence, label, html_option_one)  + " " + label,{:class => "radio-inline"} ).html_safe 
         end
+      when "file"
+        html_options[:readonly] = options[:read_only].presence||false
+        html_options[:class]   += " filepicker"
+        html_options[:rel]      = options[:option_file].presence||"" 
+        field_result = text_field(options[:instance].presence, options[:field].presence,html_options ) 
+      when "font"
+        html_options[:readonly] = options[:read_only].presence||false
+        html_options[:class]   += " fontpicker"
+        field_result = "<div class='input-group #{bootstrap_length ? 'col-md-6' : ''}'>".html_safe +
+                         text_field(options[:instance].presence, options[:field].presence,html_options ) +
+                       "</div>".html_safe
+      when "color"
+        html_options[:readonly] = options[:read_only].presence||false
+        html_options[:class]   += " colorpicker"
+        field_result = "<div class='input-group #{bootstrap_length ? 'col-md-2' : ''}'>".html_safe +
+                         text_field(options[:instance].presence, options[:field].presence,html_options ) +
+                       "</div>".html_safe
       end
       
       return label_result + field_result + field_mandatory

@@ -3,6 +3,7 @@
     <div class="navbar navbar-default " role="navigation">
         <div class="container-fluid ">
 	  	    <div class="navbar-right">
+			  <p class="navbar-text">
 				<% if self.logged_in? %>
 				  <span><%= current_user.pseudo.blank? ? current_user.mail : current_user.pseudo %></span> <%="est connecté".trn%>.&nbsp;
 				  <%= link_to 'Modifier son profile'.trn, {:controller => 'es_users', :action => 'profile'}, :class => 'navbar-link' %> |
@@ -15,6 +16,7 @@
 				  <%= link_to "Se connecter".trn, {:controller => 'es_users', :action => 'login'}, :class => 'navbar-link'  %>
 				<% end %>
 				&nbsp;
+		      </p>
 	        </div>
         </div>
     </div>

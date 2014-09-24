@@ -5,5 +5,11 @@
   <td>
 	<%= EsModule.version(list_item.module_name) %>  
   </td>
+  <td>
+  	<%actif=EsModule.activated(list_item.module_name) %>
+	<%= image_tag(actif ? "appli/ok_32.png" : "appli/cancel_32.png",
+						    {:alt => "", :align => "middle", :border => "0",
+						    :class => "app_tooltip", :title => actif ? "Module actif".trn : "Module inactif".trn, "data-placement" => "left"}) %>  
+  </td>
   
 </tr>

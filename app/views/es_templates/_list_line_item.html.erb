@@ -1,10 +1,24 @@
 <%empty = list_line_item.content_empty? %>
 <tr class="<%= cycle("row0", "row1") %>">
   <td>
+	<%=
+		link_to("<i class='glyphicon glyphicon-wrench #{list_line_item.has_dyn_attributes? ? 'red' : ''}'></i>".html_safe, 
+					url_for(:controller => "es_contents", :action => "edit_properties", :id => list_line_item['id'], :element => "EsTemplateLine"), 
+					:title =>"Paramétrage de la ligne".trn)
+	%>
+	&nbsp;
   	<%= list_line_item.num.to_i%>
   </td>
   <td>
-	<%= list_line_item.column_detail %>  
+	<%list_line_item.es_template_cols.each do |c| %>
+		<p>
+			<%=link_to("<i class='glyphicon glyphicon-wrench #{c.has_dyn_attributes? ? 'red' : ''}'></i>".html_safe, 
+						url_for(:controller => "es_contents", :action => "edit_properties", :id => c.id, :element => "EsTemplateCol"), 
+						:title =>"Paramétrage de cette colonne".trn)%>
+			&nbsp;
+			<%=c.description.blank? ? "" : c.description + " : "%><%=c.width %>	
+		</p>
+	<%end%>
   </td>
   <td>
 	<%= image_tag(empty ? "appli/ok_32.png" : "appli/cancel_32.png", 
@@ -15,6 +29,8 @@
 	
 	<%
 		tmp_links = []
+
+
 		if empty 
 			tmp_links << link_to("<i class='glyphicon glyphicon-remove-sign'></i>".html_safe, 
 						url_for(:action => "destroy_line", :id => list_line_item['id']), 

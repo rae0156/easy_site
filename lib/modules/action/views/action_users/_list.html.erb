@@ -1,0 +1,14 @@
+<!-- Data table header and content -->
+<table cellpadding="4" width="100%" class='table'>
+  <tr>
+	<th><%= sort_link_remote :text => "Nom de l'action".trn, :column => "name", :controller =>  "action_users", :action => 'list'%></th>
+    <th><%="Description".trn%></th>
+    <th><%="Utilisateur".trn%></th>
+    <th><%="Options".trn%></th>
+  </tr>
+  <%= render :partial => 'action_users/list_item', :collection => @action_users %>
+</table>
+
+<%= will_paginate @action_users, :params => params, :previous_label => '<< ' + "Précédent".trn, :next_label => "Suivant".trn + ' >>' %>
+<%= page_entries_info @action_users, :model => "action".trn %>
+

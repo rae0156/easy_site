@@ -10,6 +10,11 @@ class EsModule < ActiveRecord::Base
     end
     return module_params
   end
+
+  def self.is_params?(module_action_name)
+    module_action_name_param = module_action_name.gsub(' ','/')
+    return !EsModule.first(:conditions => ["path_setup like ?","controllers/contents/#{module_action_name_param}/params"]).blank?
+  end
   
   
   def self.get_module_params_from_content_detail(content_detail_id)
@@ -50,6 +55,11 @@ class EsModule < ActiveRecord::Base
     return m.blank? ? '0.0.0.0' : m.value
   end
   
+  def self.activated(module_name)
+    m = EsModule.first(:conditions=> {:module_name => module_name, :path_setup => '', :setup_name => "activated"})
+    return (m.blank? ? 'N': m.value)=="Y"
+  end
+  
 
   def get_module_setup
     tabs=[]
@@ -80,7 +90,7 @@ private
     tab[:group_1] = tmp_setup
 
     tmp_setup = []
-    tmp_setup << add_setup("activate"   , find_or_create_setup("activated","Y","boolean")  , :description=>"Module actif"  , :format => "boolean")
+    tmp_setup << add_setup("activate"   , find_or_create_setup("activated","N","boolean")  , :description=>"Module actif"  , :format => "boolean")
     tab[:group_2] = tmp_setup
 
     return tab
@@ -112,7 +122,8 @@ private
       tmp_setup = []
       setups = EsModule.find(:all,:conditions => ["path_setup = ? AND module_name = ?","controllers/entry_points/#{sc.setup_name}",self.module_name])
       setups.each_with_index do |setup,j| 
-        tmp_setup << add_setup("entry_points_#{j}"    , setup.setup_name             , :description=>setup.value       , :read_only => "Y")
+        tmp_setup << add_setup("entry_points_#{j}"      , setup.setup_name             , :description=>setup.value       , :read_only => "Y")
+        tmp_setup << add_setup("entry_points_#{j}_link" , "Aller vers".trn + "... #{setup.value}"  , :description => "", :format => "link",:addon_params => {:controller => sc.setup_name[0..-11].underscore, :action => setup.setup_name})
       end
       tab["title_#{i+1}".to_sym]   = "Contrôleur %{controller}".trn(:controller => sc.value) + " (#{sc.setup_name})"
       tab["group_#{i+1}".to_sym] = tmp_setup
@@ -148,8 +159,9 @@ private
     options[:format]      ||= "string"
     options[:mandatory]   ||= "N"
     options[:read_only]   ||= "N"
+    options[:addon_params]||= nil
     value=value.split(",") if options[:format] == "multiple_list"
-    return {:name => name ,:description=>options[:description].trn  ,:format => options[:format], :value => value,:read_only => options[:read_only], :mandatory => options[:mandatory], :value_list => options[:value_list] }
+    return {:name => name ,:description=>options[:description].trn  ,:format => options[:format], :value => value,:read_only => options[:read_only], :mandatory => options[:mandatory], :value_list => options[:value_list],:addon_params => options[:addon_params] }
   end  
   
   

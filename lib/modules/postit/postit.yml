@@ -3,6 +3,7 @@ interface:
     - EsPostit    
   controllers: 
     - EsPostitsController
+  mailers: / 
 
 version: 0.0.0.4
 

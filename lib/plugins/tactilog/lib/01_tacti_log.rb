@@ -52,7 +52,7 @@ module ActiveSupport
     def add(severity, message = nil, progname = nil, &block)
 
       init_log_setup if @setup_log.nil? 
-      return if @level > severity
+      return if (@level||99) > severity
 
       tmp_timing = ((Time.now - @timing_log)).round(3) unless @timing_log.blank?
 

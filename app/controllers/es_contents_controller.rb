@@ -154,10 +154,78 @@ class EsContentsController < ApplicationController
   def update_setup_module
     EsContentDetail.find(params[:id]).save_module_params(params[:generated]) if params[:generated].present?
     flash[:notice] = "Les paramètres ont été sauvés.".trn
-    redirect_to :action => "setup_module",:id => params[:id]
+#    redirect_to :action => "setup_module",:id => params[:id]
+    redirect_to :action => "list"
   end
 
+  def clear_properties
+    element_type  = params[:element_type]
+    element_id    = params[:element_id]
+    EsContent.delete_all_properties(element_type, element_id)
+    flash[:notice] = "Les propriétés ont été supprimées.".trn
+    redirect_to :controller => params[:previous_controller], :action => params[:previous_action], :id => params[:previous_id]
+  end
+
+  def edit_properties
+    @element_type     = params[:element]
+    @element_id       = params[:id]    
+    @element          = EsContent.new
+    @init_properties  = {}
+    
+    init_edit_properties(@element_type)
+    
+  end
+  
+  def save_properties
+    
+    element_type  = params[:element][:type]
+    element_id    = params[:element][:id]
+    
+    @element = EsContent.save_properties(element_type, element_id, params["generated"])
+    
+        
+    if @element.errors.empty? 
+      flash[:notice] = "Les propriétés ont été correctement sauvées.".trn
+      redirect_to :controller => params[:previous_controller], :action => params[:previous_action], :id => params[:previous_id]
+    else
+      @element_type=element_type
+      @element_id=element_id
+      @generated=init_edit_properties(@element_type)
+      @generated.attributes =params["generated"]
+      @init_properties = params["generated"]
+       
+      render :action => 'edit_properties', :element => element_type, :id => element_id
+    end
+  end
+
+
+
+
 private
+
+
+  def init_edit_properties(element_type)
+    element=nil
+    case element_type
+      when "EsTemplateLine"
+        element=EsTemplateLine.find(@element_id)
+        @element_name = "template '%{name}' ligne numéro %{num}".trn(:name=> element.es_template.name,:num=> element.num.to_i)
+        @previous_controller,@previous_action,@previous_id = "es_templates","design",element.es_template.id
+      when "EsTemplateCol"
+        element=EsTemplateCol.find(@element_id)
+        @element_name = "template '%{name}' ligne numéro %{num_line} colonne numéro %{num}".trn(:name => element.es_template_line.es_template.name, :num_line => element.es_template_line.num.to_i, :num=> element.num)
+        @previous_controller,@previous_action,@previous_id = "es_templates","design",element.es_template_line.es_template.id
+      when "EsContentDetail"
+        element=EsContentDetail.find(@element_id)
+        @element_name = "contenu %{name} séquence %{num}".trn(:name => element.es_content.name,:num=> element.sequence.to_i)
+        @previous_controller,@previous_action,@previous_id = "es_contents","list",nil
+      when "EsContent"
+        element=EsContent.find(@element_id)
+        @element_name = "contenu %{name}".trn(:name => element.name)
+        @previous_controller,@previous_action,@previous_id = "es_contents","list",nil
+    end
+    return element
+  end
 
   def create_conditions
 

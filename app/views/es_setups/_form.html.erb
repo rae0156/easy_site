@@ -29,7 +29,7 @@
 				    <%= select("setup", "value", @setup.possible_values.split("|").map {|u| [u, u]}, {}, :size => 5, :class => "form-control") %>
 				  
 				<%when "color"%>
-					<%= text_field "setup", "value", "size" => 6, "maxlength" => 6, :class => 'form-control color' %>
+					<%= text_field "setup", "value", "size" => 6, "maxlength" => 6, :class => 'form-control colorpicker' %>
 				<%when "date"%>
 					<%= text_field "setup", "value", "size" => 10, "maxlength" => 10, :class => 'form-control datepicker' %>
 				<%when "time"%>

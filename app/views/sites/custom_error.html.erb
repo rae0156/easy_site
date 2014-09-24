@@ -14,10 +14,10 @@
 	</ul>
 	<div class="tab-content">
 	    <div class="tab-pane fade in active" id="description">
-			<p><%=details[:message]%></p>
+			<p><%=details[:message].encode%></p>
 	    </div>
 	    <div class="tab-pane fade" id="detail">
-			<p><small><%=details[:message]%><BR><BR><%= details[:trace]%></small></p>
+			<p><small><%=details[:message].encode%><BR><BR><%= details[:trace].encode.html_safe%></small></p>
 	    </div>
 	</div>
 

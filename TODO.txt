@@ -1,26 +1,47 @@
 
-	
-===========================
 
-modification des parties du template 
-	par partie, mettre dans une table les attributs suivants
-		image
-		class prédéfinie
-		margin, padding
-		ect...
-		
-		
+Créer le module 'todolist/checklist/postit' avec workflow avec status et role/user (voir feuille)
+	- Version rapide avec juste les notes
+	- Analyse de la version longue
+	- Version longue
+	
 ==========================
 
+KQI => voir rep D:\EasySite - Todo\1) to_do\kqi
+
+===========================
+
+dynamic_addon => voir rep D:\EasySite - Todo\1) to_do\dynamic_addon
+	
+===========================
 
 finaliser la création de menu (user ou admin)
 	un nom + le détail
 	insérer les menus dans un module ou comme nouveau type de contenu
 	
+===========================
 
-Commencer à planifier d'autres modules
-	exemple: module 'todolist/checklist/postit' avec workflow avec status et role/user
+Réaliser la gestion des thèmes
+LESS SASS 
+Peut être existe-t'il une recompilation avec les gem 
+voir rails casts 
 
+===========================
 
+Transformer les part des template en module
+	- generate_citation
+	- generate_image_list
+	- get_lorem
+	- generate_carousel
+	- generate_blog
+	- adresse
+
+===========================
+
+Commencer à planifier d'autres modules et arranger l'existant
+
+===========================
+
+Sequence : position ranked-model pour remplacer le num ou le seq des modèles
 
 

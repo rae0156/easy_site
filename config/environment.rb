@@ -28,5 +28,7 @@ init_workspace_easysite
     :openssl_verify_mode  => 'none'
   }  
   
+#initialize dynamic attributes for many models
+init_dynamic_attributes
 
 require "#{Rails.root}/lib/modules/load_modules.rb" if File.exist?( "#{Rails.root}/lib/modules/load_modules.rb")

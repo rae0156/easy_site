@@ -9,8 +9,16 @@ module ApplicationHelper
     rescue => ex
       ctrl = nil
     end    
-    if ctrl.respond_to?('generate_part')
-      result = ctrl.generate_part(part_name,content_id)
+    if ctrl.respond_to?('module_action_part')
+      ctrl.params       = params
+      session[:module_action_part]={:part_name => part_name,:content_id => content_id}
+      session[:module_action_part][:current_user]=current_user if ctrl.respond_to?('current_user=')
+      response = ctrl.dispatch("module_action_part",request)
+      if response.is_a?(Array) && response.size > 2 && response[2].is_a?(ActionDispatch::Response) 
+        result = response[2].body
+      else
+        result = "Une erreur est survenue dans la génération de la partie %{part} pour le controlleur %{module}".trn(:module => module_name, :part => part_name)
+      end
     end
     return result.html_safe
   end

@@ -1,0 +1,15 @@
+<ul class="jqueryFileTree" style="display: none;">
+	
+	<%if @first && @typefile.split(',').include?('[EMPTY]')%>
+    <li class=""><a href="#" rel="">Aucune sélection</a></li>
+	<%end%>
+	
+    <% @dir[0].each do |dir| %>
+		<li class="<%=@typefile.split(',').include?('[SELECTABLE]') ? 'selectable' : ''%> directory collapsed"><a href="#" rel="<%=@parent + dir %>/"><%= dir %></a></li>
+    <%end%>
+	<% @dir[1].each do |file|%>
+	    <li class="file ext_<%=File.extname(file)[1..-1]%>"><a href="#" rel="<%= (@typefile.split(',').include?('[RETURNFILENAME]') ? '' : @parent) + file %>"><%= file %></a></li>
+    <% end %>
+
+
+</ul>

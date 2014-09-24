@@ -10,7 +10,7 @@
       <%if admin%>	
       	  <%unless @user.mail == EsUser.current_user.mail%>
 		    <div class="form-group">
-		      <label for="roles_es_role_ids" class="col-sm-4 control-label"><%="Rôles à assigner".trn%> : </label>
+		      <label for="user_es_role_ids" class="col-sm-4 control-label"><%="Rôles à assigner".trn%> : </label>
 			  <div class="col-sm-8">
 		      	<%= select("user", :es_role_ids, @roles.map {|u| [u.description, u.id]}, {}, :multiple => "multiple", :size => 3, :class => "form-control") %>
 			  </div>

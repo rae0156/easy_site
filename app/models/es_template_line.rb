@@ -14,11 +14,20 @@ class EsTemplateLine < ActiveRecord::Base
   validates_uniqueness_of :num, :case_sensitive => false,:scope => [:es_template_id,:es_col_parent_id,:es_site_id], :message => "#" + "Cette ligne de template existe déjà".trn
     
   before_destroy :check_delete_line
+
+  has_dyn_attr(:table_attribute_type => 'es_attribute_types', :table_attribute => 'es_attributes')  
+
   
   def check_delete_line
     unless self.content_empty?
       errors.add "base", "Impossible de supprimer cette ligne, car certaines parties y sont assignées".trn
     end
+    
+    if self.errors.empty?
+      cols = self.es_template_cols
+      cols.destroy_all unless cols.blank?
+    end
+    
     return (self.errors.empty?)
   end
 

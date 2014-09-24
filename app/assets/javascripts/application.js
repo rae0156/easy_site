@@ -22,6 +22,9 @@
 //= require ./../tinymce/tinymce.min
 //= require slide
 //= require drag_drop
+//= require jscolor/jscolor.js
+//= require fontpicker.js
+//= require filepicker.js
 // require_tree .
 
 
@@ -276,7 +279,7 @@ function start_app()
 function questionAndSubmitForm(form_name, url, confirmation) {
 
 	if (confirmation) {
-		if (confirm('Etes vous ertain de vouloir exécuter cette action ?')) {
+		if (confirm('Etes vous certain de vouloir exécuter cette action ?')) {
 			submitForm(form_name, url);
 		}
 	}

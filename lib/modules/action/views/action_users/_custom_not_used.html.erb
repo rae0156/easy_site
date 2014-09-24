@@ -1,0 +1,90 @@
+
+		<button type="button" class="show_hide btn btn-default btn-xs" style="position:absolute;top=0px;left=0px;z-index:1000;">
+		  <span class="glyphicon glyphicon-chevron-down"></span>
+		</button>
+		<button type="button" class="show_hide btn btn-default btn-xs" style="display:none;position:absolute;top=0px;left=0px;z-index:1000;">
+		  <span class="glyphicon glyphicon-chevron-up"></span>
+		</button>
+		<div class="alert alert-info show_hide" style="display:none">
+	      <div class="row">
+		    <div class="col-sm-11" id="droppable_free">
+		    	<h2><%="Liste des actions disponibles".trn%></h2>
+				<%ActionUser.all(:order => "name",:conditions=>["user_id in (?)",[0,@current_user_id]]).each do |a| 
+					screen = a.action_screens.first(:conditions => {:user_id => @current_user_id})
+					if screen.blank?%>
+						<%=generate_action(a.id,{:link_class => "draggable_free btn btn-default", :no_link => (@setup==true ? "Y" : "N")})%>
+				<%  end
+				  end%>
+		    </div>
+		    <div class="col-sm-1">
+				<button type="button" class="btn btn-default" id='save_custom' title='<%="Enregistrer".trn%>'>
+				  <span class="glyphicon glyphicon-floppy-disk"></span>
+				</button>
+			</div>
+		  </div>
+		</div>
+
+
+<script>
+	$( "button.show_hide" ).click(function() {
+		$( ".show_hide" ).toggle();
+	});
+
+
+	$( "#save_custom" ).click(function() {
+		
+		var custom_icons=[];
+
+		$( "#droppable_custom > div" ).each(function(){
+			var custom_icon = {};
+			$icon = $(this);
+			
+			custom_icon['id']	= $icon.attr('id');
+			custom_icon['top']	= $icon.css('top');
+			custom_icon['left']	= $icon.css('left');
+			
+			custom_icons.push(custom_icon);
+		});
+		
+		$.ajax({
+	        url: "/action_users/save_custom",
+	        data: { icons: custom_icons },
+	        dataType: 'script'
+	    });	    
+		return false;
+	});		
+
+
+	jQuery( document ).ready(function() {
+		$( ".draggable_free" ).draggable({ revert: "invalid" });
+		$( ".draggable_custom" ).draggable({ revert: "invalid" });
+
+		$( "#droppable_free" ).droppable({
+			accept: ".draggable_free,.draggable_custom",
+			drop: function( event, ui ) {
+				ui.draggable.css({"position": "relative",
+								  "margin": "1px",
+								  "top": "0px",
+								  "left": "0px"
+								 }).appendTo( this );
+			}			
+		});
+
+		$( "#droppable_custom" ).droppable({
+			accept: ".draggable_free,.draggable_custom",
+			hoverClass: "ui-state-active",
+			drop: function( event, ui ) {
+				if (ui.draggable.parent().attr('id')=='droppable_free')
+				{
+					ui.draggable.css({"top": ui.offset.top - this.offsetTop - this.offsetParent.offsetTop ,
+								 	  "left": ui.offset.left - this.offsetLeft - this.offsetParent.offsetLeft 
+									});
+				}
+				ui.draggable.css({"position": "absolute",
+								  "margin": "1px"
+								 }).appendTo( this );
+			}			
+		});
+	});
+</script>
+

@@ -1,0 +1,34 @@
+
+<%ActionTypeParam.find(:all,:conditions=> {:action_type_id => @type}).each do  |tp| 
+	
+	options_easy_tag = {:instance => "action_user_param", :field => tp.name}
+	if !@param.nil? && @param[tp.name].present?
+		options_easy_tag[:value] = @param[tp.name] 
+		options_easy_tag[:selected_value] = @param[tp.name]  
+	end
+	value_list = tp.value_list.blank? ? [] : tp.value_list.split('|')
+	case tp.type_param
+	when "list"
+		options_easy_tag[:value_list_array] = value_list.map{|e| [ActionCode.find_by_code(e).description,e]}
+		options_easy_tag[:include_blank]	= false
+	when "file"
+		options_easy_tag[:option_file] = value_list.size == 2 ? "#{value_list[0]};/upload/content;#{value_list[1]},[EMPTY],[DIR]" : "public;/upload/content;[EMPTY],[DIR]"  
+	end
+%>
+
+	  <div class="form-group">
+	    <label for="action_user_name" class="col-sm-4 control-label"><%= field_description "", true %> <%=tp.description.trn%> : </label>
+		<div class="col-sm-8">
+			<%= easy_tag(tp.type_param,options_easy_tag) %>
+	    </div>
+	  </div>
+	  
+	  
+	  
+<%end%>
+
+	<script>
+		init_datepicker();	
+		init_inputmask();		
+		$('.filepicker').fileSelector();
+	</script>

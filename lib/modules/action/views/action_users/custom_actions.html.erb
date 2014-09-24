@@ -1,0 +1,12 @@
+<%if current_user%>
+	<div class="container">
+		
+		<%if @setup==true%>
+			<%= render :partial => 'custom_not_used' %>
+		<%end%>
+
+		<%= render :partial => 'custom_used' %>
+
+	</div>
+<%end%>
+

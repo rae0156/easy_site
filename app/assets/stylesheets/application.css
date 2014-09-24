@@ -13,6 +13,8 @@
  *= require jquery-ui-1.10.3.custom
  *= require bootstrap-datetimepicker
  *= require drag_drop.css
+ *= require fontpicker.css
+ *= require filepicker.css
 
  *= require_self
  * require_tree .
@@ -70,4 +72,9 @@ p#spinner_text {
     color: #ff6600;
     font-size: 8pt;
     font-weight: bold;
+}
+
+
+.red, .red a {
+  color: #f00;
 }

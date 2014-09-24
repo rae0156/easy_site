@@ -11,6 +11,79 @@
     Rails.application.config.translation_mode         = EsSetup.get_setup("translation_mode","") #debug / with / [empty] = without    
   end
   
+  
+  def init_dynamic_attributes
+    yml_file = File.join(Rails.root,"config","dynamic_attributes.yml")
+    unless File.exist?(yml_file)
+      puts "Le fichier d'attributs dynamiques '#{yml_file}' n'existe pas"
+      return false 
+    end
+    models_attrs = YAML.load(File.read(yml_file))  
+    models_attrs.each do |models,categories|
+      models.split(',').each do |model|
+        begin
+            model_class = model.constantize
+        rescue 
+        end
+  
+        if class_exists?(model.to_s) && model_class.respond_to?("help_dyn_attr") 
+          categories.each do |category,groups|
+            groups.each do |group,attrs|
+              attrs.each do |attr,params|
+                
+                param_setup,type_setup,updatable,description,value_list,other_params,comments = nil,nil,'N','',nil,'',''
+                params = params.strip
+                if params.ends_with?(">>")
+                  tmp_find = params.rindex('<<')
+                  if !tmp_find.blank? && tmp_find>0
+                    param_setup = params[tmp_find+2..-3].split('-')
+                    params = params[0..tmp_find-1].rstrip
+                  else
+                    param_setup = params.strip[2..-3].split('-')
+                    params = ""
+                  end  
+                end
+                params =nil if params.blank?
+                unless param_setup.blank?
+                  type_setup  = param_setup[0]
+                  updatable   = param_setup[1] || 'Y'
+                  description = param_setup[2] || ''
+                  if ["file"].include?(type_setup)
+                    other_params  = param_setup[3] || ''
+                  else
+                    value_list = param_setup[3]
+                  end
+                end
+                
+                # puts "ici :  #{type_setup.inspect} #{updatable.inspect} #{description.inspect} #{value_list.inspect}#{other_params.inspect} #{category}/#{group}"
+                model_class.define_attributes([{
+                                                  :name          => attr, 
+                                                  :type_data     => type_setup ,
+                                                  :mandatory     => "N",
+                                                  :default_value => params,
+                                                  :choices       => value_list, 
+                                                  :category      => "#{category}/#{group}",
+                                                  :type_param    => other_params,
+                                                  :comments      => description
+                                             }]) 
+                
+              end
+            end if groups.is_a?(Hash)
+          end if categories.is_a?(Hash)
+        end
+
+      end        
+    end
+    return true
+  end
+  
+  def class_exists?(class_name)
+    return Object.const_defined?(class_name)
+  rescue 
+    return false
+  end
+  
+  
   def get_lorem
     Lorem::Base.new('words', 100).output
   end
@@ -34,7 +107,7 @@
     end
   end
 
-  def get_template_part(part_name,directory = "parts")
+  def get_template_part(part_name,directory = "parts",partial=false)
     
     if part_name.is_a?(Integer)
         es_content_detail = EsContentDetail.find_by_id(part_name)
@@ -43,27 +116,31 @@
           return render(:partial => "layouts/part_error", :locals => {:part_name => part_name, :template_name => Rails.application.config.current_template})
         else
           #from setup part
-          es_content_details = es_content_detail.content
-          
+          es_content_details = generate_tag(:div, es_content_detail.content, EsContent.prepare_properties(es_content_detail))
           return render(:inline => es_content_details)
         end
     else
-      
       if caller.first.split('/')[-2] == "templates"
         template_name = caller.first.split('/').last.split('.').first[1..-1]
         #create template and part if does not exist    
         template = EsTemplate.find_by_name(template_name)
         template = EsTemplate.create({:name => template_name, :description => template_name, :es_category_id => EsCategory.get_id("Site","template")}) if template.blank?
-        part = template.es_parts.find_by_name(part_name)
-        part = template.es_parts.create({:name => part_name, :description => part_name}) if part.blank?
+        if EsPart.is_dynamic(part_name, directory)
+          part = template.es_parts.find_by_name(part_name)
+          part = template.es_parts.create({:name => part_name, :description => part_name, :num => 0}) if part.blank?
+        end
       else
         template_name=Rails.application.config.current_template
       end
-  
+
       tmp_layout = directory + '/_' + part_name
       if lookup_context.find_all(tmp_layout).any?
         #find existing part
-        return render tmp_layout.gsub('/_','/')
+        if partial          
+          return render(:partial=> tmp_layout.gsub('/_','/'))
+        else
+          return render tmp_layout.gsub('/_','/')
+        end
       else
         #find setup for current template
         conditions = ["es_templates.name = ? AND es_parts.name = ? ", 
@@ -72,14 +149,22 @@
                     ] 
         es_content_details = EsContentDetail.find(:all, :order => "es_content_details.sequence", :conditions => conditions, :include => [:es_content => [:es_parts => :es_template]])
         
-        if es_content_details.blank?
+        if es_content_details.size == 0
           #error part
           return render(:partial => "layouts/part_error", :locals => {:part_name => tmp_layout, :template_name => template_name})
         else
           #from setup part
-          es_content_details = es_content_details.collect(&:content).join
+          es_content_text = ""
+          es_content = es_content_details.first.es_content
+          es_content_details.each do |cd|
+            properties = EsContent.prepare_properties(cd)
+            es_content_text += properties.blank? ? cd.content : generate_tag(:div, cd.content, properties)
+          end
           
-          return render(:inline => es_content_details)
+          properties  = EsContent.prepare_properties(es_content)
+          es_content_text = generate_tag(:div, es_content_text, properties) unless properties.blank?
+          
+          return render(:inline => es_content_text)
         end
       end
 

@@ -12,7 +12,7 @@
 		Language&nbsp;
 		<%= get_template_part("part_language") %> 
 	</div>
-	<div class="col-md-10 drag_drop_template">
+	<div class="col-md-10">
 		<h3>La langue est  : <%=Rails.application.config.default_locale_easysite.to_s%></h3>
 		<p><kbd>Texte existant</kbd> : <%='Texte existant'.trn%></p>
 		<p><kbd>Texte manquant</kbd> : <%='Texte manquant'.trn%></p>
@@ -62,13 +62,9 @@
 	</div>
 </div>
 <script>
-	$(document).ready(function() {
+/*	$(document).ready(function() {
 		$( ".d0,.d1" ).sortable();		
-		/*( "div" ).draggable({
-				connectToSortable: "div",
-				revert: "invalid"
-		 							});*/
-	});
+	});*/
 </script>
 
 <BR>	
@@ -114,6 +110,9 @@
 		  heure : <%= easy_tag('time',:instance => "test", :field => "field10",:help=>true) %>
 		  date : <%= easy_tag('date',:instance => "test", :field => "field11",:help=>true) %>
 		  date et heure : <%= easy_tag('date_time',:instance => "test", :field => "field12",:help=>true) %>
+		  fichier : <%= easy_tag('file',:instance => "test", :field => "field13",:style => "width:50%;",:option_file => "public/files;/upload/content;jpg,png,pdf,[DIR],[EMPTY]", :help=>true) %>
+		  police : <%= easy_tag('font',:instance => "test", :field => "field14",:help=>true) %>
+		  couleur : <%= easy_tag('color',:instance => "test", :field => "field15",:help=>true) %>
 	<% end %>
 	</div>
 

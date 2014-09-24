@@ -1,0 +1,42 @@
+interface:
+  models: 
+    - ActionUser    
+    - ActionUserParam
+    - ActionType
+    - ActionTypeParam
+    - ActionCode
+    - ActionScreen
+  controllers: 
+    - ActionUsersController
+  mailers:
+    - MessageMailer
+
+version: 0.0.1.1
+
+installation:
+   table_verification:
+     - es_users
+     - action_types
+     - action_type_params
+     - action_users
+     - action_user_params
+     - action_screens
+
+setup:
+  admin:
+    title: module Action <<string-N-Titre du module>>
+
+controllers: 
+  entry_point_names:
+    ActionUsersController: Action
+  entry_points:
+    ActionUsersController:    
+        list: Gestion des actions
+        launch: Executer une action
+        all_actions: Voir toutes les actions
+        custom_actions: Voir ses actions
+        setup_actions: Personnaliser ses actions
+  contents:
+    ActionUsersController:    
+        my_actions: 
+          description: Mes actions

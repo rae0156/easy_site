@@ -1,0 +1,26 @@
+<% @title = "Paramétrage d'un élément".trn %>
+
+
+    <h2><%= image_tag('appli/setup_48.png', {:alt => @title, :align => "middle"}) %><%= @title %></h2>
+	<h3><%= @element_name%></h3>
+	<ul>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/save_32.png", :action => "save_properties",  :form => "properties_form", :param_goto => {:previous_controller => @previous_controller, :previous_action => @previous_action, :previous_id => @previous_id}}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Vider tout".trn,
+																								:image => "appli/cancel_32.png", 
+																								:action => "clear_properties",
+																								:confirm =>"Voulez vous vraiment vider toutes les propriétés ?".trn, 
+																								:param_goto => {:element_type => @element_type, :element_id => @element_id,:previous_controller => @previous_controller, :previous_action => @previous_action, :previous_id => @previous_id}}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour".trn,:image => "appli/back_32.png", :controller => @previous_controller, :action => @previous_action, :id => @previous_id}%></li>
+	</ul>
+
+	<%= errors_for(@element) %>
+	
+	<%= form_tag({}, { :name => 'properties_form' , :class => 'form-horizontal'}) do%>
+	
+	  <%= easy_tag('hidden',:instance => "element", :field => "type",:value => @element_type) %>
+	  <%= easy_tag('hidden',:instance => "element", :field => "id",:value => @element_id) %>	
+
+	  <%= render 'form_properties' %>
+
+	<% end %>
+

@@ -78,6 +78,7 @@ class LogYamlSetup
 private
     
   def self.test_scope(scope,env_name,is_controller,class_name)
+    return false if scope=="nothing"
     scope=scope.downcase.split(",")
     env_name = env_name.downcase
     class_name = class_name.downcase

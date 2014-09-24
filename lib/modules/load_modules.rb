@@ -3,7 +3,8 @@
 class ModuleLoader
 
   STRUCTURE_DIR = ['models','controllers','views']
-  LOAD_DIR      = ['models','controllers']
+  LOAD_DIR      = ['initializers','mailers','models','controllers']
+  INTERFACE_DIR = ['models','controllers','mailers']
 
   def self.load_all_module
     module_dir = "#{Rails.root}/lib/modules"
@@ -182,7 +183,7 @@ class ModuleLoader
 
   def self.load_interface
     error = false
-    LOAD_DIR.each do |element|
+    INTERFACE_DIR.each do |element|
       if @interface["interface"][element].is_a?(Array)
         @interface["interface"][element].each do |class_name|
           if class_exists?(class_name)
@@ -211,11 +212,6 @@ class ModuleLoader
   
   
   
-  def self.class_exists?(class_name)
-    return Object.const_defined?(class_name)
-  rescue 
-    return false
-  end
   
 end
 

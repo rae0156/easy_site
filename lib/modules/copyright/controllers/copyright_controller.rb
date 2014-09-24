@@ -22,7 +22,7 @@ private
     
     format    = "<div class='row'><div class='col-md-12'><div class='text-center'>%{text}</div></div></div>"
     text =  "<p>&copy; #{company} #{year_from}-#{year_to}#{message}</p>"
-    return format % {:text => text}
+    render :inline => (format % {:text => text})
   end
   
 

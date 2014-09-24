@@ -1,0 +1,17 @@
+<tr class="<%= cycle("row0", "row1") %>">
+  <td>
+  	<%= link_to list_item.name, :controller => 'action_users', :action => 'edit', :id => list_item.id%>
+  </td>
+  <td>
+	<%= list_item.description.limit(50) %>  
+  </td>
+  <td>
+	<%= list_item.user_name %>  
+  </td>
+  <td>
+	<%= link_to("<i class='glyphicon glyphicon-remove-sign'></i>".html_safe, 
+						url_for(:action => "destroy", :id => list_item['id']), 
+						:confirm =>"Voulez vous vraiment supprimer cette action ?".trn,
+						:title =>"Supprimer une action".trn)%>
+  </td>
+</tr>

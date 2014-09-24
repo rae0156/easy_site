@@ -47,7 +47,6 @@
 		</div>
 	  </div>
 
-<%unless edit%>
 	<script>
 		$( document ).ready(function() {
 		    show_options(); 
@@ -57,7 +56,11 @@
 		});
 	
 		function show_options() { 
+<%unless edit%>
 			select_text = $( "#content_content_type option:selected" ).text()
+<%else%>
+			select_text = $( "#content_content_type" ).val()
+<%end%>
 			if (select_text=='module')
 			   $( "#option_module" ).show();
 			else 
@@ -65,4 +68,3 @@
 	    }; 
 	
 	</script>
-<%end%>

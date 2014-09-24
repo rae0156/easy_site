@@ -1,4 +1,4 @@
-class DataFile < ActiveRecord::Base
+class DataFile 
   require 'fileutils'
 
   def self.create_dir(*tmp_dirs)    

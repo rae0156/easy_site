@@ -13,5 +13,6 @@ class EsTemplateCol < ActiveRecord::Base
   validates_presence_of :width, :message => '#' + 'La largeur de la colonne est obligatoire'.trn
   validates_uniqueness_of :num, :case_sensitive => false,:scope => [:es_template_line_id,:es_site_id], :message => "#" + "Cette colonne ligne de de template existe déjà".trn
     
+  has_dyn_attr(:table_attribute_type => 'es_attribute_types', :table_attribute => 'es_attributes')  
 
 end

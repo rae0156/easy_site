@@ -16,6 +16,7 @@ class EsContentDetail < ActiveRecord::Base
     
   before_destroy :check_dependances
   
+  has_dyn_attr(:table_attribute_type => 'es_attribute_types', :table_attribute => 'es_attributes')  
   
   
   def create_module_params(module_params)
@@ -39,8 +40,6 @@ class EsContentDetail < ActiveRecord::Base
   end
 
   def save_module_params(module_params)
-    puts "ici : #{module_params.inspect}"
-    
     module_params.each do |k,v|
       self.es_content_detail_params.find_by_setup_name(k).update_attribute("value",v)
     end

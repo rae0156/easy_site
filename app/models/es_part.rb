@@ -12,6 +12,9 @@ class EsPart < ActiveRecord::Base
   validates_uniqueness_of :name, :message => "#" + "Cette partie existe déjà pour ce template".trn,:scope => [:es_template_id,:es_site_id]
 
 
+  def self.is_dynamic(part_name,directory="parts")
+    return !File.exist?("#{Rails.root}/app/views/#{directory}/_#{part_name}.html.erb") 
+  end
   
   def placed
     if self.es_template_col.blank?

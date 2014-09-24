@@ -67,19 +67,24 @@ module FormHelper
       name        = element[:name].presence        || ""
       unless name.blank?
         description = element[:description].presence || ""
+        description += " : " unless description.blank?
         value       = element[:value].presence || ""
         format      = element[:format].presence || ""
         read_only   = (element[:read_only].presence||"N")=='Y'
         mandatory   = (element[:mandatory].presence||"N")=='Y'
         value_list  = element[:value_list].presence || []
+        value_list.reject!(&:empty?) unless value_list.blank?
+        addon_param = element[:addon_params].presence || ""
         span_size   = 9
         case format
+        when "link"
+          text = link_to(value, url_for(addon_param))
         when "string"
           text = easy_tag('text',:instance => "generated", :field => name,:value=> value, :read_only=> read_only)
         when "long_string"
           text = easy_tag('long_text',:instance => "generated", :field => name,:value=> value, :read_only=> read_only,:cols=> 100)
         when "list"
-          text = easy_tag('list',:instance => "generated", :field => name,:selected_value=> value, :read_only=> read_only,:value_list_array => value_list,:multiple => false)
+          text = easy_tag('list',:instance => "generated", :field => name,:selected_value=> value, :read_only=> read_only,:value_list_array => value_list.uniq,:multiple => false)
         when "multiple_list"
           text = easy_tag('list',:instance => "generated", :field => name,:selected_value=> value, :read_only=> read_only, :number_of_line => 5, :value_list_array => value_list,:multiple => true)
         when "integer"
@@ -102,6 +107,14 @@ module FormHelper
           span_size = 1 
         when "radio_button"
           text = easy_tag('radio_button',:instance => "generated", :field => name,:value=> value, :read_only=> read_only,:labels => value_list)
+        when "color"
+          text = easy_tag('color',:instance => "generated", :field => name,:value=> value, :read_only=> read_only)
+        when "file"
+          if addon_param.blank?
+            text = easy_tag('text',:instance => "generated", :field => name,:value=> value, :read_only=> true)
+          else
+            text = easy_tag('file',:instance => "generated", :field => name,:value=> value, :read_only=> read_only, :option_file => addon_param)
+          end
         else
           text = easy_tag('text',:instance => "generated", :field => name,:value=> value, :read_only=> true)
         end

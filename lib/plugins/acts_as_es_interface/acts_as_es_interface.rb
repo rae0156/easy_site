@@ -116,6 +116,14 @@ module InterfaceControllers
         end 
       end
 
+      def module_action_part
+        module_action_part_var = session.delete(:module_action_part)
+        current_user = module_action_part_var[:current_user].presence 
+        return generate_part(module_action_part_var[:part_name],module_action_part_var[:content_id])        
+      end
+
+private
+
       def generate_part(part_name,content_detail_id)
         return "" unless self.class.is_module_actif?
         result = ""
@@ -145,3 +153,39 @@ module InterfaceControllers
 end
 
 ActionController::Base.send(:include, InterfaceControllers::AddActAsMethods) 
+
+
+module InterfaceMailers
+  module AddActAsMethods
+    
+    
+    def self.included(base)
+       base.extend(AddActAsMethods)
+    end
+  
+  
+    def has_es_interface_mailers(module_name="")
+      @module_name=module_name unless module_name.blank? #manage module_name without lib/modules/
+      extend AddActAsMethods::ClassMethods
+      include AddActAsMethods::InstanceMethods
+    end
+  
+  
+  
+  
+    module ClassMethods    
+      def init_interface(module_name)
+        @module_name=module_name
+        prepend_view_path File.join(Rails.root,'lib','modules',@module_name,'/views')
+      end
+      
+    end
+    
+    module InstanceMethods
+    end
+  
+  end
+
+end
+
+ActionMailer::Base.send(:include, InterfaceMailers::AddActAsMethods) 

@@ -1,5 +1,11 @@
 <tr class="<%= cycle("row0", "row1") %>">
   <td>
+	<%=
+		link_to("<i class='glyphicon glyphicon-wrench #{list_item.es_content.has_dyn_attributes? ? 'red' : ''}'></i>".html_safe, 
+					url_for(:controller => "es_contents", :action => "edit_properties", :id => list_item.es_content.id, :element => "EsContent"), 
+					:title =>"Paramétrage du contenu".trn)
+	%>
+	&nbsp;
   	<%unless list_item.content_type=="system" %>
 	  	<%= link_to list_item.es_content.name, :controller => 'es_contents', :action => 'edit', :id => list_item.id%>
   	<%else%>
@@ -7,6 +13,12 @@
   	<%end%>
   </td>
   <td>
+	<%=
+		link_to("<i class='glyphicon glyphicon-wrench #{list_item.has_dyn_attributes? ? 'red' : ''}'></i>".html_safe, 
+					url_for(:controller => "es_contents", :action => "edit_properties", :id => list_item.id, :element => "EsContentDetail"), 
+					:title =>"Paramétrage de ce détail de contenu".trn)
+	%>
+	&nbsp;
 	<%= list_item.sequence.to_i %>  
   </td>
   <td>
@@ -28,7 +40,7 @@
 		tmp_links = []
 		if list_item.editable=="Y"
 			 tmp_links << link_to("<i class='glyphicon glyphicon-pencil'></i>".html_safe, { :action => 'design_content', :id => list_item.id},:title => "Modifier le contenu".trn)
-		elsif list_item.content_type == EsContent::CONTENT_TYPES_MODULE && EsModule.get_module_action_list.include?(list_item.module_action_name)
+		elsif list_item.content_type == EsContent::CONTENT_TYPES_MODULE && EsModule.get_module_action_list.include?(list_item.module_action_name) && EsModule.is_params?(list_item.module_action_name)
 			 tmp_links << link_to("<i class='glyphicon glyphicon-wrench'></i>".html_safe, { :action => 'setup_module', :id => list_item.id},:title => "Paramétrer le module".trn)
 		end
 

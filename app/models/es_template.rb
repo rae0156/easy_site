@@ -160,10 +160,13 @@ private
           end
         end
         tmp_style = dr_dr ? "border:1px solid red;padding:5px;" : ""
-        text_line += generate_tag(:div, text_col, {:class => "col-md-#{c.width}",:style => tmp_style})
+        
+        properties = EsContent.prepare_properties(c,{:class => "col-md-#{c.width}",:style => tmp_style})
+        text_line += generate_tag(:div, text_col, properties)
       end 
       tmp_class = dr_dr ? "row drag_drop_template" : "row"
-      text += generate_tag(:div, text_line, {:class => tmp_class})      
+      properties = EsContent.prepare_properties(l,{:class => tmp_class})
+      text += generate_tag(:div, text_line, properties)      
     end
     text = generate_tag(:div, text, {:class => "container"}) unless dr_dr
     return text

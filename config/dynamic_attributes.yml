@@ -1,0 +1,21 @@
+EsContent,EsContentDetail,EsTemplateCol,EsTemplateLine:
+  présentation:
+    couleurs:
+      color: <<color-Y-couleur>>
+      background-color: <<color-Y-couleur de fond>>
+    image:
+      url_image: <<file-Y-fichier image-public/images;/upload/content;jpg,png,[EMPTY]>>
+    style:
+      header: <<list-Y-entête-,h1,h2,h3,h4,h5,h6>>
+      alert:  <<list-Y-alerte-,success,info,warning,danger>>
+  taille:
+    marge:
+      margin-top: <<integer-Y-marge en haut>>
+      margin-right: <<integer-Y-marge de droite>>
+      margin-bottom: <<integer-Y-marge en bas>>
+      margin-left: <<integer-Y-marge de gauche>>
+    espace:
+      padding-top: <<integer-Y-espace en haut>>
+      padding-right: <<integer-Y-espace de droite>>
+      padding-bottom: <<integer-Y-espace en bas>>
+      padding-left: <<integer-Y-espace de gauche>>
