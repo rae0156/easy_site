@@ -29,6 +29,9 @@ gem 'will_paginate', '~> 3.0'
 gem "bcrypt-ruby"
 gem "cancan"
 gem "prawn"
+
+gem 'deep_cloneable', '~> 2.0.0'
+
 #gem "rails3-jquery-autocomplete"
 
 # To use ActiveModel has_secure_password

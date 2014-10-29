@@ -116,7 +116,7 @@ private
       when "list", "list_collection"
         html_options[:disabled]=((options[:read_only].presence||false) ? "disabled" : false)
         html_options[:size]= options[:number_of_line] || 1
-        field_options[:include_blank] = options[:include_blank].present? ? options[:include_blank] : true
+        field_options[:include_blank] = true if options[:include_blank].nil? || options[:include_blank] == true
         field_options[:selected] = options[:selected_value] if options[:selected_value].present?
         if method== "list"
           field_result = select(options[:instance].presence, options[:field].presence, options[:value_list_array].presence||[], 

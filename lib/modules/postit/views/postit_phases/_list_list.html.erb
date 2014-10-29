@@ -1,0 +1,10 @@
+<!-- Data table header and content -->
+<table cellpadding="4" width="100%" class='table'>
+  <tr>
+	<th><%="Nom de la liste de tâches".trn%></th>
+	<th><%="Statut".trn%></th>
+	<th><%="Options".trn%></th>
+  </tr>
+  <%= render :partial => 'list_list_item', :collection => @postit_phase.postit_lists %>
+</table>
+

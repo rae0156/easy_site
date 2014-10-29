@@ -1,0 +1,31 @@
+			<table cellpadding="4" width="100%" class='table'>
+			  <tr>
+				<th><%="Nom de la liste".trn%></th>
+				<th><%="Description".trn%></th>
+				<th><%="Responsable".trn%></th>
+				<th><%="Statut".trn%></th>
+			    <th><%="Options".trn%></th>
+			  </tr>
+			  <%@my_lists_to_do.each do |list_task|%>
+				<tr class="<%= cycle("row0", "row1") %>">
+				  <td><%= list_task.name%></td>
+				  <td><%= list_task.description.limit(50) %></td>
+				  <td><%= list_task.owner_name %></td>
+				  <td><%= list_task.status_name %></td>
+				  <td>
+					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-comment'></i>", 
+																				:controller => "postits", :action => "view_list", :id => list_task['id'],
+																				:no_div => true,
+																				:param_goto => {:tab => 2},
+																				:html_option => {:remote => true, :title =>"Voir la liste de tâches".trn}}%>
+
+					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-thumbs-up'></i>", 
+																				:controller => "postits", :action => "close_list", :id => list_task['id'],
+																				:no_div => true,
+																				:confirm => "Voulez vous clôturer cette liste de tâches ?".trn,
+																				:param_goto => {:tab => 2},
+																				:html_option => {:remote => true, :title =>"Clôturer une liste entière".trn}}%>
+				  </td>  
+				</tr>
+			  <%end%>
+			</table>

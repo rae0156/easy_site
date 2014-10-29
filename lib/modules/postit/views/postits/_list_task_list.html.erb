@@ -1,0 +1,15 @@
+<!-- Data table header and content -->
+<table cellpadding="4" width="100%" class='table'>
+  <tr>
+	<th><%="Nom de la tâche".trn%></th>
+	<th><%="Description".trn%></th>
+    <th><%="Séquence".trn%></th>
+    <th><%="Obligatoire".trn%></th>
+	<%if @postit_list.checkable == "Y"%>
+    <th><%="Statut".trn%></th>
+    <th><%="Date de clôture".trn%></th>
+	<%end%>
+  </tr>
+  <%= render :partial => 'list_item_task_list', :collection => @postit_list.postit_tasks %>
+</table>
+

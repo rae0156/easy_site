@@ -1,0 +1,18 @@
+<!-- Data table header and content -->
+<table cellpadding="4" width="100%" class='table'>
+  <tr>
+	<th><%= sort_link_remote :text => "Nom de la tâche".trn, :column => "postit_tasks.name", :action => 'list'%></th>
+	<th><%= sort_link_remote :text => "Description".trn, :column => "postit_tasks.description", :action => 'list'%></th>
+	<th><%= sort_link_remote :text => "Liste".trn, :column => "postit_lists.name", :action => 'list'%></th>
+    <th><%="Nbr actions".trn%></th>
+    <th><%="Séquence".trn%></th>
+    <th><%="Clôture".trn%></th>
+    <th><%="Responsable".trn%></th>
+    <th>Options</th>
+  </tr>
+  <%= render :partial => 'list_item', :collection => @postit_tasks %>
+</table>
+
+<%= will_paginate @postit_tasks, :params => params, :previous_label => '<< ' + "Précédent".trn, :next_label => "Suivant".trn + ' >>' %>
+<%= page_entries_info @postit_tasks, :model => "Tâche".trn %>
+

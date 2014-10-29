@@ -1,0 +1,11 @@
+<!-- Data table header and content -->
+<table cellpadding="4" width="100%" class='table'>
+  <tr>
+	<th><%="Nom de la phase".trn%></th>
+	<th><%="Statut".trn%></th>
+	<th><%="Statut de flux".trn%></th>
+	<th><%="Options".trn%></th>
+  </tr>
+  <%= render :partial => 'list_phase_item', :collection => @postit_process.postit_phases %>
+</table>
+

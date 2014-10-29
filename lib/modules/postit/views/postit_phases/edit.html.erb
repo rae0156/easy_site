@@ -1,0 +1,16 @@
+<% @title = "Modification d'une phase".trn %>
+
+<div class="cadre bg-primary">
+	<h2><%= image_tag("appli/setup_48.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
+    <ul>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/save_32.png", :action => "update",:id =>@postit_phase.id,  :form => "element_form"}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour".trn,:image => "appli/back_32.png", :controller => (@postit_phase.postit_process ? 'postit_processes' : 'postit_phases') ,:action => (@postit_phase.postit_process ? 'link_phase' : 'list'), :id => @postit_phase.postit_process_id}%></li>
+    </ul>
+	<%= errors_for(@postit_phase) %>
+
+	<%= form_tag({ :action => 'update'}, { :name => 'element_form', :class => 'form-horizontal' }) do%>
+		
+		  <%= render :partial => 'form' %>
+	
+	<% end %>
+</div>

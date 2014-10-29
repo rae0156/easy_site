@@ -3,6 +3,7 @@
 class ActionUser < ActiveRecord::Base
 
   has_es_interface_models
+  acts_as_multi_site
 
   belongs_to :user, :foreign_key => "user_id", :class_name => "EsUser" 
   has_many   :action_user_params 
@@ -11,20 +12,37 @@ class ActionUser < ActiveRecord::Base
 
   before_destroy :check_dependances
 
-  attr_accessible :name, :description, :action_type_id, :user_id
+  attr_accessible :name, :description, :action_type_id, :user_id, :target_other, :image_name, :image_with_text
   validates_presence_of :name, :message => '#' + 'Le nom est obligatoire'.trn
   validates_presence_of :action_type_id, :message => '#' + "Le type d'action est obligatoire".trn
   validates_presence_of :user_id, :message => '#' + "L'utilisateur est obligatoire".trn
+  
+  cattr_accessor :params_from_controller
+  self.params_from_controller = {} 
+
+  def self.init_param_from_controller(param_key=nil,param_value=nil) 
+    if param_key.nil? 
+      self.params_from_controller = {} 
+    else 
+      self.params_from_controller[param_key.to_s.to_sym] = param_value 
+    end 
+  end 
+  
   
   def user_name
     return (user.blank? || user_id==0) ? "Tous".trn : "#{user.name} #{user.firstname}"
   end
 
   def get_action_and_parameters
+
     params={}
     self.action_user_params.each do |p|
       params[p.action_type_param.name.to_sym]=p.value
     end
+    self.class.params_from_controller.each do |k,v|
+      params[k] = v
+    end
+       
     return {:type => self.action_type.caller_type, :name => self.action_type.caller_name, :action => self.action_type.caller_action},params
   end
 

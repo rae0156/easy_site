@@ -1,0 +1,56 @@
+<%postit_list = @postit_list%>
+
+				<div class="page-header">
+				  <h1><%=postit_list.name%> 
+				  	<small><%=postit_list.checkable == 'Y' ? "Liste à valider".trn : "Liste à faire".trn%></small>
+				  	<small><%=postit_list.sequential == 'Y' ? "dans l'ordre".trn : "sans ordre".trn%></small>
+				  </h1>
+				</div> 
+
+        	<div class='form-horizontal'>
+
+                <%if postit_list.completed=="N" && (postit_list.checkable == "N" || postit_list.status == "COMPLETE")%>    
+
+					  <div class="form-group">
+					    <label class="col-sm-4 control-label"><%="La liste peut être clôturée".trn%> : </label>
+					    <div class="col-sm-8">
+							<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-thumbs-up  btn-lg'></i>", 
+																						:controller => "postits", :action => "close_list_only", :id => postit_list['id'],
+																						:no_div => true,
+																						:confirm => "Voulez vous clôturer cette liste ?".trn,
+																						:param_goto => {:tab => params[:tab]},
+																						:html_option => {:remote => true, :title =>"Clôturer cette liste".trn}}%>						
+						</div>
+					  </div>
+				<%end%>        		
+
+
+				  <div class="form-group">
+				    <label class="col-sm-4 control-label"><%="Description".trn%> : </label>
+				    <div class="col-sm-8">
+						<%= easy_tag('text',:instance => "postit_list", :field => "description", :read_only => true, :value => postit_list.description) %>
+					</div>
+				  </div>
+
+				  <div class="form-group">
+				    <label class="col-sm-4 control-label"><%="Status".trn%> : </label>
+				    <div class="col-sm-8">
+						<%= easy_tag('text',:instance => "postit_list", :field => "status", :read_only => true, :value => postit_list.status_name) %>
+					</div>
+				  </div>
+
+				  <div class="form-group">
+				    <label class="col-sm-4 control-label"><%="Owner".trn%> : </label>
+				    <div class="col-sm-8">
+						<%= easy_tag('text',:instance => "postit_list", :field => "owner", :read_only => true, :value => postit_list.owner_name) %>
+					</div>
+				  </div>
+
+
+				<div id="list_task_div">
+				  <%= render :partial => 'list_task_list' %>
+				</div>
+
+				  
+        	</div>                 
+

@@ -1,0 +1,47 @@
+<tr class="<%= cycle("row0", "row1") %>">
+  <td>
+  	<%if list_task_item.postit_list.postit_phase || list_task_item.postit_list.status != "NONE" %>
+	  	<%= list_task_item.name%>
+  	<%else%>
+	  	<%= link_to list_task_item.name, :action => 'edit_task', :id => list_task_item.id%>
+  	<%end%>
+  </td>
+  <td>
+	<%= list_task_item.sequence.to_i %>  
+  </td>
+  <td>
+	<%= image_tag(list_task_item.optional == 'N' ? "appli/ok_32.png" : "appli/cancel_32.png", 
+						    {:alt => "", :align => "middle", :border => "0",
+						    :class => "app_tooltip", :title => list_task_item.optional=='N'  ? "cette tâche est optionnelle".trn : "cette tâche n'est pas obligatoire".trn, "data-placement" => "left"}) %>  
+  </td>
+  <td><%=list_task_item.status_name%></td>
+  <td>
+	<%
+		tmp_links = []
+
+		if list_task_item.action_users.size > 0
+			tmp_links << link_to("<i class='glyphicon glyphicon-play-circle'></i>".html_safe, 
+									url_for(:controller => "postit_tasks", :action => "link_action", :id => list_task_item['id']), 
+									:title =>"Actions de cette tâche".trn)
+		end
+
+		if list_task_item.postit_list.status == "NONE"
+			tmp_links << link_to("<i class='glyphicon glyphicon-remove-sign'></i>".html_safe, 
+									url_for(:action => "unlink_task", :id => list_task_item['id']), 
+									:confirm =>"Voulez vous vraiment détacher cette tâche de la liste ?".trn,
+									:title =>"Détacher cette tâche de la liste".trn)
+		    if list_task_item.sequence > 1
+				 tmp_links << link_to("<i class='glyphicon glyphicon-arrow-up'></i>".html_safe, { :action => 'move_up', :id => list_task_item.id},:title => "Remonter cette tâche".trn)
+			end
+			if list_task_item.sequence < list_task_item.postit_list.postit_tasks.count 
+				 tmp_links << link_to("<i class='glyphicon glyphicon-arrow-down'></i>".html_safe, { :action => 'move_down', :id => list_task_item.id},:title => "Descendre cette tâche".trn)
+			end
+		end
+	%>
+	<%=tmp_links.join('&nbsp;').html_safe%>
+
+
+
+  </td>
+  
+</tr>

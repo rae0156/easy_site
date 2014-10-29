@@ -1,0 +1,22 @@
+<%postit_task = @postit_task%>
+
+            <h3><%=postit_task.name%></h3> 
+            <p><%=postit_task.description%></p> 
+                
+        <%if postit_task.checked=="N" %>    
+			<div class='alert alert-info'>
+				<%postit_task.action_users.each do |a|%>
+				<%=generate_action(a)%>
+				<%end%>
+			</div>
+
+			<div>
+				<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-thumbs-up  btn-lg'></i>", 
+																			:controller => "postits", :action => "close_task", :id => postit_task['id'],
+																			:no_div => true,
+																			:confirm => "Voulez vous clôturer cette tâche ?".trn,
+																			:param_goto => {:tab => 0},
+																			:html_option => {:remote => true, :title =>"Clôturer cette tâche".trn}}%>						
+			</div>
+		<%end%>
+                        

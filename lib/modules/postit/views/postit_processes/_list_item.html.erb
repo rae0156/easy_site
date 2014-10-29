@@ -1,0 +1,56 @@
+<tr class="<%= cycle("row0", "row1") %>">
+  <td>
+  	<%if (list_item.status != "NONE" && list_item.postit_phases.size > 0) || list_item.completed == 'Y' %>
+	  	<%= list_item.name%>
+  	<%else%>
+	  	<%= link_to list_item.name, :action => 'edit', :id => list_item.id%>
+  	<%end%>
+  </td>
+  <td>
+	<%= list_item.description.limit(50) %>  
+  </td>
+  <td>
+	<%= list_item.postit_phases.size %>  
+  </td>
+  <td>
+	<%= list_item.status_name %>  
+  </td>
+  <td>
+	<%= list_item.workflow_status_name %>  
+  </td>
+  <td>
+	<%= list_item.close_date_text %>  
+  </td>
+  <td>
+	<%= list_item.owner_name %>  
+  </td>
+  <td>
+  	<%if list_item.templatable == 'Y'%>
+		<%= link_to("<i class='glyphicon glyphicon-plus'></i>".html_safe, 
+					url_for(:action => "copy_from", :id => list_item['id']), 
+					:confirm =>"Voulez vous vraiment dupliquer ce processus ?".trn,
+					:title =>"Copier à partir de".trn)
+		%>					
+  	<%end%>
+
+	<%= link_to("<i class='glyphicon glyphicon-play-circle'></i>".html_safe, 
+				url_for(:action => "link_phase", :id => list_item['id']), 
+				:title =>"Phases".trn)
+	%>					
+
+  	<%if ((list_item.status == "COMPLETE" && list_item.postit_phases.size == 0) || (list_item.status == "NONE" && list_item.postit_phases.size > 0)) && list_item.completed == 'N' %>
+		<%= link_to("<i class='glyphicon glyphicon-remove-circle'></i>".html_safe, 
+					url_for(:action => "destroy", :id => list_item['id'], :mode_action => 'detach'), 
+					:confirm =>"Voulez vous vraiment supprimer ce processus sans les phases ?".trn,
+					:title =>"Supprimer le processus uniquement".trn)
+		%>					
+	
+		<%= link_to("<i class='glyphicon glyphicon-remove-sign'></i>".html_safe, 
+					url_for(:action => "destroy", :id => list_item['id'], :mode_action => 'delete'), 
+					:confirm =>"Voulez vous vraiment supprimer le processus, ses phases, ses listes de tâches et les tâches ?".trn,
+					:title =>"Supprimer le processus ainsi que tout ce qui lui est attaché".trn)
+		%>					
+  	<%end%>
+  </td>
+  
+</tr>

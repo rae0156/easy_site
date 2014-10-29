@@ -1,0 +1,35 @@
+			<table cellpadding="4" width="100%" class='table'>
+			  <tr>
+				<th><%="Nom de la tâche".trn%></th>
+				<th><%="Description".trn%></th>
+				<th><%="Date de clôture".trn%></th>
+			    <th><%="Options".trn%></th>
+			  </tr>
+			  <%@my_tasks_done.each do |task|%>
+				<tr class="<%= cycle("row0", "row1") %>">
+				  <td><%= task.name%></td>
+				  <td><%= task.description.limit(50) %></td>
+				  <td><%= (task.close_date || Time.now).strftime("%d/%m/%Y %H:%M:%S") %></td>
+				  <td>
+					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-comment'></i>", 
+																				:controller => "postits", :action => "view_task", :id => task['id'],
+																				:no_div => true,
+																				:param_goto => {:tab => 1},
+																				:html_option => {:remote => true, :title =>"Voir la tâche".trn}}%>
+
+					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-remove'></i>", 
+																				:controller => "postits", :action => "delete_task", :id => task['id'],
+																				:confirm => "Voulez vous vraiment supprimer cette tâche ?".trn,
+																				:no_div => true,
+																				:param_goto => {:tab => 1},
+																				:html_option => {:remote => true, :title =>"Supprimer la tâche".trn}}%>
+																				
+					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-share'></i>", 
+																				:controller => "postits", :action => "open_task", :id => task['id'],
+																				:no_div => true,
+																				:param_goto => {:tab => 1},
+																				:html_option => {:remote => true, :title =>"Réouvrir une tâche".trn}}%>
+				  </td>  
+				</tr>
+			  <%end%>
+			</table>

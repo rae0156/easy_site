@@ -25,6 +25,7 @@
 //= require jscolor/jscolor.js
 //= require fontpicker.js
 //= require filepicker.js
+//= require postit
 // require_tree .
 
 

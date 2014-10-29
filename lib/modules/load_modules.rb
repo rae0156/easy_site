@@ -21,22 +21,49 @@ class ModuleLoader
   private
   
   def self.load_one_module(module_path)  
+    puts "======================================================="
+    puts " Module : #{@module}"
+    puts "======================================================="
     if check_module(module_path)  
       load_module_detail(module_path)
       loaded = load_interface
-      self.load_setup if loaded && self.test_version
+      self.load_setup(module_path) if loaded && self.test_version
     end     
+    puts " "
   end
   
   def self.check_module(module_path)
     return false unless check_module_structure(module_path) 
     return false unless check_module_interface(module_path) 
     return false unless check_table_structure 
+    return false unless check_dependance 
     true    
   end  
   
+  def self.check_dependance
+    if @interface["installation"].present? && @interface["installation"]["dependance_module"].present? 
+      return false unless @interface["installation"]["dependance_module"].is_a?(Array)
+      error_module = true
+      @interface["installation"]["dependance_module"].each do |module_name|
+        if module_name.is_a?(String)
+          unless EsModule.is_installed?(module_name)
+            puts "Le module '#{@module}' ne peut pas être installé, car le module dépendant (#{module_name}) n'est pas installé."
+            error_module = false
+          end
+        else  
+          error_module = false
+        end
+        
+      end
+      return error_module
+    else
+      return true
+    end
+  end
+  
   def self.check_table_structure
     if @interface["installation"].present? && @interface["installation"]["table_verification"].present? 
+      return false unless @interface["installation"]["table_verification"].is_a?(Array)
       error_structure=true
       @interface["installation"]["table_verification"].each do |table|
         if table.is_a?(String)
@@ -129,9 +156,28 @@ class ModuleLoader
     end
   end
   
-  def self.load_setup
+  def self.load_setup(module_path)
+    delete_old_setup_part(["controllers"])
     puts "Chargement du setup pour le module '#{@module}'"  
     load_setup_part(@interface.except("interface","installation"))
+    execute_install(module_path)
+  end
+  
+  def self.execute_install(module_path)
+    rb_file = File.join(module_path,"install.rb")
+    if File.exist?(rb_file)
+      puts "Exécution du programme d'installation pour le module '@module'"  
+      load(rb_file)
+    end    
+  end
+  
+  def self.delete_old_setup_part(paths=[])
+    paths.each do |p|
+      puts "Suppression des setup commençant par '#{p}'"  
+      EsModule.find(:all,:conditions => ["module_name = ? and path_setup LIKE ? ",@module,"#{p}%"]).each do |m|
+        m.destroy
+      end
+    end
   end
   
   def self.load_setup_part(element,path='')

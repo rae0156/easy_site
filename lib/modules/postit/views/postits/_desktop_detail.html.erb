@@ -1,0 +1,77 @@
+
+	<h3>
+		<%="Mon bureau".trn%> 
+		&nbsp;
+		<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-refresh'></i>", 
+																	:controller => "postits", :action => "refresh_all",
+																	:no_div => true,
+																	:param_goto => {:tab => (params[:tab].presence||0)},
+																	:html_option => {:class => "btn-sm", :remote => true, :title =>"Rafraichir".trn}}%>
+	</h3>
+
+	<ul class="nav nav-tabs" role="tablist">
+	  <li class="<%=@active[0]%>"><a href="#task_to_do" role="tab" data-toggle="tab"><%="Mes tâches à faire".trn%></a></li>
+	  <li class="<%=@active[2]%>"><a href="#list_to_do" role="tab" data-toggle="tab"><%="Mes listes de tâches".trn%></a></li>
+	  <li class="<%=@active[4]%>"><a href="#process_to_do" role="tab" data-toggle="tab"><%="Mes processus en cours".trn%></a></li>
+	  <li class="<%=@active[1]%>"><a href="#task_done" role="tab" data-toggle="tab"><%="Mes tâches finies".trn%></a></li>
+	  <li class="<%=@active[3]%>"><a href="#list_done" role="tab" data-toggle="tab"><%="Mes listes finies".trn%></a></li>
+	  <li class="<%=@active[5]%>"><a href="#process_done" role="tab" data-toggle="tab"><%="Mes processus finis".trn%></a></li>
+	</ul>
+
+	<div class="tab-content" >
+	  <div class="tab-pane <%=@active[0]%>" id="task_to_do">
+		  <%= render :partial => 'd_detail_task_todo' %>
+	  </div>
+	  <div class="tab-pane <%=@active[1]%>" id="task_done">
+		  <%= render :partial => 'd_detail_task_done' %>
+	  </div>
+	  <div class="tab-pane <%=@active[2]%>" id="list_to_do">
+		  <%= render :partial => 'd_detail_list_todo' %>
+	  </div>
+	  <div class="tab-pane <%=@active[3]%>" id="list_done">
+		  <%= render :partial => 'd_detail_list_done' %>
+	  </div>
+	  <div class="tab-pane <%=@active[4]%>" id="process_to_do">
+		  <%= render :partial => 'd_detail_process_todo' %>
+	  </div>
+	  <div class="tab-pane <%=@active[5]%>" id="process_done">
+		  <%= render :partial => 'd_detail_process_done' %>
+	  </div>
+	</div>
+
+
+<div>
+
+	<%session[:postit_opened].each do |postit_id|
+		@postit_task = PostitTask.find_by_id(postit_id)
+	%>
+    	<div class="stickyNote alert-warning"> 
+			<div id='task_<%=@postit_task.id%>'>
+	  		  <%= render :partial => 'desktop_view_task' %>
+        	</div> 
+        </div> 
+	<%end%>
+	
+</div>	
+
+<div>
+
+	<%session[:postit_list_opened].each do |postit_id|
+		@postit_list = PostitList.find_by_id(postit_id)
+	%>
+        <div class="stickyNote alert-warning sticky-lg">
+			<div id='list_<%=@postit_list.id%>'>
+			  <%= render :partial => 'desktop_view_list_task' %>
+			</div>
+		</div>
+	
+	<%end%>
+	
+</div>	
+
+<script>
+	initpostit();			
+</script>
+
+
+

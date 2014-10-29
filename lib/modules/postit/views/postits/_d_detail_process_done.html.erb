@@ -1,0 +1,54 @@
+			<table cellpadding="4" width="100%" class='table'>
+			  <tr>
+				<th><%="Nom du processus".trn%></th>
+				<th><%="Liste".trn%></th>
+				<th><%="Description".trn%></th>
+				<th><%="Responsable".trn%></th>
+				<th><%="Date de clôture".trn%></th>
+			    <th><%="Statut du flux".trn%></th>
+			    <th><%="Options".trn%></th>
+			  </tr>
+			  <%@my_processes_done.each do |process|%>
+				<tr class="<%= cycle("row0", "row1") %>">
+				  <td colspan="2"><%= process.name%></td>
+				  <td><%= process.description.limit(50) %></td>
+				  <td><%= process.owner_name %></td>
+				  <td><%= process.close_date_text %></td>
+				  <td><%= process.workflow_status_name %></td>
+				  <td>
+					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-remove'></i>", 
+																				:controller => "postits", :action => "delete_process", :id => process['id'],
+																				:confirm => "Voulez vous vraiment supprimer ce processus et les listes associées ?".trn,
+																				:no_div => true,
+																				:param_goto => {:tab => 5},
+																				:html_option => {:remote => true, :title =>"Supprimer le processus entièrement".trn}}%>
+																				
+					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-share'></i>", 
+																				:controller => "postits", :action => "open_process", :id => process['id'],
+																				:no_div => true,
+																				:param_goto => {:tab => 5},
+																				:html_option => {:remote => true, :title =>"Réouvrir un processus".trn}}%>
+				  </td>  
+				</tr>
+				  <%process.postit_lists.each do |list|%>
+					<tr class="<%= cycle("row0", "row1") %>">
+					  <td></td>
+					  <td><%= list.name%></td>
+					  <td><%= list.description.limit(50) %></td>
+					  <td><%= list.owner_name %></td>
+					  <td><%= list.status_name %></td>
+					  <td>
+					  	<%= list.postit_phase.workflow_status_name %>
+					  </td>				  
+					  <td> 
+						<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-comment'></i>", 
+																					:controller => "postits", :action => "view_list", :id => list['id'],
+																					:no_div => true,
+																					:param_goto => {:tab => 5},
+																					:html_option => {:remote => true, :title =>"Voir la liste de tâches".trn}}%>
+	
+					  </td>  
+					</tr>
+				  <%end%>
+			  <%end%>
+			</table>

@@ -1,0 +1,37 @@
+			<table cellpadding="4" width="100%" class='table'>
+			  <tr>
+				<th><%="Nom de la liste".trn%></th>
+				<th><%="Description".trn%></th>
+				<th><%="Responsable".trn%></th>
+				<th><%="Date de clôture".trn%></th>
+			    <th><%="Options".trn%></th>
+			  </tr>
+			  <%@my_lists_done.each do |list_task|%>
+				<tr class="<%= cycle("row0", "row1") %>">
+				  <td><%= list_task.name%></td>
+				  <td><%= list_task.description.limit(50) %></td>
+				  <td><%= list_task.owner_name %></td>
+				  <td><%= (list_task.close_date || Time.now).strftime("%d/%m/%Y %H:%M:%S") %></td>
+				  <td>
+					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-comment'></i>", 
+																				:controller => "postits", :action => "view_list", :id => list_task['id'],
+																				:no_div => true,
+																				:param_goto => {:tab => 3},
+																				:html_option => {:remote => true, :title =>"Voir la liste de tâches".trn}}%>
+
+					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-remove'></i>", 
+																				:controller => "postits", :action => "delete_list", :id => list_task['id'],
+																				:confirm => "Voulez vous vraiment supprimer cette liste et les tâches associées ?".trn,
+																				:no_div => true,
+																				:param_goto => {:tab => 3},
+																				:html_option => {:remote => true, :title =>"Supprimer la liste de tâches".trn}}%>
+																				
+					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-share'></i>", 
+																				:controller => "postits", :action => "open_list", :id => list_task['id'],
+																				:no_div => true,
+																				:param_goto => {:tab => 3},
+																				:html_option => {:remote => true, :title =>"Réouvrir une liste".trn}}%>
+				  </td>  
+				</tr>
+			  <%end%>
+			</table>

@@ -54,6 +54,11 @@ class EsModule < ActiveRecord::Base
     m = EsModule.first(:conditions=> {:module_name => module_name, :path_setup => '', :setup_name => "version"})
     return m.blank? ? '0.0.0.0' : m.value
   end
+
+  def self.is_installed?(module_name)
+    return !EsModule.first(:conditions=> {:module_name => module_name, :path_setup => '', :setup_name => "version"}).blank?
+  end
+
   
   def self.activated(module_name)
     m = EsModule.first(:conditions=> {:module_name => module_name, :path_setup => '', :setup_name => "activated"})

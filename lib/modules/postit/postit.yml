@@ -1,34 +1,122 @@
 interface:
   models: 
-    - EsPostit    
+    - PostitTask    
+    - PostitList    
+    - PostitPhase    
+    - PostitProcess    
   controllers: 
-    - EsPostitsController
+    - PostitsController
+    - PostitTasksController
+    - PostitListsController
+    - PostitPhasesController
+    - PostitProcessesController
   mailers: / 
 
-version: 0.0.0.4
+version: 0.0.1.21
 
 
 installation:
+   dependance_module:
+     - action
    table_verification:
      - es_users
-     - es_postits:
-        - label
+     - es_workflows
+     - es_workflow_statuses  
+     - es_workflow_types  
+     - action_users_postit_tasks:
+        - action_user_id
+        - postit_task_id
+     - postit_tasks:
         - id
+        - name
+        - description
+        - postit_list_id
+        - sequence
+        - checked
+        - templatable
+        - optional
+        - owner_id
+        - close_date
+        - created_at
+        - created_by
+        - updated_at
+        - updated_by 
+        - es_site_id
+     - postit_lists:
+        - id
+        - name
+        - description
+        - postit_phase_id
+        - templatable
+        - checkable
+        - sequential
+        - completed
+        - owner_id
+        - close_date
+        - created_at
+        - created_by
+        - updated_at
+        - updated_by 
+        - es_site_id
+     - postit_phases:
+        - id
+        - name
+        - description
+        - postit_process_id
+        - templatable
         - dyn_workflow_status_id
-        - dyn_workflow_user_id        
-  
+        - owner_id
+        - close_date
+        - created_at
+        - created_by
+        - updated_at
+        - updated_by 
+        - es_site_id
+     - postit_processes:
+        - id
+        - name
+        - description
+        - templatable
+        - completed
+        - dyn_workflow_status_id
+        - dyn_workflow_user_id
+        - dyn_workflow_type_id
+        - owner_id
+        - close_date
+        - created_at
+        - created_by
+        - updated_at
+        - updated_by 
+        - es_site_id
+      
 setup:
   admin:
     title: module Post it <<string-Y-Titre du module>>
     specific:
-      about: Le module post-it est en construction <<long_string-N-A propos de>>
+      about: Le module post-it fonctionne avec le module action <<long_string-N-A propos de>>
 
 controllers: 
   entry_point_names:
-    EsPostitsController: Post it
+    PostitsController: Post it
+    PostitTasksController: Tâches
+    PostitListsController: Liste de tâches
+    PostitPhasesController: Phases d'un processus
+    PostitProcessesController: Processus
   entry_points:
-    EsPostitsController:    
-        new_postit: Nouveau postit
+    PostitProcessesController:
+        list: Liste des processus
+        new: Nouveau processus
+    PostitPhasesController:
+        list: Liste des phases d'un processus
+        new: Nouvelle phase d'un processus
+    PostitListsController:
+        list: Les listes de tâches
+        new: Nouvelle liste de tâches
+    PostitTasksController:
+        list: Liste des tâches
+        new: Nouvelle tâche
+    PostitsController:    
+        new_task: Nouvelle tâche
         new_checklist: Nouvelle check liste
         new_todolist: Nouvelle todo liste
-        my_postit: Liste des postit
+        desktop: Mon bureau

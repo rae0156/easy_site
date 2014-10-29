@@ -15,6 +15,7 @@
  *= require drag_drop.css
  *= require fontpicker.css
  *= require filepicker.css
+ *= require postit.css
 
  *= require_self
  * require_tree .

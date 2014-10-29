@@ -1,34 +1,64 @@
 	  <h4><%= field_description "Données obligatoires", true %></h4>
 	  
-	  <div class="form-group">
-	    <label for="action_user_name" class="col-sm-4 control-label"><%= field_description "", true %> <%="Nom".trn%> : </label>
-		<div class="col-sm-8">
-			<%= easy_tag('text',:instance => "action_user", :field => "name") %>
-	    </div>
+	<div class="panel panel-default">
+	  <div class="panel-heading"><%="Signalétique de l'action".trn%></div>
+	  <div class="panel-body">
+		  <div class="form-group">
+		    <label for="action_user_name" class="col-sm-4 control-label"><%= field_description "", true %> <%="Nom".trn%> : </label>
+			<div class="col-sm-8">
+				<%= easy_tag('text',:instance => "action_user", :field => "name") %>
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <label for="action_user_name" class="col-sm-4 control-label"><%="Description".trn%> : </label>
+			<div class="col-sm-8">
+				<%= easy_tag('text',:instance => "action_user", :field => "description") %>
+		    </div>
+		  </div>
+	      <div class="form-group">
+	        <label for="action_user_action_type_id" class="col-sm-4 control-label"><%= field_description "", true %> <%="Type d'action".trn%> : </label>
+		    <div class="col-sm-8">
+	      	  <%= select("action_user", :action_type_id, ActionType.all(:order => "description").map {|at| [at.description, at.id]}, {:include_blank => ''}, :size => 1, :class => "form-control", :ajax_action=>"refresh_params") %>
+		    </div>
+		  </div>
 	  </div>
-	  <div class="form-group">
-	    <label for="action_user_name" class="col-sm-4 control-label"><%="Description".trn%> : </label>
-		<div class="col-sm-8">
-			<%= easy_tag('text',:instance => "action_user", :field => "description") %>
-	    </div>
+	  <div class="panel-heading"><%="Paramétrage spécifique".trn%></div>
+	  <div class="panel-body">
+	      <div class="form-group">
+	        <label for="action_user_user_id" class="col-sm-4 control-label"><%= field_description "", true %> <%="Utilisateur".trn%> : </label>
+		    <div class="col-sm-8">
+	      	  <%= select("action_user", :user_id, [["Tous".trn,0]] + (current_user.blank? ? [] : [["#{current_user.name} #{current_user.firstname}",current_user.id]]) , {:include_blank => ''}, :size => 1, :class => "form-control") %>
+		    </div>
+		  </div>
+ 		  <div id="action_user_param_div">
+		    <%= render :partial => 'action_user_param' %>
+		  </div>
 	  </div>
-      <div class="form-group">
-        <label for="action_user_action_type_id" class="col-sm-4 control-label"><%= field_description "", true %> <%="Type d'action".trn%> : </label>
-	    <div class="col-sm-8">
-      	  <%= select("action_user", :action_type_id, ActionType.all(:order => "description").map {|at| [at.description, at.id]}, {:include_blank => ''}, :size => 1, :class => "form-control", :ajax_action=>"refresh_params") %>
-	    </div>
+	  <div class="panel-heading"><%="Paramétrage du Lien".trn%></div>
+	  <div class="panel-body">
+	      <div class="form-group">
+	        <label for="action_user_action_type_id" class="col-sm-4 control-label"><%= field_description "", true %> <%="Type d'ouverture".trn%> : </label>
+		    <div class="col-sm-8">
+	      	  	<%= select("action_user", :target_other, [["Même onglet".trn,'N'],["Nouvel onglet".trn,'N'],["Autre fenêtre sans option".trn,'F'],["Autre fenêtre avec options".trn,'O']] , {:include_blank => ''}, :class => "form-control") %>
+		    </div>
+		  </div>
+	      <div class="form-group">
+	        <label for="action_user_action_type_id" class="col-sm-4 control-label"><%= field_description "", true %> <%="Image de l'icone".trn%> : </label>
+		    <div class="col-sm-8">
+				<%= easy_tag('file',:instance => "action_user", :field => "image_name",:style => "width:50%;",:option_file => "public;/upload/content;jpg,png,gif,[DIR],[EMPTY]") %>
+		    </div>
+		  </div>
+	      <div class="form-group">
+	        <label for="action_user_action_type_id" class="col-sm-4 control-label"><%= field_description "", true %> <%="Afficher un texte".trn%> : </label>
+		    <div class="col-sm-1">
+				<%= easy_tag('check_box',:instance => "action_user", :field => "image_with_text") %>		
+		    </div>
+		  </div>
 	  </div>
-      <div class="form-group">
-        <label for="action_user_user_id" class="col-sm-4 control-label"><%= field_description "", true %> <%="Utilisateur".trn%> : </label>
-	    <div class="col-sm-8">
-      	  <%= select("action_user", :user_id, [["Tous".trn,0]] + (current_user.blank? ? [] : [["#{current_user.name} #{current_user.firstname}",current_user.id]]) , {:include_blank => ''}, :size => 1, :class => "form-control") %>
-	    </div>
-	  </div>
-
-
-	<div id="action_user_param_div">
-	  <%= render :partial => 'action_user_param' %>
 	</div>
+
+
+
 	 
 	<script>
 		initajaxplus();			

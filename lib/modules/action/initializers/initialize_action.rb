@@ -1,7 +1,14 @@
-
+# encoding: UTF-8 
+  def url_for_action(action_id=0,addon_parameter={})
+    url                   = {:controller => "action_users",:action => "execute"}
+    url[:action_user]     = {:id => action_id}
+    url[:addon_parameter] = addon_parameter unless addon_parameter.blank?
+    return url_for(url)
+  end
 
   def generate_action(action_id,options={})
 
+    ActionUser.init_param_from_controller
     text = ""
     action_id ||=0
     action_user = ActionUser.find_by_id(action_id)
@@ -9,9 +16,9 @@
     if action_user
       tmp_action,options_parameters = action_user.get_action_and_parameters
       description     = options[:link_description].presence || options_parameters[:link_description].presence || action_user.description
-      target          = options[:link_target].presence || options_parameters[:link_target].presence || "_self"
-      image_name      = options[:link_image_name].presence || options_parameters[:link_image_name].presence || "appli/execute_32.png"
-      image_with_text = options[:link_image_with_text].presence || options_parameters[:link_image_with_text].presence || "Y"
+      target          = options[:link_target_other].presence || options_parameters[:link_target_other].presence || action_user.target_other
+      image_name      = options[:link_image_name].presence || options_parameters[:link_image_name].presence || action_user.image_name
+      image_with_text = options[:link_image_with_text].presence || options_parameters[:link_image_with_text].presence || action_user.image_with_text
       link_class      = options[:link_class].presence || options_parameters[:link_class].presence || "btn btn-default" 
       x               = options[:link_x].presence || options_parameters[:x].presence || 0 
       y               = options[:link_y].presence || options_parameters[:y].presence || 0 
@@ -38,10 +45,22 @@
       if no_link=="Y"
         text = element_shown
       else
-        text = link_to(element_shown, url_for(:controller => "action_users",:action => "execute", :action_user => {:id => action_id}),:target => target)
+        options_link = {:title =>description}
+        case target
+          when "Y"
+            options_link[:target] = "_blank"
+          when "N"
+            options_link[:target] = "_self"
+          when "F"
+            options_link[:onclick] = 'window.open(this.href, "_blank", "toolbar=0,location=0,menubar=0"); return false;'
+          when "O"
+            options_link[:onclick] = 'window.open(this.href, "_blank", "toolbar=1,location=1,menubar=1"); return false;'
+        end
+        text = link_to(element_shown, url_for_action(action_id), options_link)
       end
       text = "<div id='user_action_#{action_id}' class='#{link_class}' #{style}>#{text}</div>".html_safe
     end
     
     return text.html_safe
   end
+

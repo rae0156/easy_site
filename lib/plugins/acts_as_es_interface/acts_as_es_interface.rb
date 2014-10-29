@@ -112,7 +112,12 @@ module InterfaceControllers
 
       def check_actif_module
         unless self.class.is_module_actif?
-          redirect_to :controller => "sites", :action => "error", :error => "Le module '%{module}' est désactivé".trn(:module => self.class.get_module_name)
+          module_name = self.class.get_module_name
+          if module_name.blank?
+            redirect_to :controller => "sites", :action => "error", :error => "Le controlleur '%{ctrl}' n'est pas associé à un module".trn(:ctrl => controller_name)
+          else
+            redirect_to :controller => "sites", :action => "error", :error => "Le module '%{module}' est désactivé".trn(:module => module_name)
+          end
         end 
       end
 

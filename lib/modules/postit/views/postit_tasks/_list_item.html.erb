@@ -1,0 +1,50 @@
+<tr class="<%= cycle("row0", "row1") %>">
+  <td>
+  	<%if list_item.postit_list %>
+	  	<%= list_item.name%>
+  	<%else%>
+	  	<%= link_to list_item.name, :action => 'edit', :id => list_item.id%>
+  	<%end%>
+  </td>
+  <td>
+	<%= list_item.description.limit(50) %>  
+  </td>
+  <td>
+	<%= list_item.postit_list ? list_item.postit_list.name : '/' %>  
+  </td>
+  <td>
+	<%= list_item.action_users.size %>  
+  </td>
+  <td>
+	<%= list_item.sequence.to_i %>  
+  </td>
+  <td>
+	<%= list_item.close_date_text %>  
+  </td>
+  <td>
+	<%= list_item.owner_name %>  
+  </td>
+  <td>
+  	<%if list_item.templatable == 'Y' && !list_item.postit_list%>
+	<%= link_to("<i class='glyphicon glyphicon-plus'></i>".html_safe, 
+				url_for(:action => "copy_from", :id => list_item['id']), 
+				:confirm =>"Voulez vous vraiment dupliquer cette tâche ?".trn,
+				:title =>"Copier à partir de".trn)
+	%>					
+  	<%end%>
+
+
+	<%= link_to("<i class='glyphicon glyphicon-play-circle'></i>".html_safe, 
+				url_for(:action => "link_action", :id => list_item['id']), 
+				:title =>"Actions".trn)
+	%>					
+	<%if !list_item.postit_list%>
+	<%= link_to("<i class='glyphicon glyphicon-remove-sign'></i>".html_safe, 
+				url_for(:action => "destroy", :id => list_item['id']), 
+				:confirm =>"Voulez vous vraiment supprimer cette tâche ?".trn,
+				:title =>"Supprimer".trn)
+	%>					
+  	<%end%>
+  </td>
+  
+</tr>

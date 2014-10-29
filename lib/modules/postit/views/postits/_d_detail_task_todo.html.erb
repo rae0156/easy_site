@@ -1,0 +1,34 @@
+			<table cellpadding="4" width="100%" class='table'>
+			  <tr>
+				<th><%="Nom de la tâche".trn%></th>
+				<th><%="Description".trn%></th>
+			    <th><%="Options".trn%> &nbsp;
+					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-comment'></i>", 
+																				:controller => "postits", :action => "view_all_task",
+																				:no_div => true,
+																				:param_goto => {:tab => 0},
+																				:html_option => {:remote => true, :title =>"Ouvrir toutes les tâches".trn}}%>
+
+			    </th>
+			  </tr>
+			  <%@my_tasks_to_do.each do |task|%>
+				<tr class="<%= cycle("row0", "row1") %>">
+				  <td><%= task.name%></td>
+				  <td><%= task.description.limit(50) %></td>
+				  <td>
+					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-comment'></i>", 
+																				:controller => "postits", :action => "view_task", :id => task['id'],
+																				:no_div => true,
+																				:param_goto => {:tab => 0},
+																				:html_option => {:remote => true, :title =>"Voir la tâche".trn}}%>
+
+					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-thumbs-up'></i>", 
+																				:controller => "postits", :action => "close_task", :id => task['id'],
+																				:no_div => true,
+																				:confirm => "Voulez vous clôturer cette tâche ?".trn,
+																				:param_goto => {:tab => 0},
+																				:html_option => {:remote => true, :title =>"Clôturer une tâche".trn}}%>
+				  </td>  
+				</tr>
+			  <%end%>
+			</table>

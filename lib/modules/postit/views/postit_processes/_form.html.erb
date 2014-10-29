@@ -1,0 +1,33 @@
+
+	  <h4><%= field_description "Données obligatoires", true %></h4>
+	  
+	  <div class="form-group">
+	    <label for="postit_process_name" class="col-sm-4 control-label"><%= field_description "", true %> <%="Nom du processus".trn%> : </label>
+		<div class="col-sm-8">
+			<%= text_field "postit_process", "name", :maxlength => 200, :class => "form-control" %>
+	    </div>
+	  </div>
+	  <div class="form-group">
+	    <label for="postit_process_description" class="col-sm-4 control-label"><%="Description".trn%> : </label>
+	    <div class="col-sm-8">
+			<%= text_field "postit_process", "description", :maxlength => 4000, :class => "form-control" %>
+		</div>
+	  </div>
+	  <div class="form-group">
+	    <label for="postit_process_templatable" class="col-sm-4 control-label"><%="Modèle".trn%> : </label>
+	    <div class="col-sm-1">
+			<%= easy_tag('check_box',:instance => "postit_process", :field => "templatable") %>		
+		</div>
+	  </div>
+      <div class="form-group">
+        <label for="postit_process_owner_id" class="col-sm-4 control-label"><%= field_description "", true %> <%="Responsable".trn%> : </label>
+	    <div class="col-sm-8">
+      	  <%= select("postit_process", :owner_id, [["Tous".trn,0]] + (current_user.blank? ? [] : [["#{current_user.name} #{current_user.firstname}",current_user.id]]) , {:include_blank => ''}, :size => 1, :class => "form-control") %>
+	    </div>
+	  </div>
+      <div class="form-group">
+        <label for="postit_process_dyn_workflow_type_id" class="col-sm-4 control-label"><%= field_description "", true %> <%="Type de flux".trn%> : </label>
+	    <div class="col-sm-8">
+      	  <%= select("postit_process", :dyn_workflow_type_id,  PostitProcess.workflow_type_list.map{|wft| [wft.label,wft.id]}, {:include_blank => ''}, :size => 1, :class => "form-control", :disabled => ((@postit_process.id.blank? || @postit_process.postit_phases.size == 0) ? false : "disabled")) %>
+	    </div>
+	  </div>

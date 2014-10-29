@@ -32,7 +32,6 @@ controllers:
   entry_points:
     ActionUsersController:    
         list: Gestion des actions
-        launch: Executer une action
         all_actions: Voir toutes les actions
         custom_actions: Voir ses actions
         setup_actions: Personnaliser ses actions

@@ -44,5 +44,21 @@
 	<%else%>
 		<%= yield %>
 	<%end%>
+
+
+
+<%if "#{Rails.env}".upcase == "DEVELOPMENT"%>
+	<script>
+		$(document).ready( function($) { 
+			$(document).ajaxError( function(event, request, settings, errors) {
+				document.getElementsByTagName('BODY')[0].innerHTML = request.responseText
+				alert('Ajax error : ' + errors);
+			})
+		});
+	</script>
+<%end%>
+
+
+
   </body>
 </html>

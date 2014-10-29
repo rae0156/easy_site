@@ -1,0 +1,59 @@
+<% @title = "Liaison d'actions à une tâche".trn %>
+
+<div class="center-menu">
+    <h2><%= image_tag("appli/setup_48.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
+	
+	<ul>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Tâches".trn,:image => "appli/back_32.png", :action => "list"}%></li>
+		<%if @postit_task.postit_list%>
+			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Liste attachée".trn,:image => "appli/back_32.png", :controller => "postit_lists", :action => "link_task", :id => @postit_task.postit_list_id}%></li>
+		<%end%>
+	</ul>
+	
+	<div class="clearer"></div>	
+</div>
+
+<h3><%= "Tâche".trn %></h3>
+<div class="row cadre bg-primary form-horizontal">
+
+	  <div class="form-group">
+	    <label for="postit_task_name" class="col-sm-2 control-label"><%="Nom de la tâche".trn%> : </label>
+		<div class="col-sm-10">
+		  <%= easy_tag('text',:instance => "postit_task", :field => "name",:read_only => true) %>
+	    </div>
+	  </div>
+	  <div class="form-group">
+	    <label for="postit_task_description" class="col-sm-2 control-label"><%="Description".trn%> : </label>
+	    <div class="col-sm-10">
+		  <%= easy_tag('text',:instance => "postit_task", :field => "description",:read_only => true) %>
+		</div>
+	  </div>
+
+
+</div>
+
+<h3><%= "Actions".trn %></h3>
+<div class="row cadre bg-primary">
+	<%= form_tag({ :action => 'save_link_action'}, { :name => 'element_form', :class => 'form-horizontal' }) do%>
+		<div class="col-sm-5">
+		    <h4><%= "Actions disponnibles".trn %></h4>
+			 <%= easy_tag('list',:instance => "user_action", :field => "free",:value_list_array => @action_free,:include_blank => false, :selected_value => "0", :number_of_line=>15,:multiple => true) %>
+		</div>
+		<div class="col-sm-2 text-center">
+		    <h3>&nbsp;</h3>
+		    <%if @postit_task.checked=='N' && !@postit_task.postit_list %>
+			    <%= render :partial => 'shared/goto_menu_item', :locals => {:action => "save_link_action", :id => @postit_task.id, :form => "element_form",:text_html => "<i class='glyphicon glyphicon-fast-forward btn-lg'></i>", :html_option => {:title =>"Ajouter toutes les actions".trn}, :param_goto => {:action_plus => "add_all_action"}}%>
+				<br />			
+			    <%= render :partial => 'shared/goto_menu_item', :locals => {:action => "save_link_action", :id => @postit_task.id, :form => "element_form",:text_html => "<i class='glyphicon glyphicon-step-forward btn-lg'></i>", :html_option => {:title =>"Ajouter les actions sélectionnées".trn}, :param_goto => {:action_plus => "add_selected_action"}}%>
+				<br />			
+			    <%= render :partial => 'shared/goto_menu_item', :locals => {:action => "save_link_action", :id => @postit_task.id, :form => "element_form",:text_html => "<i class='glyphicon glyphicon-step-backward btn-lg'></i>", :html_option => {:title =>"Supprimer les actions sélectionnées".trn}, :param_goto => {:action_plus => "del_selected_action"}}%>
+				<br />			
+			    <%= render :partial => 'shared/goto_menu_item', :locals => {:action => "save_link_action", :id => @postit_task.id, :form => "element_form",:text_html => "<i class='glyphicon glyphicon-fast-backward btn-lg'></i>", :html_option => {:title =>"Supprimer toutes les actions".trn}, :param_goto => {:action_plus => "del_all_action"}}%>
+		    <%end%>
+		</div>
+		<div class="col-sm-5">
+		    <h4><%= "Actions associées".trn %></h4>
+			 <%= easy_tag('list',:instance => "user_action", :field => "choosen",:value_list_array => @action_chosen,:include_blank => false, :selected_value => "0",:number_of_line=>15,:multiple => true) %>
+		</div>
+	<% end %>
+</div>

@@ -1,0 +1,78 @@
+			<table cellpadding="4" width="100%" class='table'>
+			  <tr>
+				<th><%="Nom du processus".trn%></th>
+				<th><%="Liste".trn%></th>
+				<th><%="Description".trn%></th>
+				<th><%="Responsable".trn%></th>
+				<th><%="Statut".trn%></th>
+			    <th><%="Statut du flux".trn%></th>
+			    <th><%="Options".trn%></th>
+			  </tr>
+			  <%@my_processes_to_do.each do |process|%>
+				<tr class="<%= cycle("row0", "row1") %>">
+				  <td colspan="2"><%= process.name%></td>
+				  <td><%= process.description.limit(50) %></td>
+				  <td><%= process.owner_name %></td>
+				  <td><%= process.status_name %></td>
+				  <td><%= process.workflow_status_name %></td>				  
+				  <td>
+				  	<%if process.status == 'COMPLETE' && process.is_last_status? %>
+						<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-thumbs-up'></i>", 
+																					:controller => "postits", :action => "close_process", :id => process['id'],
+																					:no_div => true,
+																					:confirm => "Voulez vous clôturer ce processus ?".trn,
+																					:param_goto => {:tab => 4},
+																					:html_option => {:remote => true, :title =>"Clôturer un processus".trn}}%>
+				  	<%end%>
+				  	<%if process.complete_for_this_status %>
+				  		<%process.get_next_statuses.each_with_index do |s,i| %>
+							<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<button type='button' class='btn btn-default btn-xs'><span class='glyphicon glyphicon-transfer'></span> #{s.label}</button>", 
+																						:controller => "postits", :action => "change_status", :id => process['id'],
+																						:no_div => true,
+																						:confirm => "Voulez vous changer le status vers %{status} ?".trn(:status => s.label),
+																						:param_goto => {:tab => 4, :next_status_id => s.id},
+																						:html_option => {:remote => true, :title =>"Changer le status vers %{status}".trn(:status => s.label)}}%>
+							<%if i + 1 < process.get_next_statuses.size %>
+								<br />
+							<%end%>
+					  	<%end%>
+				  	<%end%>
+				  </td>  
+				</tr>
+				  <%process.postit_lists.each do |list|%>
+					<tr class="<%= cycle("row0", "row1") %>">
+					  <td></td>
+					  <td><%= list.name%></td>
+					  <td><%= list.description.limit(50) %></td>
+					  <td><%= list.owner_name %></td>
+					  <td><%= list.status_name %></td>
+					  <td>
+					  	<%= list.postit_phase.workflow_status_name %>
+					  </td>				  
+					  <td> 
+						<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-comment'></i>", 
+																					:controller => "postits", :action => "view_list", :id => list['id'],
+																					:no_div => true,
+																					:param_goto => {:tab => 4},
+																					:html_option => {:remote => true, :title =>"Voir la liste de tâches".trn}}%>
+	
+						<%if list.completed == 'N'%>
+							<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-thumbs-up'></i>", 
+																						:controller => "postits", :action => "close_list", :id => list['id'],
+																						:no_div => true,
+																						:confirm => "Voulez vous clôturer cette liste de tâches ?".trn,
+																						:param_goto => {:tab => 4},
+																						:html_option => {:remote => true, :title =>"Clôturer une liste entière".trn}}%>
+						<%else%>
+							<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-share'></i>", 
+																						:controller => "postits", :action => "open_list", :id => list['id'],
+																						:no_div => true,
+																						:confirm => "Voulez vous réouvrir cette liste de tâches ?".trn,
+																						:param_goto => {:tab => 4},
+																						:html_option => {:remote => true, :title =>"Réouvrir une liste".trn}}%>
+						<%end%>
+					  </td>  
+					</tr>
+				  <%end%>
+			  <%end%>
+			</table>

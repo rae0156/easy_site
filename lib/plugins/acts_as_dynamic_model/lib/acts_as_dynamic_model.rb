@@ -31,7 +31,7 @@ module ActsAsDynamicModel
 #        @setup_model[:audit_model]            = @setup_model[:audit_model].nil? ? true : @setup_model[:audit_model]    
         
         acts_as_multi_site if self.column_names.include?('es_site_id')  && self.respond_to?("acts_as_multi_site")
-        stampable if (self.column_names.include?('creator_id') || self.column_names.include?('updater_id')) && self.respond_to?("stampable")
+        stampable if (self.column_names.include?('creator_id') || self.column_names.include?('updater_id') || self.column_names.include?('created_by') || self.column_names.include?('updated_by')) && self.respond_to?("stampable")
 
         act_as_order_field = self.column_names.include?('sequence') ? "sequence" : (self.column_names.include?('name') ? "name" : "id")        
         acts_as_tree :order => act_as_order_field if self.column_names.include?('parent_id') && self.respond_to?("acts_as_tree")

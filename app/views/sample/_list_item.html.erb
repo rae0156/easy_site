@@ -1,0 +1,19 @@
+<tr class="<%= cycle("row0", "row1") %>">
+  <td>
+  	<%= link_to list_item.name, :action => 'edit', :id => list_item.id%>
+  </td>
+  <td>
+	<%= list_item.description.limit(50) %>  
+  </td>
+  <td>
+	<%= list_item.sequence %>  
+  </td>
+  <td>
+	<%= link_to("<i class='glyphicon glyphicon-remove-sign'></i>".html_safe, 
+				url_for(:action => "destroy", :id => list_item['id']), 
+				:confirm =>"Voulez vous vraiment supprimer cette tâche ?".trn,
+				:title =>"Supprimer".trn)
+	%>					
+  </td>
+  
+</tr>

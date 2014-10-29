@@ -4,6 +4,8 @@ class ActionUsersController < ApplicationController
 
   has_es_interface_controllers
 
+  has_actions_detect([:addon_parameter], [:execute])
+
   def list
     sorting :default => 'action_users.name'    
     @action_users = ActionUser.paginate :per_page => 20, :page => params[:page], :order => @sort, :conditions => create_conditions,:group => "action_users.name"
@@ -111,19 +113,13 @@ class ActionUsersController < ApplicationController
 
 
 
-
-
-
-
-
-
   def execute
-    id = params[:action_user][:id]
+    id            = params[:action_user][:id]
     @action_user = ActionUser.find_by_id(id)
     if @action_user
       action,parameters=@action_user.get_action_and_parameters
-      # puts "ici : #{action.inspect}"
-      # puts "ici : #{parameters.inspect}"
+      #puts "ici 10 : #{action.inspect}"
+      #puts "ici 20 : #{parameters.inspect}"
 
       begin
           object_class = action[:name].constantize
@@ -156,7 +152,12 @@ class ActionUsersController < ApplicationController
 
   def setup_actions
     @setup = true
+    @current_user_id = current_user.id
     render :action => "custom_actions"
+  end
+
+  def custom_actions
+    @current_user_id = current_user.id
   end
 
   def save_custom

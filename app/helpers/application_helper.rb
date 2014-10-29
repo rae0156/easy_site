@@ -529,9 +529,9 @@ module ApplicationHelper
     if collection.total_pages < 2
       case collection.size
       when 0
-        "Aucun %{element_paginate} trouvé".trn(:element_paginate => entry_name)
+        "Il n'y a pas de %{element_paginate}".trn(:element_paginate => entry_name)
       else
-        "Tous les %{element_paginate}".trn(:element_paginate => entry_name.pluralize)
+        "Totalité des %{element_paginate}".trn(:element_paginate => entry_name.pluralize)
       end
     else
       "Affichage %{de} - %{vers} sur %{total} %{element_paginate}".trn(:de => collection.offset + 1, :vers => collection.offset + collection.length, :total => collection.total_entries, :element_paginate =>entry_name.pluralize)

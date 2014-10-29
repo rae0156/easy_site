@@ -1,0 +1,18 @@
+<!-- Data table header and content -->
+<table cellpadding="4" width="100%" class='table'>
+  <tr>
+	<th><%= sort_link_remote :text => "Nom de la phase".trn, :column => "postit_phases.name", :action => 'list'%></th>
+	<th><%= sort_link_remote :text => "Description".trn, :column => "postit_phases.description", :action => 'list'%></th>
+	<th><%= sort_link_remote :text => "Processus".trn, :column => "postit_processes.name", :action => 'list'%></th>
+    <th><%="Nbr listes".trn%></th>
+    <th><%="Statut".trn%></th>
+	<th><%="Statut de flux".trn%></th>
+    <th><%="Clôture".trn%></th>
+    <th><%="Responsable".trn%></th>
+    <th>Options</th>
+  </tr>
+  <%= render :partial => 'list_item', :collection => @postit_phases %>
+</table>
+
+<%= will_paginate @postit_phases, :params => params, :previous_label => '<< ' + "Précédent".trn, :next_label => "Suivant".trn + ' >>' %>
+<%= page_entries_info @postit_phases, :model => "Phase".trn %>

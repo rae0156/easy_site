@@ -1,0 +1,55 @@
+<tr class="<%= cycle("row0", "row1") %>">
+  <td><%= list_item_task_list.name%></td>
+  <td><%= list_item_task_list.description.limit(50) %></td>
+  <td><%= list_item_task_list.sequence.to_i %></td>
+  <td>
+	<%= image_tag(list_item_task_list.optional == 'N' ? "appli/ok_32.png" : "appli/cancel_32.png", 
+						    {:alt => "", :align => "middle", :border => "0",
+						    :class => "app_tooltip", :title => list_item_task_list.optional=='N'  ? "cette tâche est optionnelle".trn : "cette tâche n'est pas obligatoire".trn, "data-placement" => "left"}) %>  
+  </td>
+<%if list_item_task_list.postit_list.checkable=='Y'%>
+  <td>
+	<%= image_tag(list_item_task_list.checked == 'Y' ? "appli/ok_32.png" : "appli/cancel_32.png", 
+						    {:alt => "", :align => "middle", :border => "0",
+						    :class => "app_tooltip", :title => list_item_task_list.status_name, "data-placement" => "left"}) %>  
+  </td>
+  <td><%= list_item_task_list.checked=='N' ? '/' : list_item_task_list.close_date_text %></td>
+<%end%>
+  
+</tr>
+<%if list_item_task_list.postit_list.completed=='N'%>
+<tr>
+  <td></td>
+  <td colspan="4">
+  <%if list_item_task_list.action_users.size > 0%>
+	  <%if list_item_task_list.checked=='N'%>
+			<%list_item_task_list.action_users.each do |a|%>
+				<%=generate_action(a)%>
+			<%end%>
+	  <%else%>
+		  <%="Plus d'action accessible".trn%>
+	  <%end%>
+  <%else%>
+	  <%="Pas d'action".trn%>
+  <%end%>
+  </td>
+  <td>
+	<%if list_item_task_list.can_be_closed%>
+		<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-thumbs-up'></i>", 
+																	:controller => "postits", :action => "close_task_from_list", :id => list_item_task_list['id'],
+																	:no_div => true,
+																	:confirm => "Voulez vous clôturer cette tâche ?".trn,
+																	:param_goto => {:tab => params[:tab]},
+																	:html_option => {:remote => true, :title =>"Clôturer cette tâche".trn}}%>
+    <%end%>
+	<%if list_item_task_list.can_be_opened%>
+		<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-share'></i>", 
+																	:controller => "postits", :action => "open_task_from_list", :id => list_item_task_list['id'],
+																	:no_div => true,
+																	:confirm => "Voulez vous réouvrir cette tâche ?".trn,
+																	:param_goto => {:tab => params[:tab]},
+																	:html_option => {:remote => true, :title =>"Réouvrir cette tâche".trn}}%>
+    <%end%>
+  </td>
+</tr>
+<%end%>

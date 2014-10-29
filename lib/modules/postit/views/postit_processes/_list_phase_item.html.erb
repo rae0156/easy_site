@@ -1,0 +1,32 @@
+<tr class="<%= cycle("row0", "row1") %>">
+  <td>
+  	<%if list_phase_item.postit_process.status != "NONE" %>
+	  	<%= list_phase_item.name%>
+  	<%else%>
+	  	<%= link_to list_phase_item.name, :action => 'edit_phase', :id => list_phase_item.id%>
+  	<%end%>
+  </td>
+  <td><%=list_phase_item.status_name%></td>
+  <td><%=list_phase_item.workflow_status_name%></td>
+  <td>
+	<%
+		tmp_links = []
+		if list_phase_item.postit_lists.size > 0
+			tmp_links << link_to("<i class='glyphicon glyphicon-play-circle'></i>".html_safe, 
+									url_for(:controller => "postit_phases", :action => "link_list", :id => list_phase_item['id']), 
+									:title =>"Listes de tâche de cette phase".trn)
+		end
+		if list_phase_item.postit_process.status == "NONE"
+			tmp_links << link_to("<i class='glyphicon glyphicon-remove-sign'></i>".html_safe, 
+									url_for(:action => "unlink_phase", :id => list_phase_item['id']), 
+									:confirm =>"Voulez vous vraiment détacher cette phase du processus ?".trn,
+									:title =>"Détacher cette phase du processus".trn)
+		end
+	%>
+	<%=tmp_links.join('&nbsp;').html_safe%>
+
+
+
+  </td>
+  
+</tr>

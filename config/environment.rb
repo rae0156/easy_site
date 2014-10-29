@@ -16,6 +16,8 @@ init_workspace_easysite
 #keep also : init_workspace_easysite in es_utils
 
 
+Ddb::Userstamp.compatibility_mode = true
+
 #Ne pas bouger d'ici
   ActionMailer::Base.smtp_settings = {  
     :address              => EsSetup.get_setup("mail_serveur_adresse"),  

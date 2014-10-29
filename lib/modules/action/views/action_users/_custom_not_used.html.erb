@@ -9,9 +9,9 @@
 	      <div class="row">
 		    <div class="col-sm-11" id="droppable_free">
 		    	<h2><%="Liste des actions disponibles".trn%></h2>
-				<%ActionUser.all(:order => "name",:conditions=>["user_id in (?)",[0,@current_user_id]]).each do |a| 
+				<%ActionUser.all(:order => "name",:conditions=>["user_id in (?)",[0,@current_user_id]]).each do |a|
 					screen = a.action_screens.first(:conditions => {:user_id => @current_user_id})
-					if screen.blank?%>
+					if screen.blank?%>					
 						<%=generate_action(a.id,{:link_class => "draggable_free btn btn-default", :no_link => (@setup==true ? "Y" : "N")})%>
 				<%  end
 				  end%>

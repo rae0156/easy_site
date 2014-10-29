@@ -1,0 +1,56 @@
+<% @title = "Liaison de phases à un processus".trn %>
+
+<div class="center-menu">
+    <h2><%= image_tag("appli/setup_48.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
+	
+	<ul>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Liste de processus".trn,:image => "appli/back_32.png", :action => "list"}%></li>
+	</ul>
+	
+	<div class="clearer"></div>	
+</div>
+
+<h3><%= "Processus".trn %></h3>
+<div class="row cadre bg-primary form-horizontal">
+
+	  <div class="form-group">
+	    <label for="postit_process_name" class="col-sm-2 control-label"><%="Nom du processus".trn%> : </label>
+		<div class="col-sm-10">
+		  <%= easy_tag('text',:instance => "postit_process", :field => "name",:read_only => true) %>
+	    </div>
+	  </div>
+	  <div class="form-group">
+	    <label for="postit_process_description" class="col-sm-2 control-label"><%="Description".trn%> : </label>
+	    <div class="col-sm-10">
+		  <%= easy_tag('text',:instance => "postit_process", :field => "description",:read_only => true) %>
+		</div>
+	  </div>
+
+
+</div>
+
+<h3><%= "Phases".trn %></h3>
+<div class="row cadre bg-primary">
+	<%= form_tag({ :action => 'save_link_phase'}, { :name => 'element_form', :class => 'form-horizontal' }) do%>
+		<div class="col-sm-3">
+		    <h4><%= "Phases disponnibles".trn %></h4>
+			 <%= easy_tag('list',:instance => "phase", :field => "free",:value_list_array => @phase_free,:include_blank => false, :selected_value => "0", :number_of_line=>15,:multiple => true) %>
+		</div>
+		<div class="col-sm-2 text-center">
+			<br /><br />
+			<%if @postit_process.status == "NONE" || @postit_process.postit_phases.size == 0%>
+				<%unless @phase_free.blank?%>
+				    <%= render :partial => 'shared/goto_menu_item', :locals => {:action => "save_link_phase", :id => @postit_process.id, :form => "element_form",:text_html => "<i class='glyphicon glyphicon-chevron-right btn-lg'></i>", :html_option => {:title =>"Ajouter les phases sélectionnées".trn}}%>
+					<br />			
+				<%end%>
+			    <%= render :partial => 'shared/goto_menu_item', :locals => {:action => "add_link_phase", :id => @postit_process.id,:text_html => "<i class='glyphicon glyphicon-plus btn-lg'></i>", :html_option => {:title =>"Créer une nouvelle phase pour ce processus".trn}}%>
+			<%end%>
+		</div>
+	<% end %>
+		<div class="col-sm-7">
+		    <h4><%= "Phases associées".trn %></h4>
+			<div id="list_phase_div">
+			  <%= render :partial => 'list_phase' %>
+			</div>
+		</div>
+</div>

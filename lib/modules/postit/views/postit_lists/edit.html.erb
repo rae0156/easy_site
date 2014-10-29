@@ -1,0 +1,16 @@
+<% @title = "Modification d'une liste de tâches".trn %>
+
+<div class="cadre bg-primary">
+	<h2><%= image_tag("appli/setup_48.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
+    <ul>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/save_32.png", :action => "update",:id =>@postit_list.id,  :form => "element_form"}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour".trn,:image => "appli/back_32.png", :controller => (@postit_list.postit_phase ? 'postit_phases' : 'postit_lists') ,:action => (@postit_list.postit_phase ? 'link_list' : 'list'), :id => @postit_list.postit_phase_id}%></li>
+    </ul>
+	<%= errors_for(@postit_list) %>
+
+	<%= form_tag({ :action => 'update'}, { :name => 'element_form', :class => 'form-horizontal' }) do%>
+		
+		  <%= render :partial => 'form' %>
+	
+	<% end %>
+</div>

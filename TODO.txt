@@ -1,20 +1,17 @@
 
 
-Créer le module 'todolist/checklist/postit' avec workflow avec status et role/user (voir feuille)
-	- Version rapide avec juste les notes
-	- Analyse de la version longue
-	- Version longue
-	
+dynamic_addon => voir rep D:\EasySite - Todo\1) to_do\dynamic_addon
+
+===========================
+
+voir lenteur
+
 ==========================
 
 KQI => voir rep D:\EasySite - Todo\1) to_do\kqi
 
 ===========================
-
-dynamic_addon => voir rep D:\EasySite - Todo\1) to_do\dynamic_addon
 	
-===========================
-
 finaliser la création de menu (user ou admin)
 	un nom + le détail
 	insérer les menus dans un module ou comme nouveau type de contenu
@@ -36,12 +33,19 @@ Transformer les part des template en module
 	- generate_blog
 	- adresse
 
-===========================
-
-Commencer à planifier d'autres modules et arranger l'existant
 
 ===========================
 
 Sequence : position ranked-model pour remplacer le num ou le seq des modèles
 
+===========================
 
+Recup audit du template rails 3
+
+===========================
+
+Commencer à planifier d'autres modules et arranger l'existant
+modules intéressants : 
+	query sur pour en faire des rapports
+	gestion des fichiers et rep
+	

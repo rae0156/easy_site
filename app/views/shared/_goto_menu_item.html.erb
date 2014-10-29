@@ -26,6 +26,7 @@
 	param_goto = {} if param_goto.nil?
 	html_option = {} if html_option.nil?
 
+	no_div = false if no_div.nil?
 
 	if back
 		controller 	= session[:back_controller] 
@@ -61,11 +62,14 @@
 %>
 
 
-
+<%unless no_div%>
 <div class="<%=class_btn%>" <%=id_btn.blank? ? "" : "id='#{id_btn}'"%>>
+<%end%>
 	<%if form.blank? && controller.blank? && action.blank? %>
 		<%= submit_tag text %>
 	<%else%>
 		<%= !form.blank? ? link_to_function(link, javascript,option_hash ) : link_to(link, url_hash, option_hash) %>
 	<%end%>
+<%unless no_div%>
 </div>
+<%end%>

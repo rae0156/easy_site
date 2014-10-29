@@ -1,0 +1,38 @@
+
+	  <h4><%= field_description "Données obligatoires", true %></h4>
+	  
+	  <div class="form-group">
+	    <label for="postit_task_name" class="col-sm-4 control-label"><%= field_description "", true %> <%="Nom de la tâche".trn%> : </label>
+		<div class="col-sm-8">
+			<%= text_field "postit_task", "name", :maxlength => 200, :class => "form-control" %>
+	    </div>
+	  </div>
+	  <div class="form-group">
+	    <label for="postit_task_description" class="col-sm-4 control-label"><%="Description".trn%> : </label>
+	    <div class="col-sm-8">
+			<%= text_field "postit_task", "description", :maxlength => 4000, :class => "form-control" %>
+		</div>
+	  </div>
+	  
+	  <%if @postit_task.postit_list%>
+		  <div class="form-group">
+		    <label for="postit_task_optional" class="col-sm-4 control-label"><%="Tâche optionnelle".trn%> : </label>
+		    <div class="col-sm-1">
+				<%= easy_tag('check_box',:instance => "postit_task", :field => "optional") %>		
+			</div>
+		  </div>
+	  <%else%>
+		  <div class="form-group">
+		    <label for="postit_task_templatable" class="col-sm-4 control-label"><%="Modèle".trn%> : </label>
+		    <div class="col-sm-1">
+				<%= easy_tag('check_box',:instance => "postit_task", :field => "templatable") %>		
+			</div>
+		  </div>
+	      <div class="form-group">
+	        <label for="postit_task_owner_id" class="col-sm-4 control-label"><%= field_description "", true %> <%="Responsable".trn%> : </label>
+		    <div class="col-sm-8">
+	      	  <%= select("postit_task", :owner_id, [["Tous".trn,0]] + (current_user.blank? ? [] : [["#{current_user.name} #{current_user.firstname}",current_user.id]]) , {:include_blank => ''}, :size => 1, :class => "form-control") %>
+		    </div>
+		  </div>
+	  <%end%>
+
