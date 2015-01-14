@@ -1,0 +1,73 @@
+<%table = @dyn_export.get_table%>
+<h3 align="left"><%="Tables liées".trn%></h3>	
+
+
+	<div class="form-group">
+		<label class="control-label col-sm-2" for="select_fields"><%="Tables associées".trn%> :</label>
+		<div class="controls col-sm-10">
+			<p>
+				<%= select("include", "tables", @dyn_export.available_links,{:include_blank => ""}, {:multiple => false, :size => 5 })%>    
+			</p>
+			<p>
+				<div class='btn'>
+					<%= render :partial => 'shared/goto_menu_item', :locals => { :action => "add_include_clause", :id => @dyn_export.id, :form => "details_form", :image => "appli/add_32.png" ,  :text => "AJoutez une table".trn, :remote => true}%>		
+				</div>
+			</p>
+		</div>
+	</div>
+
+
+
+
+<table cellpadding="4" width="100%" class="adminlist">
+	<tr>
+		<th><%="De".trn%></th>
+		<th><%="Vers".trn%></th>
+		<th><%="Options".trn%></th>
+	</tr>
+
+	<%@dyn_export.dyn_export_details.find(:all, :conditions => {:clause => "INCLUDE"}, :order => "sequence asc").each do |list_item|	%>
+	<tr class="<%= cycle("row0", "row1") %>">
+	    <td><%=list_item.operator%></td>
+	    <td><%=list_item.name%></td>
+	    <td>
+
+			<%if @dyn_export.not_available_link(list_item.name).blank? && @dyn_export.not_available_field("FIELDS",list_item.name).blank? && @dyn_export.not_available_field("SORT",list_item.name).blank? && @dyn_export.not_available_field("WHERE",list_item.name).blank?%>
+
+		    	<%if list_item.active == 'Y'%>
+					<%= link_to(	"<i class='glyphicon glyphicon-ok'></i>".html_safe, 
+									url_for(:action => "activate_detail", :id => list_item.id),
+									{
+									 :title => "Désactiver une table liée".trn, 
+									 :confirm =>"Voulez vous désactiver une table liée ?".trn,
+									 :class => "app_tooltip",
+									 "data-placement" => "left", :remote => true
+									}
+								 )%>
+		    	<%else%>
+					<%= link_to(	"<i class='glyphicon glyphicon-remove'></i>".html_safe, 
+									url_for(:action => "activate_detail", :id => list_item.id),
+									{
+									 :title => "Activer une table liée".trn, 
+									 :confirm =>"Voulez vous activer une table liée ?".trn,
+									 :class => "app_tooltip",
+									 "data-placement" => "left", :remote => true
+									}
+								 )%>
+		    	<%end%>
+	
+				<%= link_to(	"<i class='glyphicon glyphicon-remove-circle'></i>".html_safe, 
+								url_for(:action => "destroy_detail", :id => list_item.id),
+								{
+								 :title => "Supprimer une table liée".trn, 
+								 :confirm =>"Voulez vous supprimer une table liée ?".trn,
+								 :class => "app_tooltip",
+								 "data-placement" => "left", :remote => true
+								}
+							 )%>
+			<%end%>
+
+		</td>
+	</tr>
+	<%end%>
+</table>

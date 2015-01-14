@@ -155,7 +155,9 @@ module ApplicationHelper
   def generate_menu(menu_name,options={})
     element = EsMenu.find_by_name(menu_name)
     return "" if element.nil?  
-    case element.link_type
+    case element.link_type    
+    when "horizontal"
+        return generate_horizontal(element).html_safe
     when "navigation"
         return generate_navigation(element).html_safe
     when "side"
@@ -170,7 +172,7 @@ module ApplicationHelper
   end
 
   def generate_sheet(element,options={})
-    tmp_list = generate_list(element,{:UL_LEVEL_1 => {:class => "nav navbar-default nav-tabs navbar-nav"},
+    tmp_list = generate_list(element,{:UL_LEVEL_1 => {:class => "nav navbar-default nav-tabs"}, #navbar-nav
                                       :UL_LEVEL_2 => {:class => "dropdown-menu"},
                                       :LI_HAS_CHILDREN_LEVEL_1 => {:class => 'dropdown'},
                                       :LI_FIRST => {:class => "active"}
@@ -285,6 +287,40 @@ module ApplicationHelper
   end
 
 
+  def generate_horizontal(element,options={})
+
+    tmp_list = generate_list(element,{:UL_LEVEL_1 => {:class => "nav navbar-default nav-tabs"}, #navbar-nav
+                                      :UL_LEVEL_2 => {:class => "dropdown-menu"},
+                                      :UL_LEVEL_OTHER => {:class => "dropdown-menu"},
+                                      :LI_HAS_CHILDREN_LEVEL_1 => {:class => 'dropdown'},
+                                      :LI_HAS_CHILDREN_LEVEL_2 => {:class => 'dropdown-submenu'},
+                                      :LI_HAS_CHILDREN_LEVEL_OTHER => {:class => 'dropdown-submenu'}
+                                      })
+    html_text = tmp_list[0]
+    tmp_tab_html = ""
+    num=0
+    tmp_list[1..-1].each do |elem|
+      menu = EsMenu.find(elem)
+      if menu.link_type=="separated"
+        html_text.gsub!("<LI>[#{elem}]</LI>",generate_tag(:LI, "", {:class => "divider"}))
+      else
+        tmp_link = generate_link(menu)
+        html_text.gsub!("[#{elem}]",tmp_link)
+      end
+      
+      if menu.link_type=="link_sheet"
+        tmp_media = EsMediaFile.find_by_name(menu.link_params)
+        tmp_tab_html+=generate_tag(:DIV, tmp_media.description, {:id=> "tab_#{menu.link_params}",:class => "tab-pane fade #{(num==0 ? 'in active' : '')}"}) unless tmp_media.blank?
+      end
+    num+=1   
+    end if tmp_list.count > 1 
+
+    html_text += generate_tag(:DIV, tmp_tab_html, {:class => "tab-content"})
+
+    return html_text
+  end
+
+
   def generate_navigation(element,options={})
     tmp_list = generate_list(element,{:UL => {:class => "nav nav-pills"}})
     html_text = tmp_list[0]
@@ -294,7 +330,7 @@ module ApplicationHelper
       html_text.gsub!("[#{elem}]",tmp_link)
     end if tmp_list.count > 1 
     
-    return html_text
+    return generate_tag(:div,html_text,:class => "navbar navbar-default navbar-fluid-top")
   end
 
   def generate_list(element,options={})

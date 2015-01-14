@@ -16,6 +16,17 @@ class ActionUser < ActiveRecord::Base
   validates_presence_of :name, :message => '#' + 'Le nom est obligatoire'.trn
   validates_presence_of :action_type_id, :message => '#' + "Le type d'action est obligatoire".trn
   validates_presence_of :user_id, :message => '#' + "L'utilisateur est obligatoire".trn
+
+  acts_as_audited :keep_text          => true,
+                  :child_attrs => {:action_type => :name },
+                  :model_audit_label  => "Action utilisateur".trn,
+                  :process_label      => "Changement manuel".trn
+ 
+  # it is an example, but not necessary if you have a field called 'ISO','CODE' or 'NAME'
+  def get_audit_label
+    self.name
+  end
+
   
   cattr_accessor :params_from_controller
   self.params_from_controller = {} 

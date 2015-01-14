@@ -1,5 +1,5 @@
 <!--DRAFT_3_1_0_0 - E6406 - 05.02.2014 - Dynamic crud-->
-<% @title = "Voir un élément '%{element}'".trn(:element =>@controller_setup[:instance_name]) %>
+<% @title = "Voir un élément '%{element}'".trn(:element =>@setup_controller[:instance_name]) %>
 <h2><%=@title%></h2>
 <%= form_tag({}, { :name => 'update_form', :class => 'form-horizontal' }) do%>
 

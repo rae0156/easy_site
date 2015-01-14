@@ -1,0 +1,93 @@
+<h3 align="left"><%="Tri".trn%></h3>	
+
+	<div class="form-group">
+		<label class="control-label col-sm-2" for="sort_fields"><%="Champs disponnibles".trn%> :</label>
+		<div class="controls col-sm-10">
+			<p>
+				<%= select("sort", "fields", @dyn_export.available_field("SORT"),{:include_blank => ""}, {:multiple => true, :size => 5 })%>
+			</p>    
+			<p>
+				<%= select("sort", "order", [['Ascendant'.trn,'ASC'], ['Descendant'.trn,'DESC']])%>    
+			</p>    
+			<p>
+				<div class='btn'>
+					<%= render :partial => 'shared/goto_menu_item', :locals => { :action => "add_sort_fields", :id => @dyn_export.id, :form => "details_form", :image => "appli/add_32.png" ,  :text => "Ajouter un champs".trn, :remote => true}%>		
+				</div>
+			</p>
+		</div>
+	</div>
+
+
+
+<table cellpadding="4" width="100%" class="adminlist">
+	<tr>
+		<th><%="Séquence".trn%></th>
+		<th><%="Nom du chmaps".trn%></th>
+		<th><%="Ordre".trn%></th>
+		<th><%="Options".trn%></th>
+	</tr>
+
+	<%@dyn_export.dyn_export_details.find(:all, :conditions => {:clause => "SORT"}, :order => "sequence asc").each do |list_item|	%>
+	<tr class="<%= cycle("row0", "row1") %>">
+	    <td><%=list_item.sequence.to_i%></td>
+	    <td><%=list_item.name%></td>
+	    <td>
+	    	<%=list_item.operator%>&nbsp;
+		    <%if list_item.active == 'Y' %>
+				<%= link_to("<i class='glyphicon glyphicon-sort'></i>".html_safe, 
+							url_for(:action => "change_order", :id => list_item['id'], :page => params[:page]), 
+							:title => "Changer l'ordre".trn, :class => "app_tooltip","data-placement" => "left", :remote => true) %>	    	
+		    <%end%>
+	    </td>
+	    <td>
+
+	  		<%if list_item.sequence.to_i > 1 %>
+				<%= link_to("<i class='glyphicon glyphicon-arrow-up'></i>".html_safe, 
+							url_for(:action => "move_up", :id => list_item['id'], :page => params[:page]), 
+							:title => "Monter".trn, :class => "app_tooltip","data-placement" => "left", :remote => true) %>
+	  		<%end%>
+	  		<%if list_item.sequence.to_i <  @dyn_export.last_sequence(list_item.clause)%>
+				<%= link_to("<i class='glyphicon glyphicon-arrow-down'></i>".html_safe, 
+							url_for(:action => "move_down", :id => list_item['id'], :page => params[:page]), 
+							:title => "Descendre".trn, :class => "app_tooltip","data-placement" => "left", :remote => true) %>
+	  		<%end%>
+
+
+	    	<%if list_item.active == 'Y'%>
+				<%= link_to(	"<i class='glyphicon glyphicon-ok'></i>".html_safe, 
+								url_for(:action => "activate_detail", :id => list_item.id),
+								{
+								 :title => "Désactiver un élément de tri".trn, 
+								 :confirm =>"Voulez vous désactiver un élément de tri ?".trn,
+								 :class => "app_tooltip",
+								 "data-placement" => "left", :remote => true
+								}
+							 )%>
+	    	<%else%>
+				<%= link_to(	"<i class='glyphicon glyphicon-remove'></i>".html_safe, 
+								url_for(:action => "activate_detail", :id => list_item.id),
+								{
+								 :title => "Activer un élément de tri".trn, 
+								 :confirm =>"Voulez vous activer un élément de tri ?".trn,
+								 :class => "app_tooltip",
+								 "data-placement" => "left", :remote => true
+								}
+							 )%>
+	    	<%end%>
+
+			<%= link_to(	"<i class='glyphicon glyphicon-remove-circle'></i>".html_safe, 
+							url_for(:action => "destroy_detail", :id => list_item.id),
+							{
+							 :title => "Supprimer un élément de tri".trn, 
+							 :confirm =>"Voulez vous supprimer un élément de tri ?".trn,
+							 :class => "app_tooltip",
+							 "data-placement" => "left", :remote => true
+							}
+						 )%>
+
+		</td>
+	</tr>
+	<%end%>
+</table>
+
+

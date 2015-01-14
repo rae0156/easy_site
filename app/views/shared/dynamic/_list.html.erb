@@ -1,5 +1,5 @@
 <!-- Data table header and content -->
-<%if @controller_setup[:parent_exists] %>
+<%if @setup_controller[:parent_exists] %>
 	<div>
 		<p><%=@parent_info%><p>
 		<%=generate_breadcrumb(*@breadcrumb).html_safe%>
@@ -8,11 +8,11 @@
 
 <table cellpadding="4" width="100%" class='table'>
   <tr>
-	<%if !@controller_setup[:table_field_active] && @controller_setup[:delete_multi]%>
+	<%if !@setup_controller[:table_field_active] && @setup_controller[:delete_multi]%>
 	    <th width="1"><%= check_box_tag("toggle_it", "", false, {:onclick => "checkAll('list_form');"}) %></th>
     <%end%>
     
-    <%if @controller_setup[:parent_exists] %>
+    <%if @setup_controller[:parent_exists] %>
     	<th><%="Enfants".trn%></th>
     <%end%>
 
@@ -38,7 +38,7 @@
      end%>
      <th><%="Options".trn%></th> 
   </tr>
-  <%if @controller_setup[:dynamic_filter_exists] %>
+  <%if @setup_controller[:dynamic_filter_exists] %>
     <%= render :partial => "shared/dynamic/dynamic_filter"%> 
   <%end%>
   
@@ -46,4 +46,4 @@
 </table>
 
 <%= will_paginate @instances, :params => params, :previous_label => '<< ' + 'Précédent'.trn, :next_label => 'Suivant'.trn + ' >>' %>
-<%= page_entries_info @instances, :model => @controller_setup[:instance_name] %>
+<%= page_entries_info @instances, :model => @setup_controller[:instance_name] %>

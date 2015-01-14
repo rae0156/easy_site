@@ -6,9 +6,12 @@
 		<div class="col-sm-5">
 		    <%=  collection_select(:admin, :theme, EsTheme.all.sort_by{|t| t.code}, :code, :code, {:selected => @theme},{ :class => "form-control"}) %>
 	    </div>
-		<div class="col-sm-1 btn btn-default">
-			<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn, :action => "save_theme",  :form => "admin_form"}%>
-	    </div>
+		<div class="col-sm-3 ">
+			<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn, :action => "save_theme",  :form => "admin_form",:class_btn => 'btn btn-default'}%>
+			&nbsp;
+			<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Rafraîchir".trn, :action => "load_themes",:class_btn => 'btn btn-default' }%>
+	    </div>	    	    
+	    
 	  </div>
 
 <% end %>

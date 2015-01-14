@@ -26,6 +26,7 @@
 //= require fontpicker.js
 //= require filepicker.js
 //= require postit
+//= require_tree ./treeview
 // require_tree .
 
 
@@ -51,14 +52,26 @@ function checkAll(form_name) {
 /**
  * Submit the form with the specified name to the specified url
  */
-function submitForm(form_name, url) {
+function submitForm(form_name, url,remote) {
   var f = document.forms[form_name];
 
   if (url != '') {
     f.action = url;
-
     if (typeof f.onsubmit == 'function') {
       f.onsubmit = function() { new Ajax.Request(url, {asynchronous:true, evalScripts:true, parameters:Form.serialize(this)}); return false; };
+    }
+    else
+    {
+    	if (remote)
+		{
+			$.ajax({
+			        type: "POST",
+			        url: $(f).attr('action'), 
+			        data: $(f).serialize(),
+			        dataType: "script"
+			   });
+			return false;    	
+		}
     }
   }
 
@@ -120,17 +133,17 @@ function checkAndSubmitAndDisableForm(form_name, url, confirmation, div_to_hide)
  * Check that at least one item has been selected, pops up a confirmation if needed
  * and submit the specified form to the specified url
  */
-function checkAndSubmitForm(form_name, url, confirmation) {
+function checkAndSubmitForm(form_name, url, confirmation,msg_confirm,msg_no_selected,remote) {
   if (!isItemSelected(form_name)) { 
-    alert('Aucun élément sélectionnés'); 
+    alert(msg_no_selected); 
   } 
   else if (confirmation) {
-    if (confirm('Voulez vous vraiment exécuter cette action sur les éléments sélectionnés ?')) {
-      submitForm(form_name, url);
+    if (confirm(msg_confirm)) {
+      submitForm(form_name, url,remote);
     }
   }
   else {
-    submitForm(form_name, url);
+    submitForm(form_name, url,remote);
   }
 }
 
@@ -277,15 +290,15 @@ function start_app()
 * Check that at least one item has been selected, pops up a confirmation if needed
 * and submit the specified form to the specified url
 */
-function questionAndSubmitForm(form_name, url, confirmation) {
+function questionAndSubmitForm(form_name, url, confirmation,msg_confirm,remote) {
 
 	if (confirmation) {
-		if (confirm('Etes vous certain de vouloir exécuter cette action ?')) {
-			submitForm(form_name, url);
+		if (confirm(msg_confirm)) {
+			submitForm(form_name, url,remote);
 		}
 	}
 	else {
-		submitForm(form_name, url);
+		submitForm(form_name, url,remote);
 	}
 }
 
@@ -329,6 +342,13 @@ function init_inputmask() {
 
 
 
+function init_tree_view_file() {
+	$(document).ready( function() {
+		$("#tree_view_file").hide();
+		$("#tree_view_file").treeview();
+		$("#tree_view_file").show();
+	} );
+}
 
 // démarrage de l'application
 $( document ).ready(function() {

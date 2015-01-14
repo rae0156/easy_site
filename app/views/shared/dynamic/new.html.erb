@@ -1,4 +1,4 @@
-<% @title = "Nouvel élément '%{element}'".trn(:element =>@controller_setup[:instance_name]) %>
+<% @title = "Nouvel élément '%{element}'".trn(:element =>@setup_controller[:instance_name]) %>
 <h2><%=@title%></h2>
 <%= form_tag({}, { :name => 'create_form', :class => 'form-horizontal' }) do%>
     <ul>

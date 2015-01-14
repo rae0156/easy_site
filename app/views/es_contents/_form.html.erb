@@ -40,9 +40,9 @@
 	    <label for="content_content_type" class="col-sm-4 control-label"><%= field_description "", true %> <%="Nom de l'action du module".trn%> : </label>
 	    <div class="col-sm-8">
 			<%if edit && @content.es_content_detail_params.size != 0 %>
-				<%= easy_tag('text',:instance => "content", :field => "module_action_name",:read_only => true)%>
+				<%= easy_tag('list',:instance => "content", :field => "module_action_name",:value_list_array => EsModule.get_module_action_list_choice,:number_of_line=>1,:multiple => false, :read_only => true)%>
 			<%else%>
-				<%= easy_tag('list',:instance => "content", :field => "module_action_name",:value_list_array => EsModule.get_module_action_list,:number_of_line=>1,:multiple => false)%>
+				<%= easy_tag('list',:instance => "content", :field => "module_action_name",:value_list_array => EsModule.get_module_action_list_choice,:number_of_line=>1,:multiple => false)%>
 			<%end%>
 		</div>
 	  </div>

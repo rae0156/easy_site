@@ -77,8 +77,31 @@ module FormHelper
         addon_param = element[:addon_params].presence || ""
         span_size   = 9
         case format
+        when "get"
+          tmp_list_value = nil
+          model = value_list[0]
+          proc = value_list[1]
+          if !model.blank? && !proc.blank?
+
+            begin
+                model_class = model.constantize
+            rescue 
+            end
+                  
+            if class_exists?(model.to_s) && model_class.respond_to?(proc) 
+              tmp_list_value = model_class.send(proc)
+              tmp_list_value = [] unless tmp_list_value.is_a?(Array) 
+            end
+
+          end
+          
+          unless tmp_list_value.nil?
+            text = easy_tag('list',:instance => "generated", :field => name,:selected_value=> value, :read_only=> read_only,:value_list_array => tmp_list_value.uniq,:multiple => false)
+          else
+            text = easy_tag('text',:instance => "generated", :field => name,:value=> value, :read_only=> true)
+          end
         when "link"
-          text = link_to(value, url_for(addon_param))
+          text =  link_to(value, url_for(addon_param), :class => "control-label col-sm-12", :style => "text-align:left;")
         when "string"
           text = easy_tag('text',:instance => "generated", :field => name,:value=> value, :read_only=> read_only)
         when "long_string"
@@ -115,6 +138,10 @@ module FormHelper
           else
             text = easy_tag('file',:instance => "generated", :field => name,:value=> value, :read_only=> read_only, :option_file => addon_param)
           end
+        when "text"
+          text = label_tag("", value, :class => "control-label")
+        when "label"
+          text = easy_tag('label',:label=> value)
         else
           text = easy_tag('text',:instance => "generated", :field => name,:value=> value, :read_only=> true)
         end

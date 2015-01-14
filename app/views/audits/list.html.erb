@@ -1,0 +1,26 @@
+<% @title = "Historisation des données".trn %>
+
+<div class="center-menu">
+    <h2><%= @title %></h2>
+	
+	<div class="clearer"></div>
+</div>
+
+<!-- Search -->
+<div>
+    <%= render :partial => 'search_form' %>
+</div>
+
+<div id='show_div'>
+    <%= render :partial => 'show' %>
+</div>
+
+<%= form_tag({:action => 'refresh', :name => 'audit_list_form', :id => 'audit_list_form'})  do%>
+
+
+<!-- Data table -->
+<div id="audits_div">
+  <%= render :partial => 'list' %>
+</div>
+
+<% end %>

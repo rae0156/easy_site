@@ -11,7 +11,16 @@ class EsPage < ActiveRecord::Base
                           :mandatory => true},
                          {:name => "controller",
                           :mandatory => true}
-                      ])
+                      ],{:audit_model=>false})
+  acts_as_audited :keep_text          => true,
+                  :child_attrs => {:es_template => :name ,:es_theme => :code},
+                  :model_audit_label  => "Droits controlleur".trn,
+                  :process_label      => "Changement manuel".trn
+ 
+  # it is an example, but not necessary if you have a field called 'ISO','CODE' or 'NAME'
+  def get_audit_label
+    self.controller + " " + self.action
+  end
 
   def self.find_page(controller,action)
     pages = EsPage.where(:controller => controller,:action=> action)

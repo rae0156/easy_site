@@ -10,4 +10,14 @@ class ActionScreen < ActiveRecord::Base
 
   attr_accessible :action_user_id, :user_id, :x, :y
 
+  acts_as_audited :keep_text          => true,
+                  :child_attrs => {:action_user => :name  },
+                  :model_audit_label  => "Action écran".trn,
+                  :process_label      => "Changement manuel".trn
+ 
+  # it is an example, but not necessary if you have a field called 'ISO','CODE' or 'NAME'
+  def get_audit_label
+    self.action_user.name
+  end
+
 end

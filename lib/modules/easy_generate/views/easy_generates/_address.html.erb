@@ -1,0 +1,4 @@
+<%unless @address.blank?%>
+	<%="<address><p>#{@address.title}</p><p><strong>#{@address.description}</strong><br>#{@address.path}<br>#{@address.reference}<br></address>".html_safe%>
+<%end%>
+

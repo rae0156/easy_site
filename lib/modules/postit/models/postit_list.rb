@@ -17,6 +17,16 @@ class PostitList < ActiveRecord::Base
   validates_presence_of :name, :message => '#' + 'Le nom est obligatoire'.trn
   validates_presence_of :owner_id, :message => '#' + "Le responsable est obligatoire".trn
 
+  acts_as_audited :keep_text          => true,
+                  :child_attrs => {:postit_phase => :name, :owner => :mail},
+                  :model_audit_label  => "Liste de tâches".trn,
+                  :process_label      => "Changement manuel".trn
+ 
+  # it is an example, but not necessary if you have a field called 'ISO','CODE' or 'NAME'
+  def get_audit_label
+    self.name
+  end
+
   def close_date_text
     return self.close_date.blank? ? "/" : self.close_date.strftime("%d/%m/%Y %H:%M:%S")
   end

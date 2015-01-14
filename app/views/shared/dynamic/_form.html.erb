@@ -1,5 +1,5 @@
-  <%tmp_readonly = params[:action]=='show' || (@controller_setup[:readonly_exists] && @instance["read_only"]=='Y')
-    if @controller_setup[:mandatory_exists] && !tmp_readonly%>
+  <%tmp_readonly = params[:action]=='show' || (@setup_controller[:readonly_exists] && @instance["read_only"]=='Y')
+    if @setup_controller[:mandatory_exists] && !tmp_readonly%>
 	  <h4><%= field_description "Données obligatoires".trn, true %></h4>
   <%end%>
 	<%@columns_screen.each do |column|

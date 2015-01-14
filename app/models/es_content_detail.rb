@@ -18,6 +18,15 @@ class EsContentDetail < ActiveRecord::Base
   
   has_dyn_attr(:table_attribute_type => 'es_attribute_types', :table_attribute => 'es_attributes')  
   
+  acts_as_audited :keep_text          => true,
+                  :child_attrs => {:es_content => :name,:es_module => :setup_name },
+                  :model_audit_label  => "Détail de contenu".trn,
+                  :process_label      => "Changement manuel".trn
+ 
+  # it is an example, but not necessary if you have a field called 'ISO','CODE' or 'NAME'
+  def get_audit_label
+    self.es_content.name + " " + self.sequence.to_s
+  end
   
   def create_module_params(module_params)
     existing_values={}

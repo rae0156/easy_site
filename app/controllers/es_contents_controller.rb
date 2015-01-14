@@ -57,8 +57,14 @@ class EsContentsController < ApplicationController
     else
       @content.es_content = EsContent.new(:name => name)
     end
+
     
     if @content.save
+      if @content.content_type == EsContent::CONTENT_TYPES_MODULE
+        module_action_name = @content.module_action_name.split(' ')
+        @content.content = "<%= generate_module_part(" + '"' + module_action_name[0] + '","' + module_action_name[1] + '"' + ",#{@content.id})%>"
+        @content.save
+      end
       flash[:notice] = "Le contenu '%{name}' a été créé.".trn(:name => @content.name)
       redirect_to :action => :list
     else
@@ -76,13 +82,21 @@ class EsContentsController < ApplicationController
     @content = EsContentDetail.find_by_id(id)
     if EsContent.find(:first,:conditions => ["id <> ? AND name = ?",@content.es_content.id,params[:content][:name]])
       @content.errors.add(:name, "#Ce nom de contenu '%{name}' existe déjà.".trn(:name => params[:content][:name])) 
+    else
+      escontent = @content.es_content
+    end
+    @content.attributes = params[:content]
+    escontent.attributes = {:name => params[:content][:name]}
+    if @content.content_type == EsContent::CONTENT_TYPES_MODULE
+      module_action_name = @content.module_action_name.split(' ')
+      @content.content = "<%= generate_module_part(" + '"' + module_action_name[0] + '","' + module_action_name[1] + '"' + ",#{@content.id})%>"
     end
 
-    @content.attributes = params[:content]
     @content.valid? if @content.errors.empty?
 
     if @content.errors.empty? 
-      @content.es_content.save
+      escontent.save
+      @content.save
       flash[:notice] = "Le contenu '%{name}' a été correctement modifié.".trn(:name => @content.name)
       redirect_to :action => :list
     else

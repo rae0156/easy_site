@@ -36,6 +36,7 @@ ul.nav > li.dropdown:hover > ul.dropdown-menu{ display: block; }
   background-image: url("../img/glyphicons-halflings-white.png");
 }
 
+/*
 .dropdown-submenu:hover > a,
 .dropdown-submenu:focus > a {
   color: #ffffff;
@@ -49,6 +50,7 @@ ul.nav > li.dropdown:hover > ul.dropdown-menu{ display: block; }
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0088cc', endColorstr='#ff0077b3', GradientType=0);
 }
+*/
 
 .dropdown-submenu {
   position: relative;

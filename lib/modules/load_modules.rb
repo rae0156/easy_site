@@ -157,7 +157,7 @@ class ModuleLoader
   end
   
   def self.load_setup(module_path)
-    delete_old_setup_part(["controllers"])
+    delete_old_setup_part(["controllers","menus"])
     puts "Chargement du setup pour le module '#{@module}'"  
     load_setup_part(@interface.except("interface","installation"))
     execute_install(module_path)
@@ -197,7 +197,7 @@ class ModuleLoader
     esmodule=EsModule.find(:first,:conditions => {:module_name => @module, :path_setup => path, :setup_name => setup_name})
     
     param_setup= nil
-    type_setup = nil
+    type_setup = ['N','Y'].include?(value) ? 'boolean' : 'string'
     updatable = 'N'
     value = value.strip
     if value.ends_with?(">>")
@@ -250,7 +250,7 @@ class ModuleLoader
         puts "module '#{@module}' : Pas de liste d'éléments interfacés pour '#{element}'"  
       else
         error = true
-        puts "Erreur dans le module '#{@module}' : Pas de liste d'éléments interfacés pour '#{element}'"  
+        puts "Erreur dans le module '#{@module}' : Pas de liste d'éléments paramétrée pour l'interfacage de '#{element}'"  
       end      
     end
     return !error

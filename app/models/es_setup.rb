@@ -19,8 +19,17 @@ class EsSetup < ActiveRecord::Base
                        :field_key         => true,
                        :field_key_scope   => "name"
                       } 
-                      ]) 
+                      ],{:audit_model=>false}) 
  
+  acts_as_audited :keep_text          => true,
+                  :child_attrs => {:es_category => :name },
+                  :model_audit_label  => "Paramétrage".trn,
+                  :process_label      => "Changement manuel".trn
+ 
+  # it is an example, but not necessary if you have a field called 'ISO','CODE' or 'NAME'
+  def get_audit_label
+    self.name
+  end
   
   def self.get_setup(setup_name,default="")
     tmp_setup = self.find(:first, :conditions => ["name = ?", setup_name] )

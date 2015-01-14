@@ -1,0 +1,52 @@
+
+<%if @audit%>
+	<div class="panel panel-default remove_detail">
+	    <div class="panel-heading"><%=link_to('<span class="glyphicon glyphicon-remove"></span>'.html_safe,"#",{:id => "close_buton", "data-placement" => "left"})%> <%="Type de modification".trn + " : " + @audit.action%></div>
+	    <div class="panel-body">
+		 <table cellpadding="4" width="100%" class="adminlist">
+		   <tr>
+		     <th><%="Attribut".trn%></th>
+		     <%if(@audit.action == 'update')%>
+		       <th><%="Ancienne valeur".trn%></th>
+		       <th><%="Nouvelle valeur".trn%></th>
+		     <%else%>
+		       <th><%="Valeur".trn%></th>
+		     <%end%>
+		   </tr>
+		   
+		  <% attribute_fields = @audit.changes_audit.to_a.select{|elt| elt[0][-5..-1]=="_text"}.collect{|elt| elt[0]}
+			 @audit.changes_audit.to_a.sort{|a,b| a[0] <=> b[0]}.each do |elt| 
+				field, modifications = elt
+				show = !(field[-3..-1] == "_id" && attribute_fields.include?(field[0..-3] + "text"))
+				if show
+			%>
+		    <tr>
+		    	<td><%= field[-5..-1]=="_text" ? field[0..-6].to_s.humanize : field.to_s.humanize -%></td>
+				<% if modifications.is_a?(Array)%>
+					<% modifications.each do |value| -%>
+						<td><%= value -%></td>
+					<% end %>
+				<% else %>
+					<td><%= modifications -%></td>
+				<% end %>
+		   	</tr>
+			<% end %>
+		  <% end %>
+		
+		</div>
+	</div>
+
+<script>
+	jQuery(document).ready(function($){
+		$('#close_buton').on('click',function() {
+			$('.remove_detail').hide();
+			return false;
+		});
+		
+	});
+</script>
+
+
+
+<%end%>
+

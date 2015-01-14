@@ -24,7 +24,7 @@ installation:
 
 setup:
   admin:
-    title: module Action <<string-N-Titre du module>>
+    title: module Action <<string-Y-Titre du module>>
 
 controllers: 
   entry_point_names:

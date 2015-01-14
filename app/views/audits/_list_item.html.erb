@@ -1,0 +1,63 @@
+<!--DRAFT_3_1_0_0 - E6406 - 31-MAR-2014 - improvement audit-->
+<% 
+	if @link_group == "date"
+		id = list_item.created_at.strftime('%d-%m-%Y')
+	elsif @link_group == "date_user"
+		id = list_item.created_at.strftime('%d-%m-%Y') + "_" + list_item.user_id.to_s 
+	elsif @link_group == "user_date"
+		id = list_item.created_at.strftime('%d-%m-%Y') + "_" + list_item.user_id.to_s 
+	elsif @link_group == "object_type"
+		id = list_item.auditable_type_label.blank? ? "Inconnu".trn : list_item.auditable_type_label.gsub(" ","-blank-")
+	else
+		id = list_item.id
+		audit_dev_obj  = list_item.auditable_label.blank? ? list_item.auditable_id.to_s : list_item.auditable_label
+		audit_dev_type = list_item.auditable_type_label.blank? ? list_item.auditable_type.underscore.humanize : list_item.auditable_type_label
+		process_label  = list_item.process_label.blank? ? "Processus inconnu".trn : list_item.process_label
+	    
+		if "#{Rails.env}".upcase == "DEVELOPMENT"
+			audit_dev_obj  += " *" if !list_item.auditable_label.nil? && list_item.auditable_label.to_s == list_item.auditable_id.to_s
+			audit_dev_type += " *" if list_item.auditable_type_label.nil?
+			process_label  += " *" if list_item.process_label.nil?
+		end
+	end
+%>
+
+
+<tr class="<%= cycle('row0', 'row1') %>">  		
+
+  <%if @link_group == "date" %>
+	  <td><a href='#' id='group_by_<%=id%>' link_group = '<%=@link_group%>'><%=h(list_item.created_at.strftime('%Y-%m-%d')) 					-%></a></td>
+  <%elsif @link_group == "date_user" %>
+	  <td><a href='#' id='group_by_<%=id%>' link_group = '<%=@link_group%>'><%=h(list_item.created_at.strftime('%Y-%m-%d')) 					-%></a></td>
+	  <td><%= h(EsUser.find(list_item.user_id).cleaned_long_name) if list_item.es_user	-%></td>
+  <%elsif @link_group == "user_date" %>
+	  <td><a href='#' id='group_by_<%=id%>' link_group = '<%=@link_group%>'><%=h(EsUser.find(list_item.user_id).cleaned_long_name) if list_item.es_user 					-%></a></td>
+	  <td><%=h(list_item.created_at.strftime('%Y-%m-%d')) 	-%></td>
+  <%elsif @link_group == "object_type" %>
+	  <td><a href='#' id='group_by_<%=id%>' link_group = '<%=@link_group%>'><%=h(list_item.auditable_type_label) 					-%></a></td>
+  <%elsif @link_group == "version" %>
+	  <td><%= h(list_item.created_at.strftime('%Y-%m-%d %H:%M:%S')) -%></td>
+	  <td><%= h(list_item.es_user.cleaned_long_name) if list_item.es_user	-%></td>
+	  <td><%= h(list_item.action) 					-%></td>
+	  <td><%= h(audit_dev_type)					    -%></td>
+	  <td><%= h(audit_dev_obj)  					-%></td>
+	  <td><%= h(process_label)			 			-%></td>
+	  <td><a href='#' id='group_by_<%=id%>' link_group = '<%=@link_group%>'><%=h(list_item.version) 					-%></a></td>
+	  <td><%= link_to('<span class="glyphicon glyphicon-list-alt"></span>'.html_safe,url_for({:controller => 'audits', :action => 'show', :id => list_item.id}),{:remote => true, :id => "view_buton", "data-placement" => "left"})%></td>
+  <%else%>
+	  <td><%= h(list_item.created_at.strftime('%Y-%m-%d %H:%M:%S')) -%></td>
+	  <td><%= h(list_item.es_user.cleaned_long_name) if list_item.es_user	-%></td>
+	  <td><%= h(list_item.action) 					-%></td>
+	  <td><%= h(audit_dev_type)					    -%></td>
+	  <td><%= h(audit_dev_obj)  					-%></td>
+	  <td><%= h(process_label)			 			-%></td>
+	  <td><%= h(list_item.version) 					-%></td>  
+	  <td><%= link_to('<span class="glyphicon glyphicon-list-alt"></span>'.html_safe,url_for({:controller => 'audits', :action => 'show', :id => list_item.id}),{:remote => true, :id => "view_buton", "data-placement" => "left"})%></td>
+  <%end%>
+
+</tr>
+<tr>
+	<td colspan=8 id = 'div_group_<%=id%>' style = 'padding:0;border-top:0px;border-bottom:0px;border-left:0px;border-right:0px;'>
+		<%= render :partial => 'detail_group',:collection => @detail_groups %>		
+	</td>
+</tr>

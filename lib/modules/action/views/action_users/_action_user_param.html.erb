@@ -9,7 +9,10 @@
 	value_list = tp.value_list.blank? ? [] : tp.value_list.split('|')
 	case tp.type_param
 	when "list"
-		options_easy_tag[:value_list_array] = value_list.map{|e| [ActionCode.find_by_code(e).description,e]}
+		options_easy_tag[:value_list_array] = value_list.map do |e| 
+			ac=ActionCode.find_by_code(e)
+			[ac ? ac.description : e,e]
+		end
 		options_easy_tag[:include_blank]	= false
 	when "file"
 		options_easy_tag[:option_file] = value_list.size == 2 ? "#{value_list[0]};/upload/content;#{value_list[1]},[EMPTY],[DIR]" : "public;/upload/content;[EMPTY],[DIR]"  
@@ -18,7 +21,7 @@
 
 	  <div class="form-group">
 	    <label for="action_user_name" class="col-sm-4 control-label"><%= field_description "", true %> <%=tp.description.trn%> : </label>
-		<div class="col-sm-8">
+		<div class="col-sm-8 action_user_param">
 			<%= easy_tag(tp.type_param,options_easy_tag) %>
 	    </div>
 	  </div>
@@ -30,5 +33,7 @@
 	<script>
 		init_datepicker();	
 		init_inputmask();		
-		$('.filepicker').fileSelector();
+		<%if params[:action]=='refresh_params'%>
+			$('.action_user_param .filepicker').fileSelector();
+		<%end%>
 	</script>

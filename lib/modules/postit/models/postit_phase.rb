@@ -19,6 +19,17 @@ class PostitPhase < ActiveRecord::Base
   validates_presence_of :name, :message => '#' + 'Le nom est obligatoire'.trn
   validates_presence_of :owner_id, :message => '#' + "Le responsable est obligatoire".trn
 
+
+  acts_as_audited :keep_text          => true,
+                  :child_attrs => {:postit_process => :name, :owner => :mail, :dyn_workflow_status => :status_name },
+                  :model_audit_label  => "Phase de processus".trn,
+                  :process_label      => "Changement manuel".trn
+ 
+  # it is an example, but not necessary if you have a field called 'ISO','CODE' or 'NAME'
+  def get_audit_label
+    self.name
+  end
+
   def workflow_status_name
     self.dyn_workflow_status ? self.dyn_workflow_status.label : "Aucun".trn 
   end

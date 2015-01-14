@@ -11,7 +11,7 @@ class UploadController < ApplicationController
 #    else
 #      @parent = File.join(Rails.root,@parent)
 #    end
-    @dir = DirContent.new(@parent, @typefile).get_content unless @parent.blank?
+    @dir = DirContent.new(@parent, @typefile).get_content_upload unless @parent.blank?
     @parent += "/" unless @parent.end_with?('/')
 
     render :layout => false

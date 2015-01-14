@@ -1,0 +1,68 @@
+interface:
+  models: /
+  controllers: 
+    - EasyGeneratesController
+  mailers: / 
+
+version: 0.0.0.10
+
+activated: Y<<boolean-N-Module actif>>
+
+setup:
+  admin:
+    title: module Easy Generate <<string-N-Titre du module>>
+
+controllers: 
+  entry_point_names:
+    EasyGeneratesController: Citation, Liste d'image, Carousel, Blog, Adresse, Lorem ipsum, etc..
+  entry_points:
+    EasyGeneratesController:    
+        setup_address: Paramétrage des adresses
+        setup_alert: Paramétrage des alertes
+        setup_blog: Paramétrage des blog
+        setup_breadcrumb: Paramétrage des fils conducteur
+        setup_carousel: Paramétrage des carousels
+        setup_citation: Paramétrage des citations
+        setup_collapse: Paramétrage des dépliables
+        setup_image_list: Paramétrage des listes d'images
+        setup_video: Paramétrage des vidéos
+  contents:
+    EasyGeneratesController:    
+        get_lorem_ipsum: 
+          description: Lorem ipsum
+        get_citation: 
+          description: Citation
+          params:
+            code_citation: <<get-Y-Code de la citation-EsMediaFile,get_code_citation>>
+        get_address: 
+          description: Adresse
+          params:
+            code_address: <<get-Y-Code d'adresse-EsMediaFile,get_code_address>>
+        get_alert: 
+          description: Message d'alerte
+          params:
+            code_alert: <<get-Y-Code d'alerte-EsMediaFile,get_code_alert>>
+        get_blog: 
+          description: Affichage mode Blog
+          params:
+            code_blog: <<get-Y-Code du blog-EsMediaFile,get_code_blog>>
+        get_breadcrumb: 
+          description: Fil conducteur
+          params:
+            code_breadcrumb: <<get-Y-Code du fil conducteur-EsMediaFile,get_code_breadcrumb>>
+        get_carousel: 
+          description: Carousel
+          params:
+            code_carousel: <<get-Y-Code du carousel-EsMediaFile,get_code_carousel>>
+        get_collapse: 
+          description: Affichage mode dépliable
+          params:
+            code_collapse: <<get-Y-Code du Déplicable-EsMediaFile,get_code_collapse>>
+        get_image_list: 
+          description: Liste d'images
+          params:
+            code_image_list: <<get-Y-Code de la liste d'images-EsMediaFile,get_code_imagelist>>
+        get_video: 
+          description: Video
+          params:
+            code_video: <<get-Y-Code de la video-EsMediaFile,get_code_video>>

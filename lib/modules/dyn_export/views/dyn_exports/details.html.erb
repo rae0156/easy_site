@@ -1,0 +1,64 @@
+<% 
+	@title 		= "Détail de l'exportation".trn + " : #{@dyn_export.code}" 
+%>
+
+<div class="center-menu">
+    <h2><%= @title %></h2>
+	<ul>
+	    <li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => { :action => "execute", :id => @dyn_export.id, :form => "details_form", :image => "appli/execute_32.png" ,  :text => "Voir SQL".trn, :param_goto =>{:export_type => "SQL"}}%></li>
+	    <li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => { :action => "execute", :id => @dyn_export.id, :form => "details_form", :image => "appli/excel_32.png" ,  :text => "Essayer".trn}%></li>
+	    <li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => { :controller => "dyn_exports", :action => "destroy_all", :id => @dyn_export.id, :check => 'true', :image => "appli/cancel_32.png" ,  :text => "Supprimer l'exportation".trn}%></li>
+	    <li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => { :controller => "dyn_exports", :action => "list", :image => "appli/back_32.png", :text => "Retour".trn}%></li>
+	</ul>
+	<div class="clearer"></div>
+</div>
+
+
+<%= form_tag({ }, { :name => "details_form",:id => "details_form", :class => 'form-horizontal',:remote => true} ) do |f| %>
+
+
+<ul class="nav nav-tabs" id="form_tab">
+  <li class="active"><a href="#table" data-toggle="tab"><%="Table".trn%></a></li>
+  <%unless @dyn_export.get_table.blank?%>
+	  <li><a href="#linked" data-toggle="tab"><%="Tables liées".trn%></a></li>
+	  <li><a href="#fields" data-toggle="tab"><%="Champs".trn%></a></li>
+	  <li><a href="#where" 	 data-toggle="tab"><%="Conditions".trn%></a></li>
+	  <li><a href="#sort" 	 data-toggle="tab"><%="Tri".trn%></a></li>
+  <%end%>
+</ul>
+
+
+<div id="form_tab_content" class="tab-content">
+  <div class="tab-pane active" id="table">
+	<h4 align="left">CSV : <a href='<%=url_for(:action => "export_csv", :code => @dyn_export.code)%>'><%=url_for(:action => "export_csv", :code => @dyn_export.code)%></a></h4>	
+	<h4 align="left">Excel : <a href='<%=url_for(:action => "export_xls", :code => @dyn_export.code)%>'><%=url_for(:action => "export_xls", :code => @dyn_export.code)%></a></h4>	
+	<br />
+	<div id = 'details_table_div'>
+		<%= render :partial => 'details_table'%>
+	</div>
+  </div>
+  <%unless @dyn_export.get_table.blank?%>
+	  <div class="tab-pane" id="linked">
+		<div id = 'details_include_div'>
+		  <%= render :partial => 'details_include'%>
+		</div>
+	  </div>
+	  <div class="tab-pane" id="fields">
+		<div id = 'details_fields_div'>
+		  <%= render :partial => 'details_fields'%>
+		</div>
+	  </div>
+	  <div class="tab-pane" id="where">
+		<div id = 'details_where_div'>
+		  <%= render :partial => 'details_where'%>
+		</div>
+	  </div>
+	  <div class="tab-pane" id="sort">
+		<div id = 'details_sort_div'>
+		  <%= render :partial => 'details_sort'%>
+		</div>
+	  </div>
+  <%end%>
+</div>
+	
+<% end %>

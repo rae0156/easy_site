@@ -8,8 +8,19 @@ class EsContent < ActiveRecord::Base
 
   has_many :es_content_details, :order => "sequence"
   has_many :es_parts
-  acts_as_dynamic_model  
+  acts_as_dynamic_model([],{:audit_model=>false})  
   has_dyn_attr(:table_attribute_type => 'es_attribute_types', :table_attribute => 'es_attributes')  
+
+
+  acts_as_audited :keep_text          => true,
+                  :child_attrs => {},
+                  :model_audit_label  => "Contenu".trn,
+                  :process_label      => "Changement manuel".trn
+ 
+  # it is an example, but not necessary if you have a field called 'ISO','CODE' or 'NAME'
+  def get_audit_label
+    self.name
+  end
 
   def compress_detail
     self.es_content_details.each_with_index do |l,i|

@@ -3,7 +3,7 @@
 class EsPagesController < DynamicController
 
    def initialize()
-    @controller_setup={:delete_multi => false,:instance_name => 'Accès aux pages'}
+    @setup_controller={:delete_multi => false,:instance_name => 'Accès aux pages'}
     @columns_screen = [{:name => "action",
                         :link_update => true,
                         :column_name => "Action",

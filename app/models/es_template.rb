@@ -17,6 +17,21 @@ class EsTemplate < ActiveRecord::Base
   validates_uniqueness_of :name, :message => "#" + "Ce template existe déjà".trn,:scope => :es_site_id
     
   before_destroy :check_dependances
+
+
+
+#  acts_as_dynamic_model([],{:audit_model=>false})
+
+  acts_as_audited :keep_text          => true,
+                  :child_attrs => { :es_category => :name},
+                  :model_audit_label  => "Template".trn,
+                  :process_label      => "Changement manuel".trn
+ 
+  # it is an example, but not necessary if you have a field called 'ISO','CODE' or 'NAME'
+  def get_audit_label
+    self.name
+  end
+
   
   def self.is_dynamic(template_name)
     return self.find_by_name(template_name).is_dynamic

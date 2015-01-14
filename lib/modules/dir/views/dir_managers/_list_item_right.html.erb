@@ -1,0 +1,77 @@
+<tr class="<%= cycle("row0", "row1") %>">
+  <td>
+  	<%= link_to list_item_right.name, :action => 'edit_right', :id => list_item_right.id%>
+  </td>
+  <td>
+	<%= list_item_right.description.limit(50) %>  
+  </td>
+  <td>
+	<%= image_tag(list_item_right.all_role=='Y' ? "appli/ok_32.png" : "appli/cancel_32.png", 
+						    {:alt => "", :align => "middle", :border => "0",
+						    :class => "app_tooltip", :title => list_item_right.all_role=='Y' ? "Tous les rôles sont concernés".trn : "Seuls les rôles sélectionnés sont concernés".trn, "data-placement" => "left"}) %>  
+  </td>
+  <td>
+	<%= image_tag(list_item_right.dir_view=='Y' ? "appli/ok_32.png" : "appli/cancel_32.png", 
+						    {:alt => "", :align => "middle", :border => "0",
+						    :class => "app_tooltip", "data-placement" => "left"}) %>  
+  </td>
+  <td>
+	<%= image_tag(list_item_right.dir_create=='Y' ? "appli/ok_32.png" : "appli/cancel_32.png", 
+						    {:alt => "", :align => "middle", :border => "0",
+						    :class => "app_tooltip", "data-placement" => "left"}) %>  
+  </td>
+  <td>
+	<%= image_tag(list_item_right.dir_del=='Y' ? "appli/ok_32.png" : "appli/cancel_32.png", 
+						    {:alt => "", :align => "middle", :border => "0",
+						    :class => "app_tooltip", "data-placement" => "left"}) %>  
+  </td>
+  <td>
+	<%= image_tag(list_item_right.dir_rename=='Y' ? "appli/ok_32.png" : "appli/cancel_32.png", 
+						    {:alt => "", :align => "middle", :border => "0",
+						    :class => "app_tooltip", "data-placement" => "left"}) %>  
+  </td>
+  <td>
+	<%= image_tag(list_item_right.file_view=='Y' ? "appli/ok_32.png" : "appli/cancel_32.png", 
+						    {:alt => "", :align => "middle", :border => "0",
+						    :class => "app_tooltip", "data-placement" => "left"}) %>  
+  </td>
+  <td>
+	<%= image_tag(list_item_right.file_create=='Y' ? "appli/ok_32.png" : "appli/cancel_32.png", 
+						    {:alt => "", :align => "middle", :border => "0",
+						    :class => "app_tooltip", "data-placement" => "left"}) %>  
+  </td>
+  <td>
+	<%= image_tag(list_item_right.file_update=='Y' ? "appli/ok_32.png" : "appli/cancel_32.png", 
+						    {:alt => "", :align => "middle", :border => "0",
+						    :class => "app_tooltip", "data-placement" => "left"}) %>  
+  </td>
+  <td>
+	<%= image_tag(list_item_right.file_del=='Y' ? "appli/ok_32.png" : "appli/cancel_32.png", 
+						    {:alt => "", :align => "middle", :border => "0",
+						    :class => "app_tooltip", "data-placement" => "left"}) %>  
+  </td>
+  <td>
+	<%= image_tag(list_item_right.file_rename=='Y' ? "appli/ok_32.png" : "appli/cancel_32.png", 
+						    {:alt => "", :align => "middle", :border => "0",
+						    :class => "app_tooltip", "data-placement" => "left"}) %>  
+  </td>
+  <td>
+	<%= image_tag(list_item_right.file_download=='Y' ? "appli/ok_32.png" : "appli/cancel_32.png", 
+						    {:alt => "", :align => "middle", :border => "0",
+						    :class => "app_tooltip", "data-placement" => "left"}) %>  
+  </td>
+  <td>
+	<%= image_tag(list_item_right.file_upload=='Y' ? "appli/ok_32.png" : "appli/cancel_32.png", 
+						    {:alt => "", :align => "middle", :border => "0",
+						    :class => "app_tooltip", "data-placement" => "left"}) %>  
+  </td>
+  <td>
+	<%= link_to("<i class='glyphicon glyphicon-remove-sign'></i>".html_safe, 
+				url_for(:action => "destroy_right", :id => list_item_right['id']), 
+				:confirm =>"Voulez vous vraiment supprimer cet droit sur répertoire ?".trn,
+				:title =>"Supprimer".trn)
+	%>					
+  </td>
+  
+  
+</tr>

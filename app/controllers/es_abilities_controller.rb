@@ -3,7 +3,7 @@
 class EsAbilitiesController < DynamicController
 
    def initialize()
-    @controller_setup={:delete_multi => false,:instance_name => 'Accès aux actions'}
+    @setup_controller={:delete_multi => false,:instance_name => 'Accès aux actions'}
     @columns_screen = [{:name => "action",
                         :column_name => "Liste d'actions",
                         :column_text => "manage = toutes les actions",

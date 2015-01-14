@@ -1,6 +1,6 @@
 
 	<tr>  
-	    <%if @controller_setup[:parent_exists] %>
+	    <%if @setup_controller[:parent_exists] %>
 			<th>&nbsp;</th>  
 	    <%end%>
 
@@ -52,10 +52,13 @@
 			       <%else%>		
 	                  <th>&nbsp;</th> 
 			    <%  end 
-			      end%>		
+		          else%>		
+                  <th>&nbsp;</th> 
+			    <%end%>		
 	    <%	end
 	     end%>
 	
+      <th>&nbsp;</th> 
 	
 	</tr> 
 

@@ -1,0 +1,46 @@
+<% 
+	@title 		= @dyn_export.name || @dyn_export.code
+%>
+
+
+<div class="center-menu">
+    <h2><%= @title %> : <%="Sélection".trn%></h2>
+		<ul>
+		    <li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => { :action => "execute_with_vars", :id => @dyn_export.id, :form => "search_form", :image => "appli/excel_32.png",  :text => "Exporter".trn}%></li>
+		    <li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => { :url_text => @old_url, :image => "appli/back_32.png" ,  :text => "Retour".trn}%></li>
+		</ul>
+	
+	<div class="clearer"></div>
+</div>
+
+<%= form_tag({}, :id => 'search_form', :name => 'search_form', :remote => true, :class => 'form-horizontal') do %>
+	<fieldset>
+		
+		<%@vars.each do |v|%>
+			<div class="form-group">
+				<label class="control-label col-sm-2"><%=v[1]%> :</label>
+				<div class="controls col-sm-10">
+					<%unless v[3].blank? %>
+						<%= select("select", v[0], (v[4]=='??' ? [['All','[ALL]']] : [])+v[3],{})%>    
+					<%else%>
+						<%case v[2]
+							when "date"%> 
+							<%= easy_tag('date',:id => "select[#{v[0]}]") %>
+						<%  else%>
+						    <%= text_field_tag "select[#{v[0]}]",'', {:maxlength => 40, :size => 40} %>
+						<%end%>
+					<%end%>
+				</div>
+			</div>
+		<%end%>
+		<%=hidden_field_tag('old_url', @old_url)%>		
+		<%=hidden_field_tag('export_type', @export_type)%>		
+		
+	</fieldset>
+<% end %>
+
+<script>
+	init_datepicker();	
+</script>
+
+<!--%= javascript_include_tag('datepicker', :local_asset => true) %-->

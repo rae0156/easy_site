@@ -12,7 +12,7 @@ default:
   action_list: index
   user_field: login
   user_justify: 10
-  level: DEBUG
+  level: INFO
   console: false
   level_model: 3
   log_to: file

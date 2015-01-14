@@ -72,6 +72,14 @@ class ApplicationController < ActionController::Base
 
 
 
+  # -----------------
+  # Download a file -
+  # -----------------
+  def download_file(file_name, displayed_filename=nil)
+    displayed_filename ||= File.basename(file_name)
+    send_file file_name, :disposition => 'attachment', :filename => displayed_filename
+  end  
+
   # ----------------------------
   # Download the generated PDF -
   # ----------------------------

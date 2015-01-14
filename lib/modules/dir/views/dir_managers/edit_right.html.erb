@@ -1,0 +1,16 @@
+<% @title = "Modification d'un droit sur un répertoire".trn %>
+
+<div class="cadre bg-primary">
+	<h2><%= image_tag("appli/setup_48.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
+    <ul>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/save_32.png", :action => "update_right",:id =>@element.id,  :form => "element_form"}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour".trn,:image => "appli/back_32.png", :action => "right_dir", :id => @element.dir_manager.id}%></li>
+    </ul>
+	<%= errors_for(@element) %>
+
+	<%= form_tag({ }, { :name => 'element_form', :class => 'form-horizontal' }) do%>
+		
+		  <%= render :partial => 'form_right' %>
+	
+	<% end %>
+</div>

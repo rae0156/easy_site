@@ -1,7 +1,15 @@
+# encoding: UTF-8
 class EsMenusController < DynamicController
 
    def initialize()
-    @controller_setup={:delete_multi => false}
+    @setup_controller={:delete_multi => false #, 
+                          #:list_options => [ 
+                          #                  {:text => "Rôles".trn,:controller => "es_menus", :action => "associate",:params => {:model => 'EsRole'}, :image_file => "appli/setup_48.png"}
+                          #                 ], 
+                          #:associations => { 
+                          #                  :esrole => {:text => "Rôles".trn, :field_list => "name,description", :field_to_display => "name"}
+                          #                 } 
+                      }
     @columns_screen = [{:name => "es_category_id",
                         :display_list => false},
                        {:name => "parent_id",

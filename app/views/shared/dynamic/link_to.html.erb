@@ -23,7 +23,7 @@
 			</span>
 			<%= render :partial => 'shared/dynamic/link_to_model' %>
 			<br>
-			<%unless @controller_setup[:readonly_exists] && @model_link["read_only"]=='Y'%>
+			<%unless @setup_controller[:readonly_exists] && @model_link["read_only"]=='Y'%>
 				<div class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/save_32.png", :action => "link_to_model", :id => @model_link.id,:form => "link_form", :param_goto => {:link => @link_to[:model_linked].name}}%></div>
 			<%end%>
 		<%elsif @model_link.blank?%>

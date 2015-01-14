@@ -1,0 +1,74 @@
+<!-- Data table header and content -->
+<!--DRAFT_3_1_0_0 - E6406 - 31-MAR-2014 - improvement audit-->
+<table cellpadding="4" width="100%" class="adminlist">
+   <tr>
+
+  <%if @link_group == "date" %>
+	   	<th><%="Date".trn%></th>
+  <%elsif @link_group == "date_user" %>
+	   	<th><%="Date".trn%></th>
+		<th><%="Utilisateur".trn%></th>
+  <%elsif @link_group == "user_date" %>
+		<th><%="Utilisateur".trn%></th>
+	   	<th><%="Date".trn%></th>
+  <%elsif @link_group == "object_type" %>
+	    <th><%="Type d'objet".trn%></th>
+  <%elsif @link_group == "version" %>
+	   	<th><%="Date".trn%></th>
+		<th><%="Utilisateur".trn%></th>
+		<th><%="Action".trn%></th>
+	    <th><%="Type d'objet".trn%></th>
+		<th><%="Libellé".trn%></th>
+		<th><%="Processus".trn%></th>
+		<th><%="Version".trn%></th>
+	    <th><%="Changement".trn%></th>
+  <%else %>
+	   	<th><%="Date".trn%></th>
+		<th><%= sort_link_remote :text => "Utilisateur".trn, :column => "user_id", :controller => params[:controller], :action => (params[:action]||"list") %></th>
+		<th><%= sort_link_remote :text => "Action".trn, :column => "action", :controller => params[:controller], :action => (params[:action]||"list") %></th>
+	    <th><%= sort_link_remote :text => "Type d'objet".trn, :column => "auditable_type_label", :controller => params[:controller], :action => (params[:action]||"list") %></th>
+		<th><%= sort_link_remote :text => "Libellé".trn, :column => "auditable_label", :controller => params[:controller], :action => (params[:action]||"list") %></th>
+		<th><%="Processus".trn%></th>
+		<th><%= sort_link_remote :text => "Version".trn, :column => "version", :controller => params[:controller], :action => (params[:action]||"list") %></th>
+	    <th><%="Changement".trn%></th>
+  <%end%>
+  </tr>
+  <%= render :partial => 'list_item', :collection => @audits %>
+</table>
+<%= will_paginate @audits, :params => params.merge(:action => "list"), :previous_label => '<< ' + "Précédent".trn, :next_label => "Suivant".trn + ' >>' %>
+<%= page_entries_info @audits, :model => "audit".trn %>
+
+<script>	
+	jQuery(document).ready(function($){
+		$('.search_detail').hide();
+	});
+</script>
+
+
+<!--DRAFT_3_1_0_0 - E6406 - 31-MAR-2014 - improvement audit-->
+<script>	
+	jQuery(document).ready(function($){
+		$("[id^='group_by_']").on('click',function() {
+			if ($('#div_group_' + $(this).attr('id').substring(9) + ' table').is(":visible"))
+			  $('#div_group_' + $(this).attr('id').substring(9) + ' table').hide();
+			else
+			{
+				if ($('#div_group_' + $(this).attr('id').substring(9) + ' table').length)
+				  $('#div_group_' + $(this).attr('id').substring(9) + ' table').show();
+				else
+				{
+		          jQuery.ajax({
+					url: '<%= url_for(:action => :display_group) %>',
+					type: 'GET',
+	                data: {
+							id: $(this).attr('id'),
+							link_group: $(this).attr('link_group')
+					      }	
+		            });			
+				}				
+			}
+			return false;
+		});
+		
+	});
+</script>

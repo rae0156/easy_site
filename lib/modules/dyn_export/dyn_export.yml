@@ -1,0 +1,29 @@
+interface:
+  models: 
+    - DynExport   
+    - DynExportDetail
+  controllers: 
+    - DynExportsController
+  mailers: / 
+
+version: 0.0.0.1
+
+installation:
+   table_verification:
+     - dyn_exports
+     - dyn_export_details
+
+setup:
+  admin:
+    title: module Exportations dynamique <<string-Y-Titre du module>>
+
+menus:
+  menu_entry_points: Y <<boolean>>
+  menu_models: N <<boolean>>
+  
+controllers: 
+  entry_point_names:
+    DynExportsController: Exportations dynamique
+  entry_points:
+    DynExportsController:    
+        list: Gestion des exportations

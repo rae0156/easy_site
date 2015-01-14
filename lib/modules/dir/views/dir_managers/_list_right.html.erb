@@ -1,0 +1,28 @@
+<!-- Data table header and content -->
+<table cellpadding="4" width="100%" class='table'>
+  <tr>
+	<th rowspan="2"><%= sort_link_remote :text => "Nom".trn, :column => "name", :action => 'right_dir'%></th>
+	<th rowspan="2"><%= sort_link_remote :text => "Description".trn, :column => "description", :action => 'right_dir'%></th>
+    <th rowspan="2"><%="Tous les rôles".trn%></th>
+    <th colspan="4"><%="Répertoire".trn%></th>
+    <th colspan="7"><%="Fichier".trn%></th>
+    <th rowspan="2"></th>
+  </tr>
+  <tr>
+    <th><%="Voir".trn%></th>
+    <th><%="Créer".trn%></th>
+    <th><%="Sup.".trn%></th>
+    <th><%="Ren.".trn%></th>
+    <th><%="Voir".trn%></th>
+    <th><%="Créer".trn%></th>
+    <th><%="Mod.".trn%></th>
+    <th><%="Sup.".trn%></th>
+    <th><%="Ren.".trn%></th>
+    <th><%="Téléch.".trn%></th>
+    <th><%="Charger".trn%></th>
+  </tr>
+  <%= render :partial => 'list_item_right', :collection => @collection_accesses %>
+</table>
+
+
+

@@ -1,0 +1,48 @@
+<%
+	order_tabs = @setup_controller[:search_tab_order]
+	active = order_tabs.size > 0 
+%>
+
+
+<%if active%>
+
+    <ul class="nav nav-tabs">
+
+		<%order_tabs.each_with_index do |tab_code,i| 
+			case tab_code
+			when "s" %>
+			    <li class='<%=i>0 ? '' : 'active'%>'><a href="#tab_search" data-toggle="tab"><%="Recherche globale".trn%></a></li>
+		  <%when "d"%>
+			    <li class='<%=i>0 ? '' : 'active'%>'><a href="#tab_dynamic_search" data-toggle="tab"><%="Recherche détaillée".trn%></a></li>
+		  <%when "p"%>
+	    		<li class='<%=i>0 ? '' : 'active'%>'><a href="#tab_parent_search" data-toggle="tab"><%="Recherche par parent".trn%></a></li>
+		  <%end
+		  end if order_tabs.size > 1%>
+
+    </ul>
+    <br>
+    <div class="tab-content">
+
+		<%order_tabs.each_with_index do |tab_code,i| 
+			case tab_code
+			when "s" %>
+				<div class="tab-pane <%=i>0 ? '' : 'active'%>" id="tab_search">
+					<%= render :partial => 'shared/search' %>				
+				</div>
+		  <%when "d"%>
+				<div class="tab-pane <%=i>0 ? '' : 'active'%>" id="tab_dynamic_search">
+			  	    <%= render :partial => 'shared/dynamic/dynamic_search' %>			
+				</div>
+		  <%when "p"%>
+				<div class="tab-pane <%=i>0 ? '' : 'active'%>" id="tab_parent_search">
+					<%= form_tag({ :action => 'list' }, { :name => 'list_form_category'}) do%>
+					    <button type="button" id="view_hide" class="btn btn-default"><%="Choisir un".trn%> '<%=@setup_controller[:instance_name]%>'</button>
+						<div id="fileTree_element"></div>
+					<% end %>
+				    <%= render :partial => 'shared/dynamic/script_category_search' %>
+				</div>
+		  <%end
+		  end%>
+	    
+	</div>
+<%end%>

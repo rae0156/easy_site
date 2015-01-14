@@ -5,7 +5,17 @@ class EsPart < ActiveRecord::Base
   belongs_to :es_template_col
   belongs_to :es_content
   belongs_to :es_site
-  acts_as_dynamic_model 
+  
+  acts_as_dynamic_model([],{:audit_model=>false}) 
+  acts_as_audited :keep_text          => true,
+                  :child_attrs => {:es_category => :name, :es_content => :name, :es_site => :code},
+                  :model_audit_label  => "Parties de template".trn,
+                  :process_label      => "Changement manuel".trn
+ 
+  # it is an example, but not necessary if you have a field called 'ISO','CODE' or 'NAME'
+  def get_audit_label
+    self.name
+  end
 
   validates_presence_of :name, :message => '#' + 'Le nom est obligatoire'.trn
   validates_presence_of :description, :message => '#' + 'La description est obligatoire'.trn

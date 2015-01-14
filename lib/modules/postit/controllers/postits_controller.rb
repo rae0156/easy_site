@@ -96,7 +96,7 @@ class PostitsController < ApplicationController
   end
 
   def close_list_only
-    params[:tab]=2
+    params[:tab]||=2
     postit_list = PostitList.find_by_id(params[:id])
     postit_list.update_attributes({:completed => "Y",:close_date => Time.now})
     get_desktop_info

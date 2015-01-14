@@ -2,7 +2,16 @@
 
 class EsLanguage < ActiveRecord::Base
 
-  acts_as_dynamic_model 
+  acts_as_dynamic_model([],{:audit_model=>false}) 
+
+#voir acts_as_audited plus bas. Ne pas le bouger
+
+ 
+  # it is an example, but not necessary if you have a field called 'ISO','CODE' or 'NAME'
+  def get_audit_label
+    self.code
+  end
+
   
   def self.trn(code,code_language=:fr,options={})
     return "" if code.blank?
@@ -45,5 +54,12 @@ class EsLanguage < ActiveRecord::Base
 
     return text
   end
+
+
+  acts_as_audited :keep_text          => true,
+                :child_attrs => { },
+                :model_audit_label  => "Langue".trn,
+                :process_label      => "Changement manuel".trn
+
   
 end

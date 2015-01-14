@@ -1,0 +1,23 @@
+<% @title = "Gestion des droits du répertoire %{dir}".trn(:dir => @dir.name) %>
+
+<div class="center-menu">
+    <h2><%= image_tag("appli/setup_48.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
+	
+<ul>
+	<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Nouveau".trn,:image => "appli/new_32.png", :action => "new_right", :id => @dir.id} %></li>
+	<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour".trn,:image => "appli/back_32.png", :action => "list"}%></li>
+</ul>
+	
+	<div class="clearer"></div>	
+</div>
+
+<!-- Error messages -->	
+<%= errors_for(flash[:errors_destroy], "delete").html_safe if flash[:errors_destroy] %>
+
+<%= form_tag({ }, { :name => 'list_form'}) do%>
+	<!-- Data table -->
+	<div id="list_div">
+	  <%= render :partial => 'list_right' %>
+	</div>
+<% end %>
+

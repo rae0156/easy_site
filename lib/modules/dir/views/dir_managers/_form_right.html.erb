@@ -1,0 +1,75 @@
+
+	  <h4><%= field_description "Données obligatoires", true %></h4>
+	  
+	  <div class="form-group">
+	    <label for="element_name" class="col-sm-4 control-label"><%= field_description "", true %> <%="Nom du droit".trn%> : </label>
+		<div class="col-sm-4">
+			<%= text_field "element", "name", :maxlength => 50, :class => "form-control" %>
+	    </div>
+	  </div>
+	  <div class="form-group">
+	    <label for="element_description" class="col-sm-4 control-label"><%="Description".trn%> : </label>
+	    <div class="col-sm-8">
+			<%= text_field "element", "description", :maxlength => 200, :class => "form-control" %>
+		</div>
+	  </div>
+	  <div class="form-group">
+	    <label for="element_es_role_ids" class="col-sm-4 control-label"><%="Chemin de base".trn%> : </label>
+	    <div class="col-sm-4">
+			<%= easy_tag('list',:instance => "element", :field => "es_role_ids",:include_blank => "Tous les rôles".trn, :value_list_array => EsRole.all.map {|r| [r.name, r.id]},:number_of_line=>5,:multiple => true)%>
+		</div>
+	  </div>
+
+<table cellpadding="4" width="100%" class='table'>
+  <tr>
+    <th></th>
+    <th><%="Voir".trn%></th>
+    <th><%="Créer".trn%></th>
+    <th><%="Modifier".trn%></th>
+    <th><%="Supprimer".trn%></th>
+    <th><%="Renommer".trn%></th>
+    <th><%="Télécharger".trn%></th>
+    <th><%="Charger".trn%></th>
+  </tr>
+  <tr>
+    <th><%="Répertoires".trn%></th>
+    <td>			
+    	<%= easy_tag('check_box',:instance => "element", :field => "dir_view")%>
+	</td>
+    <td>
+		<%= easy_tag('check_box',:instance => "element", :field => "dir_create")%>
+    </td>
+    <td></td>
+    <td>
+		<%= easy_tag('check_box',:instance => "element", :field => "dir_del")%>
+    </td>
+    <td>
+		<%= easy_tag('check_box',:instance => "element", :field => "dir_rename")%>
+    </td>
+    <td colspan="2"></td>
+  </tr>
+  <tr>
+    <th><%="Fichiers".trn%></th>
+    <td>
+		<%= easy_tag('check_box',:instance => "element", :field => "file_view")%>
+    </td>
+    <td>
+		<%= easy_tag('check_box',:instance => "element", :field => "file_create")%>
+    </td>
+    <td>
+		<%= easy_tag('check_box',:instance => "element", :field => "file_update")%>
+    </td>
+    <td>
+		<%= easy_tag('check_box',:instance => "element", :field => "file_del")%>
+    </td>
+    <td>
+		<%= easy_tag('check_box',:instance => "element", :field => "file_rename")%>
+    </td>
+    <td>
+		<%= easy_tag('check_box',:instance => "element", :field => "file_download")%>
+    </td>
+    <td>
+		<%= easy_tag('check_box',:instance => "element", :field => "file_upload")%>
+    </td>
+  </tr>
+</table>

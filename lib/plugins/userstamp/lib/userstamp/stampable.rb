@@ -73,6 +73,7 @@ module Ddb #:nodoc:
                         :deleter_attribute  => Ddb::Userstamp.compatibility_mode ? :deleted_by : :deleter_id
                       }.merge(options)
 
+
           self.stamper_class_name = defaults[:stamper_class_name].to_sym
           self.creator_attribute  = defaults[:creator_attribute].to_sym
           self.updater_attribute  = defaults[:updater_attribute].to_sym
@@ -120,7 +121,6 @@ module Ddb #:nodoc:
           def has_stamper?
             !self.class.stamper_class.nil? && !self.class.stamper_class.stamper.nil? rescue false
           end
-
           def set_creator_attribute
             return unless self.record_userstamp
             if respond_to?(self.creator_attribute.to_sym) && has_stamper?

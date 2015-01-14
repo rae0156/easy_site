@@ -12,4 +12,4 @@
 </table>
 
 <%= will_paginate @instances, :params => params, :previous_label => '<< ' + 'Précédent'.trn, :next_label => 'Suivant'.trn + ' >>' %>
-<%= page_entries_info @instances, :model => @controller_setup[:instance_name] %>
+<%= page_entries_info @instances, :model => @setup_controller[:instance_name] %>

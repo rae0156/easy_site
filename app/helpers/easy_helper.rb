@@ -3,28 +3,29 @@
 module EasyHelper
     ACTION = {
               :label            => ["label","for","-Options html","class","style"], 
-              :text             => ["instance","field","value","-Options html","class","style","read_only","bootstrap","-Options additionnelles","with_label","ajax_action","mandatory"],
-              :long_text        => ["instance","field","value","cols","rows","-Options html","class","style","read_only","bootstrap","-Options additionnelles","with_label","ajax_action","mandatory"],
-              :check_box        => ["instance","field","value","checked_value","unchecked_value","-Options html","class","style","read_only","bootstrap","-Options additionnelles","with_label","ajax_action","mandatory"], 
-              :list             => ["instance","field","value_list_array","selected_value","-Options visuelles","include_blank","number_of_line","multiple","-Options html","class","style","read_only","bootstrap","-Options additionnelles","with_label","ajax_action","mandatory"],
-              :list_collection  => ["instance","field","collection","value_method","text_method","selected_value","-Options visuelles","include_blank","number_of_line","multiple","-Options html","class","style","read_only","bootstrap","-Options additionnelles","with_label","ajax_action","mandatory"],
-              :radio_button     => ["instance","field","labels","value","-Options html","class","style","read_only","bootstrap","-Options additionnelles","with_label","ajax_action","mandatory"],
+              :text             => ["instance","field","id","value","-Options html","class","style","read_only","bootstrap","-Options additionnelles","with_label","ajax_action","mandatory"],
+              :long_text        => ["instance","field","id","value","cols","rows","-Options html","class","style","read_only","bootstrap","-Options additionnelles","with_label","ajax_action","mandatory"],
+              :check_box        => ["instance","field","id","value","checked_value","unchecked_value","-Options html","class","style","read_only","bootstrap","-Options additionnelles","with_label","ajax_action","mandatory"], 
+              :list             => ["instance","field","id","value_list_array","selected_value","-Options visuelles","include_blank","number_of_line","multiple","-Options html","class","style","read_only","bootstrap","-Options additionnelles","with_label","ajax_action","mandatory"],
+              :list_collection  => ["instance","field","id","collection","value_method","text_method","selected_value","-Options visuelles","include_blank","number_of_line","multiple","-Options html","class","style","read_only","bootstrap","-Options additionnelles","with_label","ajax_action","mandatory"],
+              :radio_button     => ["instance","field","id","labels","value","-Options html","class","style","read_only","bootstrap","-Options additionnelles","with_label","ajax_action","mandatory"],
               :mandatory        => ["label","-Options html","class","style"], 
-              :integer          => ["--Ne pas oublier le javascript 'init_inputmask();'","instance","field","value","-Options html","class","style","read_only","bootstrap","-Options additionnelles","with_label","ajax_action","mandatory"], 
-              :decimal          => ["--Ne pas oublier le javascript 'init_inputmask();'","instance","field","value","-Options html","class","style","read_only","bootstrap","-Options additionnelles","with_label","ajax_action","mandatory"], 
-              :date             => ["--Ne pas oublier le javascript 'init_datepicker();'","instance","field","value","-Options html","class","style","read_only","bootstrap","bootstrap_length","-Options additionnelles","with_label","ajax_action","mandatory"], 
-              :time             => ["--Ne pas oublier le javascript 'init_datepicker();'","instance","field","value","-Options html","class","style","read_only","bootstrap","bootstrap_length","-Options additionnelles","with_label","ajax_action","mandatory"], 
-              :date_time        => ["--Ne pas oublier le javascript 'init_datepicker();'","instance","field","value","-Options html","class","style","read_only","bootstrap","bootstrap_length","-Options additionnelles","with_label","ajax_action","mandatory"], 
-              :file             => ["instance","field","value","-Options html","class","style","read_only","bootstrap","-Options pour fichier","option_file","-Options additionnelles","with_label","ajax_action","mandatory"], 
-              :font             => ["instance","field","value","-Options html","class","style","read_only","bootstrap","bootstrap_length","-Options additionnelles","with_label","ajax_action","mandatory"], 
-              :color            => ["instance","field","value","-Options html","class","style","read_only","bootstrap","bootstrap_length","-Options additionnelles","with_label","ajax_action","mandatory"], 
-              :hidden           => ["instance","field","value","-Options html","class"]
+              :integer          => ["--Ne pas oublier le javascript 'init_inputmask();'","instance","field","id","value","-Options html","class","style","read_only","bootstrap","-Options additionnelles","with_label","ajax_action","mandatory"], 
+              :decimal          => ["--Ne pas oublier le javascript 'init_inputmask();'","instance","field","id","value","-Options html","class","style","read_only","bootstrap","-Options additionnelles","with_label","ajax_action","mandatory"], 
+              :date             => ["--Ne pas oublier le javascript 'init_datepicker();'","instance","field","id","value","-Options html","class","style","read_only","bootstrap","bootstrap_length","-Options additionnelles","with_label","ajax_action","mandatory"], 
+              :time             => ["--Ne pas oublier le javascript 'init_datepicker();'","instance","field","id","value","-Options html","class","style","read_only","bootstrap","bootstrap_length","-Options additionnelles","with_label","ajax_action","mandatory"], 
+              :date_time        => ["--Ne pas oublier le javascript 'init_datepicker();'","instance","field","id","value","-Options html","class","style","read_only","bootstrap","bootstrap_length","-Options additionnelles","with_label","ajax_action","mandatory"], 
+              :file             => ["instance","field","id","value","-Options html","class","style","read_only","bootstrap","-Options pour fichier","option_file","-Options additionnelles","with_label","ajax_action","mandatory"], 
+              :font             => ["instance","field","id","value","-Options html","class","style","read_only","bootstrap","bootstrap_length","-Options additionnelles","with_label","ajax_action","mandatory"], 
+              :color            => ["instance","field","id","value","-Options html","class","style","read_only","bootstrap","bootstrap_length","-Options additionnelles","with_label","ajax_action","mandatory"], 
+              :hidden           => ["instance","field","id","value","-Options html","class"]
               }
     OPTIONS = {
                 :help               => {:mandatory => false , :html_option => false, :description => "true = pour avoir l'aide en plus de la génération"}, 
                 :label              => {:mandatory => true  , :html_option => false, :description => "Libellé"}, 
                 :labels             => {:mandatory => true  , :html_option => false, :description => "Libellé ou liste de libellés"}, 
                 :for                => {:mandatory => false , :html_option => false, :description => "Liaison avec un champs (instance_champs)"}, 
+                :id                 => {:mandatory => false , :html_option => true,  :description => "Remplace l'instance et le champs"}, 
                 :instance           => {:mandatory => true  , :html_option => false, :description => "Nom de l'instance"}, 
                 :field              => {:mandatory => true  , :html_option => false, :description => "Nom du champs"}, 
                 :value              => {:mandatory => false , :html_option => true , :description => "Valeur"}, 
@@ -75,6 +76,7 @@ private
       field_mandatory = (options[:mandatory].presence || false) ? "<span class=\"text-error\">*</span>".html_safe : ""
       html_options[:class]             = "" unless html_options[:class].present?
       html_options[:class]            += (bootstrap ? " form-control" : "") unless method == "radio_button" 
+      html_options[:name]  = html_options[:id] if html_options[:id].present?
 
       field_result = ""
       case method
@@ -116,7 +118,9 @@ private
       when "list", "list_collection"
         html_options[:disabled]=((options[:read_only].presence||false) ? "disabled" : false)
         html_options[:size]= options[:number_of_line] || 1
-        field_options[:include_blank] = true if options[:include_blank].nil? || options[:include_blank] == true
+        unless options[:include_blank] == false
+          field_options[:include_blank] = options[:include_blank].nil? ? true : options[:include_blank] 
+        end
         field_options[:selected] = options[:selected_value] if options[:selected_value].present?
         if method== "list"
           field_result = select(options[:instance].presence, options[:field].presence, options[:value_list_array].presence||[], 
@@ -140,10 +144,12 @@ private
         field_result="".html_safe
         options[:labels] = [] if options[:labels].blank?
         options[:labels] = [options[:labels]] unless options[:labels].is_a?(Array)
-        options[:labels].each do |label|
+        options[:labels].each do |tmp_label|
+          label = tmp_label.is_a?(Array) ? tmp_label[0] : tmp_label
+          value = tmp_label.is_a?(Array) ? tmp_label[1] : tmp_label
           html_option_one = html_options.clone
-          html_option_one[:checked] = "checked" if options[:value]==label
-          field_result += label_tag("#{options[:instance].presence}_#{options[:field].presence}_#{label.gsub(' ','_')}", radio_button(options[:instance].presence, options[:field].presence, label, html_option_one)  + " " + label,{:class => "radio-inline"} ).html_safe 
+          html_option_one[:checked] = "checked" if options[:value]==value
+          field_result += label_tag("#{options[:instance].presence}_#{options[:field].presence}_#{value.gsub(' ','_')}", radio_button(options[:instance].presence, options[:field].presence, value, html_option_one)  + " " + label,{:class => "radio-inline"} ).html_safe + "&nbsp;&nbsp;".html_safe
         end
       when "file"
         html_options[:readonly] = options[:read_only].presence||false

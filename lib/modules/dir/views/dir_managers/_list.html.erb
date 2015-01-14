@@ -1,0 +1,17 @@
+<!-- Data table header and content -->
+<table cellpadding="4" width="100%" class='table'>
+  <tr>
+	<th><%= sort_link_remote :text => "Nom".trn, :column => "name", :action => 'list'%></th>
+	<th><%= sort_link_remote :text => "Description".trn, :column => "description", :action => 'list'%></th>
+    <th><%="Chemin de base".trn%></th>
+    <th><%="Nom du répertoire".trn%></th>
+    <th><%="Exentions de fichier".trn%></th>
+    <th><%="Par utilisateur".trn%></th>
+    <th><%="Taille limite".trn%></th>
+  </tr>
+  <%= render :partial => 'list_item', :collection => @collections %>
+</table>
+
+<%= will_paginate @collections, :params => params, :previous_label => '<< ' + "Précédent".trn, :next_label => "Suivant".trn + ' >>' %>
+<%= page_entries_info @collections, :model => "Tâche".trn %>
+

@@ -1,21 +1,21 @@
 <%
-tmp_class = @controller_setup[:table_field_active] ? (list_item[:active]== 'Y' ? "" : "inactive_row") : cycle("row0", "row1")
-tmp_update = !(@controller_setup[:table_field_active] && list_item[:active]== 'N')
+tmp_class = @setup_controller[:table_field_active] ? (list_item[:active]== 'Y' ? "" : "inactive_row") : cycle("row0", "row1")
+tmp_update = !(@setup_controller[:table_field_active] && list_item[:active]== 'N')
 %>
 
 <tr class="<%= tmp_class %>">
-	<%if !@controller_setup[:table_field_active] && @controller_setup[:delete_multi]%>
-		<td><%= (@controller_setup[:readonly_exists] && list_item["read_only"]=='Y') ? "" : check_box_tag("cid[]", list_item.id, false, { :id => "cb" + list_item_counter.to_s }) %></td>
+	<%if !@setup_controller[:table_field_active] && @setup_controller[:delete_multi]%>
+		<td><%= (@setup_controller[:readonly_exists] && list_item["read_only"]=='Y') ? "" : check_box_tag("cid[]", list_item.id, false, { :id => "cb" + list_item_counter.to_s }) %></td>
 	<%end%>
 
 
-    <%if @controller_setup[:parent_exists] %>
+    <%if @setup_controller[:parent_exists] %>
 		<td>
 			<%if tmp_update%>
 				<%if list_item.children.count==0%>
 					<%= link_to "<i class='glyphicon glyphicon-plus-sign'></i>".html_safe,  {:action => 'new'.trn, :parent_id => list_item.id}, {:title => "Créer un enfant".trn} %>
 				<%else%>
-					<%= link_to "<i class='glyphicon glyphicon-indent-left'></i>".html_safe,  {:action => 'list'.trn, :parent_id => list_item.id}, {:title => "Afficher %{element}".trn(:element => (@controller_setup[:column_name_exists] ? list_item.name : "l'enfant".trn))} %> 
+					<%= link_to "<i class='glyphicon glyphicon-indent-left'></i>".html_safe,  {:action => 'list'.trn, :parent_id => list_item.id}, {:title => "Afficher %{element}".trn(:element => (@setup_controller[:column_name_exists] ? list_item.name : "l'enfant".trn))} %> 
 				<%end%>
 			<%end%>
 		</td>  
@@ -28,7 +28,7 @@ tmp_update = !(@controller_setup[:table_field_active] && list_item[:active]== 'N
 			tmp_value = "/" if tmp_value.blank?
 			tmp_value = tmp_value.limit(50,column[:type]) if ["text","list_free","list_multi"].include?(column[:type]) 		
 			if column[:link_update] && tmp_update				
-				tmp_value= link_to tmp_value,  :action => 'edit', :id => list_item.id unless (@controller_setup[:readonly_exists] && list_item["read_only"]=='Y')
+				tmp_value= link_to tmp_value,  :action => 'edit', :id => list_item.id unless (@setup_controller[:readonly_exists] && list_item["read_only"]=='Y')
 			elsif column[:name] == 'sequence'
 				tmp_value = tmp_value.to_s
 				if !@parent.blank? && tmp_update 
@@ -69,32 +69,42 @@ tmp_update = !(@controller_setup[:table_field_active] && list_item[:active]== 'N
 		<%end
 	  end%>
 	<td>
-		<%tmp_value = link_to("<i class='glyphicon glyphicon-book'></i>".html_safe, 
-							url_for(:action => "show", :id => list_item['id']),
-							:title =>"Visualiser".trn)%>
-		<%= (tmp_value.to_s||"").html_safe %>
-		<%
-		unless (@controller_setup[:readonly_exists] && list_item["read_only"]=='Y')
-			if !@controller_setup[:delete_multi] || @controller_setup[:table_field_active]
-				if  @controller_setup[:table_field_active]
+		<%if @setup_controller[:option_show]%>
+			<%tmp_value = link_to("<i class='glyphicon glyphicon-book'></i>".html_safe, 
+								url_for(:action => "show", :id => list_item['id']),
+								:title =>"Visualiser".trn)%>
+			<%= (tmp_value.to_s||"").html_safe %>
+		<%end
+		unless (@setup_controller[:readonly_exists] && list_item["read_only"]=='Y')
+			if !@setup_controller[:delete_multi] || @setup_controller[:table_field_active]
+				if  @setup_controller[:table_field_active]
 					tmp_value = list_item[:active]
 					tmp_value = link_to(tmp_value=='Y' ? "<i class='glyphicon glyphicon-ok-sign'></i>".html_safe : "<i class='glyphicon glyphicon-remove-sign'></i>".html_safe, 
 										url_for(:action => "activate", :id => list_item['id'], :page => params[:page]), 
-										:confirm =>"Voulez vous vraiment #{(tmp_value=='Y' ? 'désactiver/supprimer' : 'activer')} '%{element}' ?".trn(:element => @controller_setup[:instance_name].downcase),
+										:confirm =>"Voulez vous vraiment #{(tmp_value=='Y' ? 'désactiver/supprimer' : 'activer')} '%{element}' ?".trn(:element => @setup_controller[:instance_name].downcase),
 										:title => (tmp_value=='Y' ? "Désactiver" : "Activer").trn) 
 				else
 					tmp_value = link_to("<i class='glyphicon glyphicon-remove-sign'></i>".html_safe, 
 										url_for(:action => "destroy", :id => list_item['id']), 
-										:confirm =>"Voulez vous vraiment supprimer '%{element}' ?".trn(:element => @controller_setup[:instance_name].downcase),
+										:confirm =>"Voulez vous vraiment supprimer '%{element}' ?".trn(:element => @setup_controller[:instance_name].downcase),
 										:title =>"Supprimer".trn)
-				end
-		%>
+				end%>
 
 				<%= (tmp_value.to_s||"").html_safe %>		
 
 		    <%end
+
+	          if !@setup_controller[:list_options].blank? 
+	             @setup_controller[:list_options].each_with_index do |o,i| 
+	                        tmp_param = {:controller => o[:controller], :action => o[:action], :id => list_item['id'], :page => params[:page]}
+	                        tmp_param = tmp_param.merge( o[:params] ) if o[:params].present? 
+	                        text = o[:text]||"Option %{num}".trn(:num => i+1)
+	                %>
+	                        <%= link_to(o[:glyphicon_bootstrap].present? ? "<i class='glyphicon #{o[:glyphicon_bootstrap]}'></i>".html_safe : (o[:image_file].present? ? image_tag(o[:image_file]) : text) , 
+		                                url_for(tmp_param), 
+		                                :title => text) %>
+			    <%end
+		      end
 		  end%>
-
 	</td>				
-
 </tr>

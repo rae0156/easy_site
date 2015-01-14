@@ -1,3 +1,4 @@
+
 module Kernel
   def log(message, level = ActiveSupport::BufferedLogger::INFO)
     Rails.logger.add level,message

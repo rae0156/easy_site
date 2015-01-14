@@ -16,6 +16,8 @@
  *= require fontpicker.css
  *= require filepicker.css
  *= require postit.css
+ *= require filestyle.css
+ *= require jquery.treeview.css
 
  *= require_self
  * require_tree .

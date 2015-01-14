@@ -1,0 +1,4 @@
+<%unless @alert.blank?%>
+	<%=generate_alert(@alert.description, @alert.title,@alert.reference)%>
+<%end%>
+

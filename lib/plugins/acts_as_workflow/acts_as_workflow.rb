@@ -265,6 +265,9 @@ module ActsAsworkflow
          puts("Attention : la table '#{table_name}' n'existe pas. Vérifiez l'option ':role_model_name'")   
       end
 
+      if self.workflow_by_user 
+        belongs_to :dyn_workflow_user, :foreign_key => "dyn_workflow_user_id", :class_name => tmp_user_model_name 
+      end 
 
       belongs_to :dyn_workflow_status, :foreign_key => "dyn_workflow_status_id", :class_name => "DynWorkflowStatus"  
       belongs_to  :dyn_workflow_type if self.column_names.include?('dyn_workflow_type_id')

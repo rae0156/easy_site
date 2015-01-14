@@ -1,0 +1,18 @@
+<!--DRAFT_3_1_0_0 - E6406 - 31-MAR-2014 - improvement audit-->
+<%if detail_group%>
+	<% 
+		audit_dev_obj  = detail_group.auditable_label.blank? ? detail_group.auditable_id.to_s : detail_group.auditable_label
+		audit_dev_type = detail_group.auditable_type_label.blank? ? detail_group.auditable_type.underscore.humanize : detail_group.auditable_type_label
+		process_label  = detail_group.process_label.blank? ? "Processus inconnu".trn : detail_group.process_label
+	%>
+	<tr>  		
+	  <td><%= h(detail_group.created_at.strftime('%Y-%m-%d %H:%M:%S')) -%></td>
+	  <td><%= h(EsUser.find(detail_group.user_id).cleaned_long_name) if detail_group.es_user	-%></td>
+	  <td><%= h(detail_group.action) 				-%></td>
+	  <td><%= h(audit_dev_type)					    -%></td>
+	  <td><%= h(audit_dev_obj)  					-%></td>
+	  <td><%= h(process_label)			 			-%></td>
+	  <td><%= h(detail_group.version) 			    -%></td>  
+	  <td><%= link_to('<span class="glyphicon glyphicon-list-alt"></span>'.html_safe,url_for({:controller => 'audits', :action => 'show', :id => detail_group.id}),{:remote => true, :id => "view_buton", "data-placement" => "left"})%></td>
+	</tr>
+<%end%>

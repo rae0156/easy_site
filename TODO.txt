@@ -1,51 +1,65 @@
+NE PAS OUBLIER
+==============
+ne pas oublier qu'il existe acts_as_detect_action dans les actions
+
+les thèmes : 
+	http://pikock.github.io/bootstrap-magic/app/index.html#!/editor
+	à mettre dans stylesheets/themes
+	modifier les fonts (se baser sur les déjà fait) 
 
 
-dynamic_addon => voir rep D:\EasySite - Todo\1) to_do\dynamic_addon
 
-===========================
+A FAIRE
+=======
 
-voir lenteur
-
-==========================
-
-KQI => voir rep D:\EasySite - Todo\1) to_do\kqi
-
-===========================
+Réfléchir à une homogénisation des setup dynamique 
+  es_media_files	
+	address
+	alert
+	citation
 	
-finaliser la création de menu (user ou admin)
-	un nom + le détail
-	insérer les menus dans un module ou comme nouveau type de contenu
+	video ( lien internet ou fichier -> faire validation)
+	
+	carousel : 1 niveau d'enfants
+	breadcrumb : 1 niveau d'enfants
+	collapse : 1 niveau d'enfants
+	image_list : 1 niveau d'enfants => code:image
+	blog : x niveaux
+	sheet dans media_files
+  es_menus (link ou link_sheet, separated et submenu)
+    dropdown : 1 niveau d'enfants
+    horizontal : x niveaux
+    navigation : 1 niveau d'enfants
+    sheet : x niveaux
+    side
+    vertical_menu : x niveaux
+    
+    remettre les models et controller 'easy_generate' dans le module du même nom
+    
+===========================
+
+Réaliser les setup de chaque éléments du module 'easy_generate'
+
+===========================
+
+Réaliser les setup de chaque éléments du module 'menu'
+	exemple :
+		certaines sortes de menu ne peuvent pas dépasser 1 niveau, d'autres 2
+		pour le menu "sheet", prendre les éléments sheet de es_media_files et es_menus en compte
 	
 ===========================
 
-Réaliser la gestion des thèmes
-LESS SASS 
-Peut être existe-t'il une recompilation avec les gem 
-voir rails casts 
+KQI => voir rep D:\EasySite 
+- Todo\1) to_do\kqi
 
-===========================
+===========================	
 
-Transformer les part des template en module
-	- generate_citation
-	- generate_image_list
-	- get_lorem
-	- generate_carousel
-	- generate_blog
-	- adresse
+Rendre l'existant userfriendly
+Prévoir des pages différentes des autres dans la partie template au sein du même site + enchainement des pages
+Prévoir le site partie admin et partie user
+	création de menu (user ou admin)
 
+===========================	
 
-===========================
-
-Sequence : position ranked-model pour remplacer le num ou le seq des modèles
-
-===========================
-
-Recup audit du template rails 3
-
-===========================
-
-Commencer à planifier d'autres modules et arranger l'existant
-modules intéressants : 
-	query sur pour en faire des rapports
-	gestion des fichiers et rep
+Commencer à planifier d'autres modules
 	

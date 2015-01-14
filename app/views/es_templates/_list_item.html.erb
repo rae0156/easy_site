@@ -1,6 +1,12 @@
 <tr class="<%= cycle("row0", "row1") %>">
   <td>
   	<%= link_to list_item.name, :controller => 'es_templates', :action => 'edit', :id => list_item.id%>
+	<%if list_item.name == Rails.application.config.current_template %>
+		&nbsp;
+		<%= image_tag("appli/ok_32.png",
+							    {:alt => "", :align => "middle", :border => "0",
+							    :class => "app_tooltip", :title => "Template en cours d'utilisation".trn, "data-placement" => "left"}) %>  
+	<%end%>				
   </td>
   <td>
 	<%= list_item.description.limit(50) %>  
@@ -25,11 +31,8 @@
   </td>
   <td>
   	
-	<%if list_item.name == Rails.application.config.current_template %>
-		<%= image_tag("appli/cancel_32.png",
-							    {:alt => "", :align => "middle", :border => "0",
-							    :class => "app_tooltip", :title => "Template en cours d'utilisation".trn, "data-placement" => "left"}) %>  
-  	<%elsif list_item.is_dynamic %>
+  	<%if list_item.is_dynamic %>
+
 		<%= link_to("<i class='glyphicon glyphicon-picture'></i>".html_safe, 
 					url_for(:action => "design", :id => list_item['id']), 
 					:title =>"Dessiner le template".trn)
@@ -53,6 +56,8 @@
 	<%else%>
 		<%= "Fichier template".trn %>  
 	<%end%>				
+
+
   </td>
   
 </tr>

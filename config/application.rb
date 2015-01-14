@@ -1,3 +1,6 @@
+# activate PUTS_TIMING function 
+PUTS_TIMING_ACTIVE = false 
+
 require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'

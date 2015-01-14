@@ -1,0 +1,35 @@
+interface:
+  models: 
+    - DirManager   
+    - DirAccess
+    - DirBase
+  controllers: 
+    - DirManagersController
+  mailers: / 
+
+version: 0.0.0.6
+
+installation:
+   table_verification:
+     - dir_bases
+     - dir_managers
+     - dir_accesses
+     - dir_accesses_es_roles
+     - es_roles
+
+setup:
+  admin:
+    title: module Dir manager <<string-Y-Titre du module>>
+
+menus:
+  menu_entry_points: Y <<boolean>>
+  menu_models: Y <<boolean>>
+  models:
+    - DirManager
+  
+controllers: 
+  entry_point_names:
+    DirManagersController: Répertoires et fichiers
+  entry_points:
+    DirManagersController:    
+        list: Gestion des répertoires

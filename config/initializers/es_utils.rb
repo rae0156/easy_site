@@ -99,7 +99,7 @@
     if template  
       parts_containt = {}
       template.es_parts.each do |p|
-        parts_containt[p.name] = get_template_part(p.name)
+        parts_containt[p.name] = get_template_part(p.name) unless p.es_template_col_id == 0
       end
       return render(:inline => template.generate_template_for_render(parts_containt))
     else
@@ -108,7 +108,6 @@
   end
 
   def get_template_part(part_name,directory = "parts",partial=false)
-    
     if part_name.is_a?(Integer)
         es_content_detail = EsContentDetail.find_by_id(part_name)
         if es_content_detail.blank?
@@ -178,6 +177,19 @@
     FileUtils.mkdir_p(tmp_dirs)
   end      
 
+  def remove_file(file_name)
+    File.delete(file_name)
+  end
+
+
+  def save_upload(upload,directory)
+    name =  upload['datafile'].original_filename
+    # create the file path
+    path = File.join(directory, name)
+    # write the file
+    File.open(path, "wb") { |f| f.write(upload['datafile'].read) }
+  end
+
 
   def generate_tag(tag,content,options={})
     
@@ -196,6 +208,36 @@
     return tmp_text
   end
 
+
+class Numeric
+    def nice_bytes( max_digits=3 )
+      bytes = self.to_i
+      value_K = 2.0**10
+      value_M = 2.0**20
+      value_G = 2.0**30
+      value_T = 2.0**40
+      value, suffix, precision = case bytes
+        when 0...value_K
+          [ bytes, 'octets', 0 ]
+        else
+          value, suffix = case bytes
+            when value_K...value_M then [ bytes / value_K, 'ko' ]
+            when value_M...value_G then [ bytes / value_M, 'Mo' ]
+            when value_G...value_T then [ bytes / value_G, 'Go' ]
+            else                        [ bytes / value_T, 'To' ]
+          end
+          used_digits = case value
+            when   0...10   then 1
+            when  10...100  then 2
+            when 100...1024 then 3
+          end
+          leftover_digits = max_digits - used_digits
+          [ value, suffix, leftover_digits > 0 ? leftover_digits : 0 ]
+      end
+      number = ("%.#{precision}f" % value).to_f
+      (number.to_i == number ? number.to_i : number).to_s + " #{suffix}"
+    end
+end    
 
 class Object
   def multi_send(send_string)
@@ -238,7 +280,12 @@ class String
   end
 
   def trn(options={})
-    text_traduct = EsLanguage.trn(self,(Rails.application.config.default_locale_easysite||:fr),options)
+    begin
+      text_traduct = EsLanguage.trn(self,(Rails.application.config.default_locale_easysite||:fr),options)
+    rescue => e  
+      text_traduct = self
+    end
+    
 #    text_code = self
 #    default = Rails.env.downcase == 'development' ? "#{text_code} <<<PAS DE TRADUCTION" : text_code
 #    options[:default]||=default

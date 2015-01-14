@@ -11,7 +11,17 @@ class EsCategory < ActiveRecord::Base
   has_many :es_templates
   has_many :es_media_files
   has_many :es_users
-  acts_as_dynamic_model 
+  acts_as_dynamic_model([],{:audit_model=>false}) 
+  
+  acts_as_audited :keep_text          => true,
+                  :child_attrs => {},
+                  :model_audit_label  => "Catégorie".trn,
+                  :process_label      => "Changement manuel".trn
+ 
+  # it is an example, but not necessary if you have a field called 'ISO','CODE' or 'NAME'
+  def get_audit_label
+    self.name
+  end
   
   def self.get_id(cat_name, cat_type)
     cat = self.find(:first, :conditions => ["name = ? and category_type = ?", cat_name, cat_type] )

@@ -1,0 +1,224 @@
+<%if @dir_manager
+	action_cut_copy = flash.keep[:copy_cut]||''
+	case action_cut_copy
+		when 'cut'
+			text_action = "A déplacer".trn
+		when 'copy'
+			text_action = "A copier".trn
+		else 
+			text_action = "A coller".trn
+	end
+	%>
+
+	<form id="form_explorer" name="form_explorer" class="form-inline" role="form" enctype="multipart/form-data" method="post">
+		<h1><%="Exploration du répertoire '%{dir}'".trn(:dir =>  @sub_dir.blank? ? @dir_manager.name : "#{@dir_manager.name}/#{@sub_dir}")%></h1>
+
+		<% if flash[:error_dir].present? %>
+			<div role="alert" class="alert alert-danger fade in">
+		      <button data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>
+		      <%= flash[:error_dir] %>
+		    </div>
+		<% end %>
+
+
+		<%=hidden_field_tag :sub_dir, @sub_dir||''%>
+		
+		<div>
+			<div class="col-sm-3">
+			</div>
+			<div class="col-sm-9">
+				<%if (!action_cut_copy.blank? && @dir_manager.action_available?('file_create')) || (@dir_manager.action_available?('dir_create')) || (@dir_manager.action_available?('file_upload')) %>
+					<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+					  <div class="panel panel-default">
+					    <div class="panel-heading" role="tab" id="headingOne">
+					      <h4 class="panel-title">
+					        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+					          <%='Options'.trn%>
+					        </a>
+					      </h4>
+					    </div>
+					    <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+					      <div class="panel-body">
+								<%if !action_cut_copy.blank? && @dir_manager.action_available?('file_create')%>
+									<div class="form-group">
+									    <label for="dir_manager_info_copy_file"><%=text_action%> : </label>
+										<%= text_field "dir_manager_info", "copy_file", :size => 40, :maxlength => 200, :class => "form-control", :readonly => true, :value => flash.keep[:copy_file] %>
+										<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-remove btn-lg'></i>", 
+																									:controller => "dir_managers", :action => "explorer_action", :id => @dir_manager.id,
+																									:no_div => true,
+																									:form => "form_explorer",
+																									:param_goto => {:action_type => 'cancel_copy'},
+																									:html_option =>{ :remote => true, :title =>"Annuler la copie".trn}}%>						
+									</div>
+								<%end%>
+								<%if @dir_manager.action_available?('dir_create')%>
+								  <div class="form-group">
+								    <label for="dir_manager_info_new_dir"><%="Nouveau".trn%> : </label>
+									<%= text_field "dir_manager_info", "new_dir", :size => 40, :maxlength => 200, :class => "form-control", :value => @new_dir %>
+						
+									<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-plus btn-lg'></i>", 
+																								:controller => "dir_managers", :action => "explorer_action", :id => @dir_manager.id,
+																								:no_div => true,
+																								:confirm => "Voulez vous créer ce répertoire ?".trn,
+																								:form => "form_explorer",
+																								:param_goto => {:action_type => 'new_dir'},
+																								:html_option =>{ :remote => true, :title =>"Créer un nouveau répertoire".trn}}%>						
+								  </div>
+								<%end%>
+								<%if @dir_manager.action_available?('file_upload')%>
+									<div class="form-group">
+									    <span class="btn btn-default btn-file">
+										    <%="Choisir un fichier".trn%> <input type="file" id="dir_manager_info_upload_file" name="dir_manager_info[upload_file]">
+									    </span>
+									    <input type="text" class="form-control" size='40' readonly>
+										<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-upload btn-lg'></i>", 
+																									:controller => "dir_managers", :action => "explorer_action", :id => @dir_manager.id,
+																									:no_div => true,
+																									:form => "form_explorer",
+																									:param_goto => {:action_type => 'upload_file'},
+																									:html_option =>{ :title =>"Charger un fichier".trn}}%>						
+										<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-remove btn-lg'></i>", 
+																									:controller => "dir_managers", :action => "explorer_action", :id => @dir_manager.id,
+																									:no_div => true,
+																									:form => "form_explorer",
+																									:param_goto => {:action_type => 'cancel_upload'},
+																									:html_option =>{ :remote => true, :title =>"Vider le nom du fichier".trn}}%>						
+									</div>
+								<%end%>
+					      </div>
+					    </div>
+					  </div>
+					</div>
+				<%end%>
+			</div>
+		</div>
+		
+		<div>
+			<div class="col-sm-3">
+				<%unless @dir_tree.blank?%>
+					<%=@dir_tree.html_safe%>
+				<%end%>	
+			</div>
+			<div class="col-sm-9">
+				<table class='table'>
+					<tr><th><%="Nom".trn%></th><th><%="Taille".trn%></th><th><%="Modification".trn%></th>
+						<th>
+							<%if !action_cut_copy.blank? && @dir_manager.action_available?('file_create')%>
+								<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-ok-circle btn-xs'></i>", 
+																							:controller => "dir_managers", :action => "explorer_action", :id => @dir_manager.id,
+																							:no_div => true,
+																							:form => "form_explorer",
+																							:param_goto => {:action_type => 'paste_file'},
+																							:html_option => {:remote => true, :title =>"Coller un fichier".trn}}%>						
+							<%end%>
+							<%if @dir[1].size>0 && @dir_manager.action_available?('dir_del')%>
+								<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-remove btn-xs'></i>", 
+																							:controller => "dir_managers", :action => "explorer_action", :id => @dir_manager.id,
+																							:no_div => true,
+																							:form => "form_explorer",
+																							:confirm => "Voulez vous vraiment supprimer tous les fichiers ?".trn,
+																							:param_goto => {:action_type => 'delete_all_files'},
+																							:html_option => {:remote => true, :title =>"Supprimer tous les fichiers".trn}}%>						
+							<%end%>
+						</th>
+					</tr>
+
+
+					<% @dir[0].each do |dir|%>
+						<tr>
+							<%if dir[0]=='..'%>
+								<td colspan="4">
+									<%=link_to(dir[0],url_for(:controller => "dir_managers", :action => "explorer", :id => @dir_manager.id, :sub_dir => dir[2]),:remote => true)%>
+								</td>
+							<%else%>
+								<td>
+									<%=link_to(dir[0],url_for(:controller => "dir_managers", :action => "explorer", :id => @dir_manager.id, :sub_dir => dir[2]),:remote => true)%>
+								</td>
+								<td>
+								</td>
+								<td>
+									<%= dir[1].strftime("%d/%m/%Y %H:%M:%S") %>
+								</td>
+								<td>
+									<%if @dir_manager.action_available?('dir_del')%>
+										<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-remove btn-xs'></i>", 
+																									:controller => "dir_managers", :action => "explorer_action", :id => @dir_manager.id,
+																									:no_div => true,
+																									:confirm => "Voulez vous supprimer ce répertoire ?".trn,
+																									:form => "form_explorer",
+																									:param_goto => {:action_type => 'delete_dir',:dir_name => dir[0]},
+																									:html_option => {:remote => true, :title =>"Supprimer un répertoire".trn}}%>						
+									<%end%>
+									<%if @dir_manager.action_available?('dir_rename')%>
+										<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-pencil btn-xs'></i>", 
+																									:controller => "dir_managers", :action => "explorer_action", :id => @dir_manager.id,
+																									:no_div => true,
+																									:confirm => "Voulez vous renommer ce répertoire ?".trn,
+																									:form => "form_explorer",
+																									:param_goto => {:action_type => 'rename_dir',:dir_name => dir[0]},
+																									:html_option => {:remote => true, :title =>"Renommer un répertoire".trn}}%>						
+									<%end%>
+								</td>
+							<%end%>
+						</tr>
+				    <% end %>			
+
+
+
+					<% @dir[1].each do |file|%>
+						<tr>
+							<td>
+								<%if @dir_manager.action_available?('file_download')%>
+									<%=link_to(file[0],url_for(:controller => "dir_managers", :action => "explorer_action", :id => @dir_manager.id, :action_type => 'download_file',:file_name => file[0],:sub_dir => @sub_dir), :title =>"Télécharger le fichier".trn)%>
+								<%else%>
+									<%= file[0]%>
+								<%end%>
+							</td>
+							<td><%= file[1].nice_bytes%></td>
+							<td><%= file[2].strftime("%d/%m/%Y %H:%M:%S") %></td>
+							<td>
+								<%if @dir_manager.action_available?('file_del')%>
+									<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-remove btn-xs'></i>", 
+																								:controller => "dir_managers", :action => "explorer_action", :id =>@dir_manager.id,
+																								:no_div => true,
+																								:form => "form_explorer",
+																								:confirm => "Voulez vous supprimer ce fichier ?".trn,
+																								:param_goto => {:action_type => 'delete_file', :file_name => file[0]},
+																								:html_option => {:remote => true, :title =>"Supprimer un fichier".trn}}%>						
+								<%end%>
+								<%if @dir_manager.action_available?('file_create')%>
+									<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-plus btn-xs'></i>", 
+																								:controller => "dir_managers", :action => "explorer_action", :id =>@dir_manager.id,
+																								:no_div => true,
+																								:form => "form_explorer",
+																								:param_goto => {:action_type => 'copy_file', :file_name => file[0]},
+																								:html_option => {:remote => true, :title =>"Copier un fichier".trn}}%>						
+									<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-share-alt btn-xs'></i>", 
+																								:controller => "dir_managers", :action => "explorer_action", :id =>@dir_manager.id,
+																								:no_div => true,
+																								:form => "form_explorer",
+																								:param_goto => {:action_type => 'cut_file', :file_name => file[0]},
+																								:html_option => {:remote => true, :title =>"Déplacer un fichier".trn}}%>						
+	
+								<%end%>
+								<%if @dir_manager.action_available?('file_rename')%>
+									<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-pencil btn-xs'></i>", 
+																								:controller => "dir_managers", :action => "explorer_action", :id =>@dir_manager.id,
+																								:no_div => true,
+																								:form => "form_explorer",
+																								:param_goto => {:action_type => 'rename_file', :file_name => file[0]},
+																								:html_option => {:remote => true, :title =>"Renommer un fichier".trn}}%>						
+								<%end%>
+							</td>
+						</tr>
+				    <% end %>			
+				</table>
+			</div>
+		</div>
+	</form>
+<%end%>
+
+<script>
+	init_tree_view_file();
+</script>
+<%= javascript_include_tag "filestyle.js" %>

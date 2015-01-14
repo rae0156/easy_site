@@ -1,0 +1,51 @@
+interface:
+  models: /
+  controllers: 
+    - MenusController
+  mailers: / 
+
+version: 0.0.0.3
+
+activated: Y<<boolean-N-Module actif>>
+
+setup:
+  admin:
+    title: module Menu <<string-N-Titre du module>>
+
+controllers: 
+  entry_point_names:
+    MenusController: Gestion des menus
+  entry_points:
+    MenusController:    
+        setup_side: Paramétrage des menus de côté
+        setup_navigation: Paramétrage des menus de navigation
+        setup_dropdown: Paramétrage des menus déroulants
+        setup_vertical: Paramétrage des menus verticaux
+        setup_sheet: Paramétrage des menus de feuille
+        setup_horizontal: Paramétrage des menus horizontaux
+  contents:
+    MenusController:    
+        get_menu_sidebar: 
+          description: Menu côté
+          params:
+            code_menu: <<get-Y-Code du menu de côté-EsMenu,get_code_menu_sidebar>>
+        get_menu_navigation: 
+          description: Menu navigation
+          params:
+            code_menu: <<get-Y-Code du menu navigation-EsMenu,get_code_menu_navigation>>
+        get_menu_dropdown: 
+          description: Menu déroulant
+          params:
+            code_menu: <<get-Y-Code du menu déroulant-EsMenu,get_code_menu_dropdown>>
+        get_menu_vertical: 
+          description: Menu vertical
+          params:
+            code_menu: <<get-Y-Code du menu verical-EsMenu,get_code_menu_vertical>>
+        get_menu_sheet: 
+          description: Menu feuille
+          params:
+            code_menu: <<get-Y-Code du menu feuille-EsMenu,get_code_menu_sheet>>
+        get_menu_horizontal: 
+          description: Menu horizontal
+          params:
+            code_menu: <<get-Y-Code du menu horizontal-EsMenu,get_code_menu_horizontal>>

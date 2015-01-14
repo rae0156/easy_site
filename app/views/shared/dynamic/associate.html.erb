@@ -1,0 +1,41 @@
+<% @title = "Associer %{instance_name} à %{association}".trn(:instance_name => @setup_controller[:instance_name].humanize, :association => @text_to_associate) %>
+<% @pathway = [@title] %>
+
+  <div class="center-menu">
+    <h2> <%= @title %></h2>
+    <ul>
+		<%unless (@setup_controller[:readonly_exists] && @instance["read_only"]=='Y')%>
+			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/save_32.png", :action => "update_associate", :id => params[:id],  :form => "associate_#{@setup_controller[:instance_name]}"}%></li>
+		<%end%>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:back => true, :text => "Retour".trn,:image => "appli/back_32.png", :action => "list", :param_goto => {:parent_id => (@parent.blank? ? "" : @parent.id)}}%></li>
+    </ul>
+    <div class="clearer"></div>
+  </div>
+
+  <!-- Error messages -->
+  <%= errors_for(@instance) %>
+
+<%= form_tag(url_for(:action => 'update_associate', :id => params[:id] ), { :name => "associate_#{@setup_controller[:instance_name]}",:id => "associate_#{@setup_controller[:instance_name]}",:class => 'form-horizontal'} ) do |f| %>
+
+	<%@list_field.each do |field|
+		column = @columns_screen.select{|c| c[:name]==field}
+		if column.size > 0
+			 column = column.first
+	%>
+		  <div class="form-group">
+		    <label for=<%="instance_#{column[:name]}"%> class="col-sm-4 control-label"><%=column[:column_name]%> :</label>
+			<div class="col-sm-8">
+				<%= easy_tag('text',:instance => "instance", :field => column[:name], :read_only=> true) %>
+		    </div>
+		  </div>
+	<%	end	
+	 end%>    	
+
+	  <div class="form-group">
+	    <label for=<%="association_list"%> class="col-sm-4 control-label"><%=@text_to_associate%> :</label>
+		<div class="col-sm-8">
+			<%= collection_select(:instance, @associate_field_id, @list, :id, @association_field_to_display, {:include_blank => ""}, {:size => 15, :multiple => true}) %>
+	    </div>
+	  </div>
+<% end %>
+

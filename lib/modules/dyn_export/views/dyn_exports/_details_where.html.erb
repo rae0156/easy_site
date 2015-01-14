@@ -1,0 +1,150 @@
+<h3 align="left"><%="Condition".trn%></h3>	
+
+	<div class="form-group">
+		<label class="control-label col-sm-2" for="select_fields"><%="Champs".trn%> :</label>
+		<div class="controls col-sm-10">
+			<p>
+				<%= select("where", "fields", @dyn_export.available_field("FIELDS",true),{:include_blank => ""}, {:multiple => true, :size => 5 })%>    
+			</p>
+			<p>
+				<div class='btn'>
+					<%= render :partial => 'shared/goto_menu_item', :locals => { :action => "add_where_clause", :id => @dyn_export.id, :form => "details_form", :image => "appli/add_32.png" ,  :text => "Ajouter une condition".trn, :remote => true}%>		
+				</div>
+				<div class='btn'>
+					<%= render :partial => 'shared/goto_menu_item', :locals => { :action => "add_empty_where_clause", :id => @dyn_export.id, :form => "details_form", :image => "appli/new_32.png" ,  :text => "Ajouter une condition libre".trn, :remote => true}%>		
+				</div>
+			</p>
+		</div>
+	</div>
+
+
+	<div class="form-group">
+		<label class="control-label col-sm-2" for="select_fields"><%="Chaine de la condition".trn%> :</label>
+		<div class="controls col-sm-10">
+			<p>
+			    <%= text_field_tag "where[string]", @dyn_export.get_where_string, {:maxlength => 80, :size => 80, :class => 'textbox'} %>
+			</p>
+			<p>
+				<div class='btn'>
+					<%= render :partial => 'shared/goto_menu_item', :locals => { :action => "save_where_string", :id => @dyn_export.id, :form => "details_form", :image => "appli/save_32.png" ,  :text => "Sauver".trn, :remote => true}%>		
+				</div>
+			</p>
+			<p><%="Peut être vide. Si c'est le cas, chaque conditions sera liées par un 'AND'".trn%></p>
+			<p><%="Exemple utilisant le numéro de séquence".trn%> : ( %{1} AND %{2} ) OR %{3}</p>
+		</div>
+	</div>
+
+	<%condition_string = DynExport.build_condition(@dyn_export.get_where,@dyn_export.get_where_string)[0]
+	  unless condition_string.blank?%>
+	<div class="form-group">
+		<label class="control-label col-sm-2" for="select_fields"><%="Condition construite".trn%> :</label>
+		<div class="controls col-sm-10">
+			<p><%=condition_string%></p>
+		</div>
+	</div>
+	<%end%>
+
+
+<table cellpadding="4" width="100%" class="adminlist">
+	<tr>
+		<th><%="Séquence".trn%></th>
+		<th><%="Nom du champs".trn%></th>
+		<th><%="Operateur".trn%></th>
+		<th><%="Argument".trn%>&nbsp;
+			<%= render :partial => 'shared/goto_menu_item', :locals => {:no_div=> true, :action => "save_wheres", :id => @dyn_export.id, :form => "details_form", :text_html => "<i class='glyphicon glyphicon-floppy-save'></i>".html_safe ,  :text => "", :remote => true}%>
+		</th>
+		<th><%="Paramètres".trn%></th>
+		<th><%="Options".trn%></th>
+	</tr>
+
+	<%i=0
+	@dyn_export.dyn_export_details.find(:all, :conditions => {:clause => "WHERE"}, :order => "sequence asc").each do |list_item|%>
+	<tr class="<%= cycle("row0", "row1") %>">
+	    <td><%=list_item.sequence.to_i%></td>
+	    <%i+=1%>
+		<%if list_item.name.blank?%>
+		    <%if list_item.active == 'Y' %>
+			    <td colspan="3">
+			    	<%= text_field_tag "where[value][]",list_item.argument, {:maxlength => 200, :size => 100, :class => 'textbox'} %> 
+			    </td>
+		    <%else%>
+			    <td colspan="3"><%=list_item.argument%></td>
+		    <%end%>
+	    <%else%>
+		    <td><%=list_item.name%></td>
+		    <%if list_item.active == 'Y' %>
+			    <td><%= select_tag 'where[operator][]',options_for_select([ "=", "NOT LIKE", "LIKE", "<","<=",">", ">=", "<>" ], list_item.operator), :size => 5  %></td>
+			    <td>
+			    	<%= text_field_tag "where[value][]",list_item.argument, {:maxlength => 80, :size => 40, :class => 'textbox'} %> 
+					<%if i == 1%>
+					<br/><span> <%="Exemple".trn%> : aaa??aaa</span>		
+					<%end%>
+			    </td>
+		    <%else%>
+			    <td><%=list_item.operator%></td>
+			    <td><%=list_item.argument%></td>
+		    <%end%>
+	    <%end%>
+	    <%if list_item.active == 'Y' %>
+		    <td>
+		    	<%= text_field_tag "where[params][]",list_item.params, {:maxlength => 80, :size => 40, :class => 'textbox'} %> 
+				<%if i == 1%>
+				<br/><span> <%="Exemple : type de valeur".trn%>(string,date)|label|value1,value2</span>		
+				<%end%>
+		    </td>
+	    <%else%>
+		    <td><%=list_item.params%></td>
+	    <%end%>
+	    
+	    <td>
+
+	  		<%if list_item.sequence.to_i > 1 %>
+				<%= link_to("<i class='glyphicon glyphicon-arrow-up'></i>".html_safe, 
+							url_for(:action => "move_up", :id => list_item['id'], :page => params[:page]), 
+							:title => "Monter".trn, :class => "app_tooltip","data-placement" => "left", :remote => true) %>
+	  		<%end%>
+	  		<%if list_item.sequence.to_i <  @dyn_export.last_sequence(list_item.clause)%>
+				<%= link_to("<i class='glyphicon glyphicon-arrow-down'></i>".html_safe, 
+							url_for(:action => "move_down", :id => list_item['id'], :page => params[:page]), 
+							:title => "Descendre".trn, :class => "app_tooltip","data-placement" => "left", :remote => true) %>
+	  		<%end%>
+
+
+	    	<%if list_item.active == 'Y'%>
+				<%= link_to(	"<i class='glyphicon glyphicon-ok'></i>".html_safe, 
+								url_for(:action => "activate_detail", :id => list_item.id),
+								{
+								 :title => "Désactiver une condition".trn, 
+								 :confirm =>"Voulez vous désactiver une condition ?".trn,
+								 :class => "app_tooltip",
+								 "data-placement" => "left", :remote => true
+								}
+							 )%>
+	    	<%else%>
+				<%= link_to(	"<i class='glyphicon glyphicon-remove'></i>".html_safe, 
+								url_for(:action => "activate_detail", :id => list_item.id),
+								{
+								 :title => "Activer une condition".trn, 
+								 :confirm =>"Voulez vous activer une condition ?".trn,
+								 :class => "app_tooltip",
+								 "data-placement" => "left", :remote => true
+								}
+							 )%>
+	    	<%end%>
+
+			<%= link_to(	"<i class='glyphicon glyphicon-remove-circle'></i>".html_safe, 
+							url_for(:action => "destroy_detail", :id => list_item.id),
+							{
+							 :title => "Supprimer une condition".trn, 
+							 :confirm =>"Voulez vous supprimer une condition ?".trn,
+							 :class => "app_tooltip",
+							 "data-placement" => "left", :remote => true
+							}
+						 )%>
+
+		</td>
+	</tr>
+	<%end%>
+</table>
+
+

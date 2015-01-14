@@ -1,0 +1,127 @@
+<table cellpadding="4" width="100%" class="adminlist">
+	  <tr>
+	  		<th colspan="2" width='50px'>
+		    	<%= link_to(image_tag("/images/famfam/arrow_down.png",
+								    {:alt => "", :align => "middle", :border => "0",
+								    :class => "app_tooltip", :title => "Voir tout les détails".trn, "data-placement" => "left", :id => "histo_show_#{histo_collection.object_id}"}),"#histo_show_#{histo_collection.object_id}") %>
+			    <%= link_to(image_tag("/images/famfam/arrow_up.png",
+								    {:alt => "", :align => "middle", :border => "0",
+								    :class => "app_tooltip", :title => "Cacher les détails".trn, "data-placement" => "left", :id => "histo_hide_#{histo_collection.object_id}"}),"#histo_show_#{histo_collection.object_id}") %>		
+	  		</th>
+			<%fields_histo.each do |f| %>
+				<th><%=f[0]%></th>
+			<%end%>
+	  </tr>  
+	<%histo_collection.each do |histo_element|%>
+	
+		<tr class="row1">
+		    <td colspan="2">
+		    	<a href="#" title="Show/Hide details" id='histo_<%=histo_collection.object_id%>_<%=histo_element.id%>'>
+		    		<%=histo_element.id%>
+		    	</a>
+		    </td>    
+			<%fields_histo.each do |f| %>
+			    <td><%=eval("histo_element.#{f[2].blank? ? f[1] : f[2]}")%></td>    
+			<%end%>
+		</tr>
+		<%histo_element.audits.reverse.each do |a|%>
+			<tr style="display: none;" class='histo histo_<%=histo_collection.object_id%>_<%=histo_element.id%> histo_all_<%=histo_collection.object_id%>'>
+			    <td><%=a.action.humanize%><BR><%=EsUser.find_by_id(a.user_id).name_without_company.gsub(' ','&nbsp;').html_safe%></td>    
+			    <td><%=a.created_at.strftime("%Y-%m-%d %H:%M:%S")%></td>    
+				<%fields_histo.each do |f| %>
+				    <td>
+				    	<% 
+			    			fld = f[1]
+				    		if a.changes_audit[fld].present?
+					    		value = nil
+					    		fld1 = nil
+					    		fld2 = nil
+
+					    		if f[1][-2..-1] == 'id' && a.changes_audit[f[1][0..-3] + "text"].present? 
+					    			fld1 = f[1][0..-3] + "text"
+					    		end
+					    		
+					    		if !f[2].blank? 
+					    			if f[2].split('.').size==2 && fld[-2..-1]=='id'
+						    			model = f[2].split('.')[0].classify
+										begin
+										  model_class = model.constantize
+										rescue
+										  model_class = nil		
+										end
+										unless model_class.nil?
+								    		if a.action == 'create'
+								    			tmp = a.changes_audit[fld]
+								    		else
+								    			tmp = a.changes_audit[fld][1]
+								    		end
+											tmp_instance = model_class.find_by_id(tmp)
+							    			fld2 = tmp_instance.send(f[2].split('.')[1]) if tmp_instance
+										end
+									else
+										tmp_key  = f[2].split('.')[0]
+										tmp_send = f[2].split('.')[1..-1].join('.')
+							    		if a.action == 'create'
+											send_complete = "a.changes_audit['#{tmp_key}'].#{tmp_send}"
+							    		else
+											send_complete = "a.changes_audit['#{tmp_key}'][1].#{tmp_send}"
+							    		end
+										begin
+										  fld2 = eval(send_complete)
+										rescue
+										  fld2 = nil
+										end
+									end
+								end	
+
+					    		if a.action == 'create'
+					    			title = ''
+					    			value = a.changes_audit[fld].to_s					    			
+					    			value +=  '<BR>' + a.changes_audit[fld1].to_s unless fld1.nil?
+					    			value +=  '<BR>' + fld2.to_s if !fld2.nil? && (fld1.nil? || a.changes_audit[fld1].to_s != fld2.to_s)					    			
+					    		else
+					    			title = "#{a.changes_audit[fld][0]} -> #{a.changes_audit[fld][1]}" 
+					    			value = a.changes_audit[fld][1].to_s
+					    			value +=  '<BR>' + a.changes_audit[fld1][1].to_s unless fld1.nil?
+					    			value +=  '<BR>' + fld2.to_s if !fld2.nil? && (fld1.nil? || a.changes_audit[fld1][1].to_s != fld2.to_s)					    			
+					    		end
+							end				    			
+				    	%>
+				    	
+				    	<%unless value.nil?%>
+				    		<span title='<%=title%>'><%=value.html_safe%></span>
+			    		<%end%>
+				    </td>    
+				<%end%>
+			</tr>
+		<%end%>
+	<%end%>
+
+
+</table>
+
+<%if histo_collection.size > 0%>
+	<script type="text/javascript">
+	
+		$(document).ready(function(){
+			$('[id^="histo_<%=histo_collection.object_id%>_"]').click(function() {
+				id = $(this).attr('id');
+				$('.' + id).toggle();
+				return false;
+			});
+			
+			$('#histo_show_<%=histo_collection.object_id%>').click(function() {
+				id = $(this).attr('id').substring(10);
+				$('.histo_all' + id).show();
+				return false;
+			});
+
+			$('#histo_hide_<%=histo_collection.object_id%>').click(function() {
+				id = $(this).attr('id').substring(10);
+				$('.histo_all' + id).hide();
+				return false;
+			});
+		});
+	
+	</script>		
+<%end%>

@@ -1,0 +1,37 @@
+<tr class="<%= cycle("row0", "row1") %>">
+  <td>
+  	<%= link_to list_item.name, :action => 'edit', :id => list_item.id%>
+  </td>
+  <td>
+	<%= list_item.description.limit(50) %>  
+  </td>
+  <td>
+	<%= list_item.dir_base.name %>  
+  </td>
+  <td>
+	<%= list_item.real_dir %>  
+  </td>
+  <td>
+	<%= list_item.file_ext %>  
+  </td>
+  <td>
+	<%= image_tag(list_item.sub_dir_by_user=='Y' ? "appli/ok_32.png" : "appli/cancel_32.png", 
+						    {:alt => "", :align => "middle", :border => "0",
+						    :class => "app_tooltip", :title => list_item.sub_dir_by_user=='Y' ? "Création d'un répertoire par utilisateur".trn : "Pas de création d'un répertoire par utilisateur".trn, "data-placement" => "left"}) %>  
+  </td>
+  <td>
+	<%= (list_item.limit_size||(1024*1024)).nice_bytes %>  
+  </td>
+  <td>
+	<%= link_to("<i class='glyphicon glyphicon-ok'></i>".html_safe, 
+				url_for(:action => "right_dir", :id => list_item['id']), 
+				:title =>"Droits du répertoire".trn)
+	%>					
+	<%= link_to("<i class='glyphicon glyphicon-remove-sign'></i>".html_safe, 
+				url_for(:action => "destroy", :id => list_item['id']), 
+				:confirm =>"Voulez vous vraiment supprimer cette référence au répertoire ?".trn,
+				:title =>"Supprimer".trn)
+	%>					
+  </td>
+  
+</tr>

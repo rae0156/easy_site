@@ -1,7 +1,7 @@
 <ul class="jqueryFileTree" style="display: none;">
 	
 	<%if @first && @typefile.split(',').include?('[EMPTY]')%>
-    <li class=""><a href="#" rel="">Aucune sélection</a></li>
+    <li class=""><a href="#" rel=""><%="Aucune sélection".trn%></a></li>
 	<%end%>
 	
     <% @dir[0].each do |dir| %>

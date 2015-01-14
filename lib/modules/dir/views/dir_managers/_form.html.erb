@@ -1,0 +1,51 @@
+
+	  <h4><%= field_description "Données obligatoires", true %></h4>
+	  
+	  <div class="form-group">
+	    <label for="element_name" class="col-sm-4 control-label"><%= field_description "", true %> <%="Nom de la tâche".trn%> : </label>
+		<div class="col-sm-4">
+			<%= text_field "element", "name", :maxlength => 50, :class => "form-control" %>
+	    </div>
+	  </div>
+	  <div class="form-group">
+	    <label for="element_description" class="col-sm-4 control-label"><%="Description".trn%> : </label>
+	    <div class="col-sm-8">
+			<%= text_field "element", "description", :maxlength => 200, :class => "form-control" %>
+		</div>
+	  </div>
+	  <div class="form-group">
+	    <label for="element_dir_base_id" class="col-sm-4 control-label"><%= field_description "", true %> <%="Chemin de base".trn%> : </label>
+	    <div class="col-sm-4">
+			<%= easy_tag('list',:instance => "element", :field => "dir_base_id",:value_list_array => DirBase.all.map {|b| [b.name, b.id]},:number_of_line=>1,:multiple => false)%>
+		</div>
+	  </div>
+	  <div class="form-group">
+	    <label for="element_real_dir" class="col-sm-4 control-label"><%= field_description "", true %> <%="Nom du répertoire".trn%> : </label>
+	    <div class="col-sm-4">
+			<%= text_field "element", "real_dir", :maxlength => 200, :class => "form-control" %>
+		</div>
+	    <div class="col-sm-4">
+			<span class="help-block"><%="Eviter les caractères spéciaux".trn%></span>
+		</div>
+	  </div>
+	  <div class="form-group">
+	    <label for="element_file_ext" class="col-sm-4 control-label"><%= field_description "", true %> <%="Exentions de fichier".trn%> : </label>
+	    <div class="col-sm-4">
+			<%= text_field "element", "file_ext", :maxlength => 50, :class => "form-control" %>
+		</div>
+	    <div class="col-sm-4">
+			<span class="help-block"><%="Liste séparée par des ;".trn%></span>
+		</div>
+	  </div>
+	  <div class="form-group">
+	    <label for="element_sub_dir_by_user" class="col-sm-4 control-label"><%="Répertoire par utilisateur".trn%> : </label>
+	    <div class="col-sm-1">
+			<%= easy_tag('check_box',:instance => "element", :field => "sub_dir_by_user")%>
+		</div>
+	  </div>
+	  <div class="form-group">
+	    <label for="element_limit_size" class="col-sm-4 control-label"><%="Taille limite".trn%> : </label>
+	    <div class="col-sm-4">
+			<%= easy_tag('list',:instance => "element", :field => "limit_size",:include_blank => "Taille par défaut".trn, :value_list_array => [['100 octets',100],['1 Ko',1024],['4 Ko',(4 * 1024)],['1 Mo',(1024 * 1024)],['4 Mo',(4 * 1024 * 1024)],['10 Mo',(10 * 1024 * 1024)],['100 Mo',(100 * 1024 * 1024)],['1 Go',(1024 * 1024 * 1024)]],:number_of_line=>1)%>
+		</div>
+	  </div>

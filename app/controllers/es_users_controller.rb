@@ -165,7 +165,7 @@ class EsUsersController < ApplicationController
       self.current_user = EsUser.authenticate(mail, params[:user][:password])
       if self.current_user
         if self.current_user.active == "Y"
-          DataFile.create_dir("public","content", "users","#{current_user.id}") unless current_user.blank? 
+          create_dir("public","content","users","#{current_user.id}") unless current_user.blank? 
           flash[:notice] = "Bonjour".trn + " #{self.current_user.firstname} #{self.current_user.name}"
           if session[:return_to].blank?
             redirect_to :controller => :sites, :action => :index
