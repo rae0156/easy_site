@@ -39,7 +39,7 @@
 	      <div class="form-group">
 	        <label for="action_user_action_type_id" class="col-sm-4 control-label"><%= field_description "", true %> <%="Type d'ouverture".trn%> : </label>
 		    <div class="col-sm-8">
-	      	  	<%= select("action_user", :target_other, [["Même onglet".trn,'N'],["Nouvel onglet".trn,'N'],["Autre fenêtre sans option".trn,'F'],["Autre fenêtre avec options".trn,'O']] , {:include_blank => ''}, :class => "form-control") %>
+	      	  	<%= select("action_user", :target_other, [["Même onglet".trn,'N'],["Nouvel onglet".trn,'Y'],["Autre fenêtre sans option".trn,'F'],["Autre fenêtre avec options".trn,'O']] , {:include_blank => ''}, :class => "form-control") %>
 		    </div>
 		  </div>
 	      <div class="form-group">

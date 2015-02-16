@@ -15,3 +15,8 @@
   min-width: 200px;
   overflow: auto;
 }
+
+.window_fixed + .fileTreeview{
+  position:   inherit;
+  max-width: inherit;
+}

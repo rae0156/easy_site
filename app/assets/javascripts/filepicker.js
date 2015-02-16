@@ -1,3 +1,9 @@
+
+/*
+ * add the class 'window_fixed' with filepicker to have a windows fixed
+ */
+
+
 $(document).ready(function(){
 	$('.filepicker').fileSelector();
   	});

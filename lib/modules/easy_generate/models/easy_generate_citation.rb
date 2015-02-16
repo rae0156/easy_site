@@ -1,6 +1,6 @@
 # encoding: UTF-8
 
-class EasyGenerateVideo < ActiveRecord::Base
+class EasyGenerateCitation < ActiveRecord::Base
   self.table_name = "es_media_files"
 
   belongs_to :es_category
@@ -9,6 +9,7 @@ class EasyGenerateVideo < ActiveRecord::Base
                            :label_name        => "Code",
                            :column_name       => "Code",
                            :field_key         => true,
+                           :field_key_scope   => "media_type",
                            :mandatory         => true
                           }, 
                           {:name              => "title",
@@ -17,28 +18,25 @@ class EasyGenerateVideo < ActiveRecord::Base
                            :mandatory         => true
                           }, 
                           {:name              => "description",
-                           :label_name        => "Description",
-                           :column_name       => "Description"
-                          }, 
-                          {:name              => "path",
-                           :label_name        => "Lien vidéo internet",
-                           :column_name       => "Lien vidéo internet"
+                           :label_name        => "Citation",
+                           :column_name       => "Citation"
                           }, 
                           {:name              => "reference",
-                           :label_name        => "Fichier vidéo",
-                           :column_name       => "Fichier vidéo"
+                           :label_name        => "Référence",
+                           :column_name       => "Référence"
                           }       
                         ],
                         { :only_field_defined=>true, 
                           :audit_model=>false, 
-                          :fixed_attributes => {:media_type => 'video', :sequence => 1}, 
+                          :fixed_attributes => {:media_type => 'citation', :sequence => 1}, 
                           :dynamic_search_exists => false, 
                           :sequence_exists => false, 
                           :parent_exists => false
                         }) 
   acts_as_audited :keep_text          => true,
                   :child_attrs => {:es_category => :name },
-                  :model_audit_label  => "Vidéo".trn,
+                  :model_audit_label  => "Citation".trn,
                   :process_label      => "Changement manuel".trn
+
 
 end

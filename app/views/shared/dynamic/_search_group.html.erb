@@ -36,7 +36,7 @@
 		  <%when "p"%>
 				<div class="tab-pane <%=i>0 ? '' : 'active'%>" id="tab_parent_search">
 					<%= form_tag({ :action => 'list' }, { :name => 'list_form_category'}) do%>
-					    <button type="button" id="view_hide" class="btn btn-default"><%="Choisir un".trn%> '<%=@setup_controller[:instance_name]%>'</button>
+					    <button type="button" id="view_hide" class="btn btn-default"><%="Choisir parmi".trn%> '<%=@setup_controller[:instance_name]%>'</button>
 						<div id="fileTree_element"></div>
 					<% end %>
 				    <%= render :partial => 'shared/dynamic/script_category_search' %>

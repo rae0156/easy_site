@@ -50,7 +50,30 @@ module ApplicationHelper
       num=0
       tmp_list[1..-1].each do |id_image|
         element = collection[0].class.find(id_image)
-        html_element_text =  generate_tag(:IMG, "", {:src=>"[path]"}) + generate_tag(:DIV, generate_tag(:H4, "[title]") + generate_tag(:P, "[description]"),{:class=>"carousel-caption"}) 
+
+
+        if !element.path.blank?
+          url = ((element.path.downcase.starts_with?('http://') || element.path.downcase.starts_with?('https://')) ? '' : "http://") + element.path.to_s
+          if test_url(url)
+            element_html = generate_tag(:IMG, "", {:src=>url})
+          else
+            element_html = generate_tag(:DIV, "Le lien image '%{url}' n'est pas correcte".trn(:url => url)) 
+          end
+        elsif !element.reference.blank?
+          if File.file?(File.join(Rails.root,element.reference))
+            tmp_file = element.reference.downcase.starts_with?('public/') ? element.reference[6..-1] : element.reference
+            element_html = generate_tag(:IMG, "", {:src=>tmp_file})
+          else
+            element_html = generate_tag(:DIV, "Le fichier image '%{url}' n'est pas correcte".trn(:url => element.reference)).html_safe 
+          end
+        else
+          element_html = generate_tag(:DIV, "Aucune image n'est renseignée".trn) 
+        end
+
+
+        html_element_text =  element_html + generate_tag(:DIV, generate_tag(:H4, "[title]") + generate_tag(:P, "[description]"),{:class=>"carousel-caption"}) 
+
+
         tmp_content = substitute_string(html_element_text,element,["title","description"])
         html_indicators_text += generate_tag(:LI, "", {"data-target"=> "#carousel_#{id_rand}", "data-slide-to"=> "#{num}", :class=>(num==0 ? "active": "")})
         html_text.gsub!("[#{id_image}]",tmp_content)
@@ -71,7 +94,27 @@ module ApplicationHelper
     html_text=tmp_list[0]
     tmp_list[1..-1].each do |id_image|
       element = collection[0].class.find(id_image)
-      html_element_text_before =  generate_tag(:A, generate_tag(:IMG, "", {:class=>"media-object",:src=>"[path]"}), {:class=>"pull-left"}) 
+
+
+      if !element.path.blank?
+        url = ((element.path.downcase.starts_with?('http://') || element.path.downcase.starts_with?('https://')) ? '' : "http://") + element.path.to_s
+        if test_url(url)
+          html_element_text_before = generate_tag(:A, generate_tag(:IMG, "", {:class=>"media-object",:src=>url}), {:class=>"pull-left"})
+        else
+          html_element_text_before = generate_tag(:DIV, "Le lien image '%{url}' n'est pas correcte".trn(:url => url)) 
+        end
+      elsif !element.reference.blank?
+        if File.file?(File.join(Rails.root,element.reference))
+          tmp_file = element.reference.downcase.starts_with?('public/') ? element.reference[6..-1] : element.reference
+          html_element_text_before = generate_tag(:A, generate_tag(:IMG, "", {:class=>"media-object",:src=>tmp_file}), {:class=>"pull-left"})
+        else
+          html_element_text_before = generate_tag(:DIV, "Le fichier image '%{url}' n'est pas correcte".trn(:url => element.reference))
+        end
+      else
+        html_element_text_before = generate_tag(:DIV, "Aucune image n'est renseignée".trn) 
+      end
+
+
       html_element_text_container = generate_tag(:H4, "[title]", {:class=>"media-heading"}) + generate_tag(:P, "[description]") 
       tmp_content_before = substitute_string(html_element_text_before,element)
       tmp_content_container = substitute_string(html_element_text_container,element,["title","description"])
@@ -89,7 +132,27 @@ module ApplicationHelper
     
     tmp_list[1..-1].each do |id_image|
       element = collection[0].class.find(id_image)
-      tmp_content = substitute_string(generate_tag(:A, generate_tag(:IMG, "", {:src=>"[path]"}) + generate_tag(:H3, "[title]") + generate_tag(:P, "[description]"), {:href=>"#", :class=>"thumbnail"}),element,["title","description"])
+      
+
+      if !element.path.blank?
+        url = ((element.path.downcase.starts_with?('http://') || element.path.downcase.starts_with?('https://')) ? '' : "http://") + element.path.to_s
+        if test_url(url)
+          element_html = substitute_string(generate_tag(:A, generate_tag(:IMG, "", {:src=>url}) + generate_tag(:H3, "[title]") + generate_tag(:P, "[description]"), {:href=>"#", :class=>"thumbnail"}),element,["title","description"])
+        else
+          element_html = generate_tag(:DIV, "Le lien image '%{url}' n'est pas correcte".trn(:url => url)) 
+        end
+      elsif !element.reference.blank?
+        if File.file?(File.join(Rails.root,element.reference))
+          tmp_file = element.reference.downcase.starts_with?('public/') ? element.reference[6..-1] : element.reference
+          element_html = substitute_string(generate_tag(:A, generate_tag(:IMG, "", {:src=>tmp_file}) + generate_tag(:H3, "[title]") + generate_tag(:P, "[description]"), {:href=>"#", :class=>"thumbnail"}),element,["title","description"])
+        else
+          element_html = generate_tag(:DIV, "Le fichier image '%{url}' n'est pas correcte".trn(:url => element.reference)).html_safe 
+        end
+      else
+        element_html = generate_tag(:DIV, "Aucune image n'est renseignée".trn) 
+      end
+
+      tmp_content = element_html 
       html_text.gsub!("[#{id_image}]",tmp_content)
     end
     
@@ -99,10 +162,16 @@ module ApplicationHelper
   def generate_breadcrumb(*adrs)
     html_text=""
     num=1
+
     adrs.each do |adr|
      
       if adr.is_a?(Array) && adr.count > 1
-        tmp_elem = generate_tag(:A, adr[0], {:href=>adr[1]})
+        unless adr[1].include?('.')
+          url = adr[1]
+        else
+          url = ((adr[1].downcase.starts_with?('http://') || adr[1].downcase.starts_with?('https://')) ? '' : "http://") + adr[1]
+        end        
+        tmp_elem = generate_tag(:A, adr[0], {:href=>url})
       else
         tmp_elem = adr.split.join
       end
@@ -126,7 +195,25 @@ module ApplicationHelper
   end
 
   def generate_video(video)
-    return substitute_string(generate_tag(:DIV, "<iframe width='[width]' height='[height]' src='[path]' frameborder='0' allowfullscreen></iframe>", {:class => 'flex-video widescreen'}) ,video).html_safe 
+    if !video.path.blank?
+      url = ((video.path.downcase.starts_with?('http://') || video.path.downcase.starts_with?('https://')) ? '' : "http://") + video.path.to_s
+      if test_url(url)
+        return substitute_string(generate_tag(:DIV, "<iframe width='[width]' height='[height]' src='#{url}' frameborder='0' allowfullscreen></iframe>", {:class => 'flex-video widescreen'}) ,video).html_safe 
+      else
+        return generate_tag(:DIV, "Le lien vidéo '%{url}' n'est pas correcte".trn(:url => url)).html_safe 
+      end
+    elsif !video.reference.blank?
+      if File.file?(File.join(Rails.root,video.reference))
+        tmp_file = video.reference.downcase.starts_with?('public/') ? video.reference[6..-1] : video.reference
+        text = "<embed src='#{tmp_file}' width='#{video.width}' height='#{video.height}'></embed>"        
+
+        return text.html_safe 
+      else
+        return generate_tag(:DIV, "Le fichier vidéo '%{url}' n'est pas correcte".trn(:url => video.reference)).html_safe 
+      end
+    else
+      return generate_tag(:DIV, "Aucune vidéo n'est renseignée".trn).html_safe 
+    end
   end
 
   def substitute_string(text,instance=nil,fields_to_translate=[])
@@ -190,7 +277,7 @@ module ApplicationHelper
       end
       
       if menu.link_type=="link_sheet"
-        tmp_media = EsMediaFile.find_by_name(menu.link_params)
+        tmp_media = EsMediaFile.find(:first, :conditions => {:name => menu.link_params, :media_type => "sheet"})
         tmp_tab_html+=generate_tag(:DIV, tmp_media.description, {:id=> "tab_#{menu.link_params}",:class => "tab-pane fade #{(num==0 ? 'in active' : '')}"}) unless tmp_media.blank?
       end
     num+=1   
@@ -273,17 +360,18 @@ module ApplicationHelper
 #  end
 
   def generate_side(element,options={})
-    tmp_list = generate_list(element,{:options => [:first],:UL => {:class => "nav nav-pills nav-stacked"}})
+    tmp_list = generate_list(element,{#:options => [:first],
+                                      :UL => {:class => "nav nav-pills nav-stacked"}})
     html_text = tmp_list[0]
-    html_text.gsub!("[FIRST]",generate_tag(:LI, element.description, {:class => "nav-header"}))
+    #html_text.gsub!("[FIRST]",generate_tag(:LI, element.description, {:class => "nav-header"}))
 
     tmp_list[1..-1].each do |elem|
       menu = EsMenu.find(elem)
       tmp_link = generate_link(menu)
       html_text.gsub!("[#{elem}]",tmp_link)
     end if tmp_list.count > 1 
-    
-    return html_text
+
+    return generate_tag(:DIV,  generate_tag(:div, element.description) + html_text)
   end
 
 
@@ -309,7 +397,7 @@ module ApplicationHelper
       end
       
       if menu.link_type=="link_sheet"
-        tmp_media = EsMediaFile.find_by_name(menu.link_params)
+        tmp_media = EsMediaFile.find(:first, :conditions => {:name => menu.link_params, :media_type => "sheet"})
         tmp_tab_html+=generate_tag(:DIV, tmp_media.description, {:id=> "tab_#{menu.link_params}",:class => "tab-pane fade #{(num==0 ? 'in active' : '')}"}) unless tmp_media.blank?
       end
     num+=1   
@@ -449,19 +537,23 @@ module ApplicationHelper
     unless menu.blank?
       case menu.link_type
       when "link"
-          menu_param = {}
-          menu_param[:controller] = "/#{menu.controller}" unless menu.controller.blank?
-          menu_param[:action]     = menu.action unless menu.action.blank?
-          unless menu.link_params.blank?
-            menu.link_params.split('|').each do |param_value|
-              unless param_value.index('=').nil?
-                param = param_value.split('=')[0].to_sym
-                value = param_value[param_value.index('=')+1..-1]
-                menu_param[param] = value
-              end 
+          if menu.link_params=="[MENU]"
+            menu_param = menu.controller.blank? ? '' : EsModule.get_url_from_module_menu(menu.controller)
+          else
+            menu_param = {}
+            menu_param[:controller] = "/#{menu.controller}" unless menu.controller.blank?
+            menu_param[:action]     = menu.action unless menu.action.blank?
+            unless menu.link_params.blank?
+              menu.link_params.split('|').each do |param_value|
+                unless param_value.index('=').nil?
+                  param = param_value.split('=')[0].to_sym
+                  value = param_value[param_value.index('=')+1..-1]
+                  menu_param[param] = value
+                end 
+              end
             end
+            menu_param = "#" if menu_param.blank?
           end
-          menu_param = "#" if menu_param.blank?
           tmp_link = link_to(menu.name.trn, menu_param, {:title => menu.description.trn})
       when "link_sheet"
           tmp_link = generate_tag("a", menu.name.trn, {"data-toggle"=> "tab", "href"=> "#tab_#{menu.link_params}",:title => menu.description.trn})

@@ -1,6 +1,7 @@
 <%
 tmp_class = @setup_controller[:table_field_active] ? (list_item[:active]== 'Y' ? "" : "inactive_row") : cycle("row0", "row1")
 tmp_update = !(@setup_controller[:table_field_active] && list_item[:active]== 'N')
+
 %>
 
 <tr class="<%= tmp_class %>">
@@ -11,11 +12,11 @@ tmp_update = !(@setup_controller[:table_field_active] && list_item[:active]== 'N
 
     <%if @setup_controller[:parent_exists] %>
 		<td>
-			<%if tmp_update%>
-				<%if list_item.children.count==0%>
-					<%= link_to "<i class='glyphicon glyphicon-plus-sign'></i>".html_safe,  {:action => 'new'.trn, :parent_id => list_item.id}, {:title => "Créer un enfant".trn} %>
-				<%else%>
+			<%if tmp_update && @current_level < @setup_controller[:max_level]%>
+				<%if list_item.children.count>0%>
 					<%= link_to "<i class='glyphicon glyphicon-indent-left'></i>".html_safe,  {:action => 'list'.trn, :parent_id => list_item.id}, {:title => "Afficher %{element}".trn(:element => (@setup_controller[:column_name_exists] ? list_item.name : "l'enfant".trn))} %> 
+				<%elsif list_item.can_have_children?%>
+					<%= link_to "<i class='glyphicon glyphicon-plus-sign'></i>".html_safe,  {:action => 'new'.trn, :parent_id => list_item.id}, {:title => "Créer un enfant".trn} %>
 				<%end%>
 			<%end%>
 		</td>  
@@ -33,10 +34,10 @@ tmp_update = !(@setup_controller[:table_field_active] && list_item[:active]== 'N
 				tmp_value = tmp_value.to_s
 				if !@parent.blank? && tmp_update 
 				    if list_item.sequence > 1
-						 tmp_value+=link_to("<i class='glyphicon glyphicon-arrow-up'></i>".html_safe,  :action => 'up', :id => list_item.id)
+						 tmp_value+=link_to("<i class='glyphicon glyphicon-arrow-up'></i>".html_safe, {:action => 'up', :id => list_item.id, :page => params[:page]},{:remote=>true})
 					end
 					if list_item.sequence < @parent.children.count 
-						 tmp_value+=link_to("<i class='glyphicon glyphicon-arrow-down'></i>".html_safe,  :action => 'down', :id => list_item.id)
+						 tmp_value+=link_to("<i class='glyphicon glyphicon-arrow-down'></i>".html_safe, {:action => 'down', :id => list_item.id, :page => params[:page]},{:remote=>true})
 					end
 				end
 			elsif column[:foreign] 
@@ -87,7 +88,7 @@ tmp_update = !(@setup_controller[:table_field_active] && list_item[:active]== 'N
 					tmp_value = link_to("<i class='glyphicon glyphicon-remove-sign'></i>".html_safe, 
 										url_for(:action => "destroy", :id => list_item['id']), 
 										:confirm =>"Voulez vous vraiment supprimer '%{element}' ?".trn(:element => @setup_controller[:instance_name].downcase),
-										:title =>"Supprimer".trn)
+										:title =>"Supprimer".trn, :remote=>true)
 				end%>
 
 				<%= (tmp_value.to_s||"").html_safe %>		

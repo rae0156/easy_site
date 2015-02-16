@@ -15,6 +15,7 @@ module EasyHelper
               :date             => ["--Ne pas oublier le javascript 'init_datepicker();'","instance","field","id","value","-Options html","class","style","read_only","bootstrap","bootstrap_length","-Options additionnelles","with_label","ajax_action","mandatory"], 
               :time             => ["--Ne pas oublier le javascript 'init_datepicker();'","instance","field","id","value","-Options html","class","style","read_only","bootstrap","bootstrap_length","-Options additionnelles","with_label","ajax_action","mandatory"], 
               :date_time        => ["--Ne pas oublier le javascript 'init_datepicker();'","instance","field","id","value","-Options html","class","style","read_only","bootstrap","bootstrap_length","-Options additionnelles","with_label","ajax_action","mandatory"], 
+              :link             => ["instance","field","id","value","-Options html","class","style","read_only","bootstrap","-Options additionnelles","with_label","ajax_action","mandatory"], 
               :file             => ["instance","field","id","value","-Options html","class","style","read_only","bootstrap","-Options pour fichier","option_file","-Options additionnelles","with_label","ajax_action","mandatory"], 
               :font             => ["instance","field","id","value","-Options html","class","style","read_only","bootstrap","bootstrap_length","-Options additionnelles","with_label","ajax_action","mandatory"], 
               :color            => ["instance","field","id","value","-Options html","class","style","read_only","bootstrap","bootstrap_length","-Options additionnelles","with_label","ajax_action","mandatory"], 
@@ -133,6 +134,10 @@ private
                         html_options
                         )
         end
+      when "link"
+        html_options[:readonly]=options[:read_only].presence||false
+        field_result = text_field(options[:instance].presence, options[:field].presence,html_options )
+        field_result +=  link_to("Tester le lien".trn, '#',  :target=>"_blank", :class => "control-label col-sm-12 linkpicker", :style => "text-align:left;", :rel => "#{options[:instance].presence}_#{options[:field].presence}")
       when "hidden"
         field_result = hidden_field(options[:instance].presence, options[:field].presence, html_options)
       when "check_box"

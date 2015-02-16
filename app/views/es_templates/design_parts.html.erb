@@ -4,6 +4,7 @@
 	<h2><%= image_tag("appli/setup_48.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
     <ul>
 		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/save_32.png", :action => "#",:html_option => {:id => "save_design"}}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Gérer les parties".trn,:image => "appli/execute_32.png", :action => "parts", :id => @template.id} %></li>
 		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour".trn,:image => "appli/back_32.png", :action => "list"}%></li>
     </ul>
 	<%= errors_for(@template) %>

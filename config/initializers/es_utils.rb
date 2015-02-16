@@ -208,6 +208,18 @@
     return tmp_text
   end
 
+  
+  
+  def test_url(string)
+    url = URI.parse(string)
+    res_start = Net::HTTP.start(url.host, url.port) do |http|
+      res = Net::HTTP.get_response(url)
+      return res.code.to_i >= 200 && res.code.to_i < 400 #good codes will be betweem 200 - 399
+    end
+  rescue
+    false
+  end    
+
 
 class Numeric
     def nice_bytes( max_digits=3 )

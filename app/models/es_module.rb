@@ -115,6 +115,28 @@ class EsModule < ActiveRecord::Base
     save_menu(options_to_save)
   end
   
+  def self.get_menu_by_module
+    result = {}
+    modules = EsModule.find :all, :order => "module_name", :group => "es_modules.module_name"
+    modules.each do |m|
+      EsModule.get_menu_list(m.module_name).each do |menu|
+        result[m.module_name] = [] unless result[m.module_name].present?
+        result[m.module_name] << [menu[0],menu[2]]
+      end
+    end    
+    result
+  end
+
+  def self.get_url_from_module_menu(code)
+    modules = EsModule.find :all, :order => "module_name", :group => "es_modules.module_name"
+    modules.each do |m|
+      EsModule.get_menu_list(m.module_name).each do |menu|
+        return menu[1] if menu[2]==code
+      end
+    end    
+    return "#"
+  end
+  
 private 
  
   def get_main_setup
@@ -166,6 +188,7 @@ private
 
     return tab
   end
+
 
   def get_main_admin
     tab = {}

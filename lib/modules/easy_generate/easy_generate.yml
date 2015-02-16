@@ -4,7 +4,7 @@ interface:
     - EasyGeneratesController
   mailers: / 
 
-version: 0.0.0.10
+version: 0.0.0.11
 
 activated: Y<<boolean-N-Module actif>>
 
@@ -26,6 +26,7 @@ controllers:
         setup_collapse: Paramétrage des dépliables
         setup_image_list: Paramétrage des listes d'images
         setup_video: Paramétrage des vidéos
+        setup_sheet: Paramétrage des feuilles de menu
   contents:
     EasyGeneratesController:    
         get_lorem_ipsum: 

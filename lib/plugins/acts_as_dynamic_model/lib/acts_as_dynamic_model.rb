@@ -14,7 +14,7 @@ module ActsAsDynamicModel
     module ClassMethods
 
       def acts_as_dynamic_model(columns=[],options={})
-        
+
     #      named_scope :all_active  , :conditions => ["NVL(#{self.table_name}.active, 'Y') = 'Y' "]
     #      named_scope :all_inactive, :conditions => ["#{self.table_name}.active = 'N'"]
         
@@ -22,7 +22,7 @@ module ActsAsDynamicModel
           
           before_validation :manage_dynamic_default, :on => :create    
           before_save   :upper_case_dynamic
-          before_save   :read_only_assign , :on => :create
+          before_save   :auto_field_assign 
           self.init_setup(columns,options) 
           self.dynamic_validation
         end        
@@ -30,9 +30,10 @@ module ActsAsDynamicModel
       
       def init_setup(columns,options)
         @setup_model=options
-        @setup_model[:audit_model]            = @setup_model[:audit_model].nil?         ? true : @setup_model[:audit_model]    
-        @setup_model[:fixed_attributes]       = @setup_model[:fixed_attributes].nil?    ? {} : @setup_model[:fixed_attributes]    
-        @setup_model[:only_field_defined]     = @setup_model[:only_field_defined].nil?  ? false : @setup_model[:only_field_defined]    
+        @setup_model[:audit_model]            = @setup_model[:audit_model].nil?             ? true : @setup_model[:audit_model]    
+        @setup_model[:fixed_attributes]       = @setup_model[:fixed_attributes].nil?        ? {} : @setup_model[:fixed_attributes]    
+        @setup_model[:fixed_attributes_tree]  = @setup_model[:fixed_attributes_tree].nil?   ? @setup_model[:fixed_attributes] : @setup_model[:fixed_attributes_tree]    
+        @setup_model[:only_field_defined]     = @setup_model[:only_field_defined].nil?      ? false : @setup_model[:only_field_defined]    
         
         acts_as_multi_site if self.column_names.include?('es_site_id')  && self.respond_to?("acts_as_multi_site")
         stampable if (self.column_names.include?('creator_id') || self.column_names.include?('updater_id') || self.column_names.include?('created_by') || self.column_names.include?('updated_by')) && self.respond_to?("stampable")
@@ -55,11 +56,20 @@ module ActsAsDynamicModel
         columns_setup = []
         
         self.columns.each do |column|
+          
+          attr_accessible column.name.to_sym 
           foreign = is_id(column) && linked_model_list.include?(column.name[0..-4]) 
+
+          linked_model=nil
+          if column.name.match(/_id$/)
+            linked_model =  column.name.gsub(/_id$/, '')
+          end
+
           tmp_columns_setup= { :name                => column.name,
                                :mandatory           => ["name","code"].include?(column.name),
                                :column_name         => nil,
                                :label_name          => nil,
+                               :column_text         => nil,
                                :length_min          => column.type.to_s=="string" ? (column.limit>10 ? -1 : column.limit) : -1,
                                :length_max          => column.type.to_s=="string" ? column.limit : -1,
                                :type                => is_boolean(column) ? "boolean" : column.type.to_s,
@@ -67,23 +77,46 @@ module ActsAsDynamicModel
                                :field_key_scope     => "",
                                :value_list          => is_boolean(column) ? "Y,N" : "",
                                :link_field          => "",
-                               :print               => !["id","created_at","updated_at","sequence","active","visible","creator_id","updater_id","created_by","updated_by","read_only"].include?(column.name),
+                               :print               => !["id","created_at","updated_at","sequence","active","visible","creator_id","updater_id","created_by","updated_by","read_only","model_type"].include?(column.name),
                                :min_value           => nil,
                                :max_value           => nil,
                                :upper_case          => false,
                                :default_value       => (column.type.to_s=="string" && column.limit==1 && column.default=='Y') ? 'Y' : nil,
                                :order               => nil,
                                :order_load          => nil,
+                               :option_file         => nil,
+                               :info                => nil,     
+                               :valid_inter_field   => [],                          
                                :foreign             => foreign, 
-                               :hidden               => ["id","created_at","updated_at","creator_id","updater_id"].include?(column.name) #|| foreign
+                               :hidden              => ["id","created_at","updated_at","creator_id","updater_id"].include?(column.name), #|| foreign
+                               :checked_value       => nil,
+                               :display_edit        => nil,
+                               :display_list        => nil,
+                               :display_new         => nil,
+                               :display_show        => nil,
+                               :dynamic_filter      => nil,
+                               :dynamic_search      => nil,
+                               :length_field        => nil,
+                               :length_field_filter => nil,
+                               :length_value        => nil,
+                               :link_update         => nil,
+                               :linked_name         => linked_model,
+                               :linked_to_model     => nil,
+                               :model_linked        => linked_model.nil? ? nil : linked_model.classify,
+                               :model_linked_field  => linked_model.nil? ? nil : 'id',
+                               :search              => nil,
+                               :sort                => nil,
+                               :unchecked_value     => nil,
+                               :value_list_method   => nil,
+                               :export              => true                               
                               } 
+                              
           exist_columns_setup = columns_setup_forced.select{|col| col[:name]==column.name}
           exist_columns_setup = exist_columns_setup.blank? ? {} : exist_columns_setup[0]
           new_columns_setup = {}
           tmp_columns_setup.each do |key,value|
             new_columns_setup[key] = exist_columns_setup[key].nil? ? value : exist_columns_setup[key]
           end      
-
           if @setup_model[:only_field_defined] && exist_columns_setup.blank? 
             new_columns_setup[:name] = column.name
             new_columns_setup[:hidden] = true
@@ -92,26 +125,42 @@ module ActsAsDynamicModel
           columns_setup << new_columns_setup                          
         
         end
+        
+        #add columns without table field
+        columns_setup_forced.select{|col| !self.column_names.include?(col[:name]||'')}.each do |column|
+          if column[:name].match(/_ids$/)
+            linked_model = column[:name].gsub(/_ids$/, '')
+            column[:linked_name]          = linked_model 
+            column[:model_linked]         = linked_model.classify
+            column[:model_linked_field]   = column[:model_linked_field].presence||'id' 
+          end
+          columns_setup << column
+        end
+        
         columns_setup = columns_setup.select { |hsh| (hsh[:hidden]||false)==false } 
         
 
     #   fill order_load
-        columns_setup.each do |hsh| 
-          hsh[:order_load] = nil unless hsh[:export]
+        max_index = 0
+        columns_setup.sort_by { |hsh| hsh[:order_load]||0 }.each do |hsh|
+          hsh[:order_load] = nil if hsh[:export]==false
+          max_index = hsh[:order_load] if (hsh[:order_load]||0) > max_index  
         end
-        tmp_columns_order = columns_setup.collect{|hsh| hsh[:order_load]||0}
-        index=0    
-        columns_setup.each do |hsh| 
-          if hsh[:order_load].blank? && hsh[:export]
-            begin 
-              index+=1
-            end while tmp_columns_order.include?(index)
-            hsh[:order_load]= index
+        
+        columns_setup.sort_by { |hsh| hsh[:order]||0 }.each do |hsh|
+          if hsh[:order_load].blank? && hsh[:export]==true
+            max_index+=1
+            hsh[:order_load]= max_index
           end
         end
-   
+
+ 
+
+
         #sort column by order
         @columns_setup = columns_setup.sort_by { |hsh| hsh[:order]||0 }
+
+        @setup_model[:valid_inter_field_exists]  = @setup_model[:valid_inter_field_exists].nil? ? @columns_setup.select{ |col| (col[:valid_inter_field]||[]).size > 0}.count > 0 : @setup_model[:valid_inter_field_exists]
       end
 
       def is_id(column)
@@ -121,7 +170,6 @@ module ActsAsDynamicModel
       def dynamic_validation
         multi_site = self.column_names.include?('es_site_id')  && self.respond_to?("acts_as_multi_site")
         @columns_setup.each do |column|
-          attr_accessible column[:name].to_sym 
 
           validates_presence_of   column[:name].to_sym,:message => '#' + "'%{name}' ne peut pas être vide".trn(:name => column[:column_name]) if column[:mandatory]
           
@@ -159,6 +207,7 @@ module ActsAsDynamicModel
             validates_uniqueness_of(column[:name].to_sym, :case_sensitive => false, :scope => scope,:message => '#' + "La valeur de '%{name}' exist déjà".trn(:name => column[:column_name]))  
           end
         end
+        validate :valid_inter_field
         validate :validate_dynamic
       end
     
@@ -227,8 +276,77 @@ module ActsAsDynamicModel
 #        method to overwrite
       end
 
-      def read_only_assign        
-          self.read_only = 'N' if self.respond_to?("read_only") 
+      def valid_inter_field
+        if self.class.setup_model[:valid_inter_field_exists] == true
+          self.class.columns_setup.each do |c|
+            if (c[:valid_inter_field]||[]).size > 0
+              c[:valid_inter_field].each do |v|
+                c2 = self.class.columns_setup.select{|col| col[:name]==v[:name]}
+                c2 = c2.size > 0 ? c2.first : nil
+                if self.respond_to?(c[:name]||'/') && !c2.blank? && self.respond_to?(c2[:name]||'/')
+                  case (v[:type]||'')
+                  when "only_one"
+                    if !self[c[:name]].blank? && !self[c2[:name]].blank?
+                      errors.add(:base,"'%{field1}' et '%{field2}' ne peuvent pas être rempli en même temps.".trn(:field1 => c[:column_name], :field2 => c2[:column_name] ))                      
+                    end
+                  end
+                end
+              end
+            end
+          end
+        end
+        
+      end
+
+      def is_first_level?
+        return false unless self.respond_to?("parent_id")
+        return self.parent.blank? 
+      end
+
+      def is_last_level?
+        return false unless self.respond_to?("parent_id") 
+        return self.children.size==0
+      end
+
+      def is_a_child?
+        return false unless self.respond_to?("parent_id") 
+        return !self.parent.blank? 
+      end
+
+      def is_a_parent?
+        return false unless self.respond_to?("parent_id") 
+        return self.children.size>0
+      end
+
+      def can_have_children?
+        can = false
+        if self.respond_to?("parent_id")
+          can = true
+          if self.respond_to?("model_type")
+            begin 
+              tmp_model = self.model_type.constantize
+              can = tmp_model.setup_model[:children_exists]
+            rescue 
+            end    
+          end
+        end
+        return (can==true)
+      end
+
+      def get_level
+        return 0 unless self.respond_to?("parent_id") 
+        level=1
+        tmp=self
+        while !tmp.parent.blank?
+          level+=1
+          tmp = tmp.parent
+        end
+        return level
+      end
+
+      def auto_field_assign        
+          self.read_only  = 'N' if self.respond_to?("read_only") && self.read_only.blank? 
+          self.model_type = self.class.name if self.respond_to?("model_type") && self.model_type.blank?
       end
 
       def upper_case_dynamic
@@ -248,7 +366,7 @@ module ActsAsDynamicModel
         end
         
         self.class.columns_setup.each do |column|
-          if !self.send("#{column[:name]}_changed?") && !["id","created_at","updated_at"].include?(column[:name]) && !column[:default_value].nil? 
+          if self.respond_to?("#{column[:name]}_changed?") && !self.send("#{column[:name]}_changed?") && !["id","created_at","updated_at"].include?(column[:name]) && !column[:default_value].nil? 
             if action=='create' || (action=='update' && self[column[:name]].nil?)
               self[column[:name]] = column[:default_value] 
             end

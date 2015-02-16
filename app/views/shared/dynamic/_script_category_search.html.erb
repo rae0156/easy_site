@@ -1,7 +1,8 @@
 <script type="text/javascript">
     $('#fileTree_element').fileTree({ root: '', script: '/<%=@setup_controller[:controller_name]%>/contenttree' }, function(dir) {
-		$.ajax('/<%=@setup_controller[:controller_name]%>/viewtree', {
-		    data: { dir: dir}
+		$.ajax('/<%=@setup_controller[:controller_name]%>/list', {
+		    data: { dir: dir},
+		    dataType: 'script'
 		});
     });
         

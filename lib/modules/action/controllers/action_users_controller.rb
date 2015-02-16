@@ -166,7 +166,7 @@ class ActionUsersController < ApplicationController
       id = (icon[:id].presence || "user_action_0").gsub('user_action_',"")
       ActionScreen.create({:action_user_id => id, :user_id => current_user.id, :x => icon[:left].gsub("px",""), :y => icon[:top].gsub("px","")})
     end if params[:icons].present?
-    
+    render :nothing => true
   end
 
 private  

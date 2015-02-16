@@ -12,54 +12,24 @@ les thèmes :
 A FAIRE
 =======
 
-Réfléchir à une homogénisation des setup dynamique 
-  es_media_files	
-	address
-	alert
-	citation
-	
-	video ( lien internet ou fichier -> faire validation)
-	
-	carousel : 1 niveau d'enfants
-	breadcrumb : 1 niveau d'enfants
-	collapse : 1 niveau d'enfants
-	image_list : 1 niveau d'enfants => code:image
-	blog : x niveaux
-	sheet dans media_files
-  es_menus (link ou link_sheet, separated et submenu)
-    dropdown : 1 niveau d'enfants
-    horizontal : x niveaux
-    navigation : 1 niveau d'enfants
-    sheet : x niveaux
-    side
-    vertical_menu : x niveaux
-    
-    remettre les models et controller 'easy_generate' dans le module du même nom
-    
-===========================
+Réalisation d'un module 'page' permettant des pages dynamiques
+	exemple : Contact, Accueil, Info pratique
+	dans chaque page, on peut mettre des textes, des images ou des vidéos
 
-Réaliser les setup de chaque éléments du module 'easy_generate'
-
-===========================
-
-Réaliser les setup de chaque éléments du module 'menu'
-	exemple :
-		certaines sortes de menu ne peuvent pas dépasser 1 niveau, d'autres 2
-		pour le menu "sheet", prendre les éléments sheet de es_media_files et es_menus en compte
-	
-===========================
-
-KQI => voir rep D:\EasySite 
-- Todo\1) to_do\kqi
+d'abord revoir le fonctionnement des contenus
 
 ===========================	
 
-Rendre l'existant userfriendly
+Rendre l'existant userfriendly pour la creation d'un nouveau site
 Prévoir des pages différentes des autres dans la partie template au sein du même site + enchainement des pages
 Prévoir le site partie admin et partie user
 	création de menu (user ou admin)
 
 ===========================	
 
-Commencer à planifier d'autres modules
+faire backup mysql + source + rails  
+
+===========================	
+
+Commencer à planifier d'autres modules (module blog, diffusion d'articles/video/image)
 	

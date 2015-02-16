@@ -28,23 +28,23 @@ class EsMediaFile < ActiveRecord::Base
   end
 
   def self.get_code_blog
-    EsMediaFile.where(["media_type = ? and parent_id is null","blog"]).all.map{|element| element.name}.uniq
+    EsMediaFile.where(["media_type = ? and parent_id = 0","blog"]).all.map{|element| element.name}.uniq
   end
 
   def self.get_code_breadcrumb
-    EsMediaFile.where(["media_type = ? and parent_id is null","breadcrumb"]).all.map{|element| element.name}.uniq
+    EsMediaFile.where(["media_type = ? and parent_id = 0","breadcrumb"]).all.map{|element| element.name}.uniq
   end
 
   def self.get_code_carousel
-    EsMediaFile.where(["media_type = ? and parent_id is null","carousel"]).all.map{|element| element.name}.uniq
+    EsMediaFile.where(["media_type = ? and parent_id = 0","carousel"]).all.map{|element| element.name}.uniq
   end
 
   def self.get_code_collapse
-    EsMediaFile.where(["media_type = ? and parent_id is null","collapse"]).all.map{|element| element.name}.uniq
+    EsMediaFile.where(["media_type = ? and parent_id = 0","collapse"]).all.map{|element| element.name}.uniq
   end
 
   def self.get_code_imagelist
-    EsMediaFile.where(["media_type = ? and parent_id is null","image_list"]).all.map{|element| element.name}.uniq
+    EsMediaFile.where(["media_type = ? and parent_id = 0","image_list"]).all.map{|element| element.name}.uniq
   end
 
   def self.get_code_video

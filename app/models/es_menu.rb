@@ -18,27 +18,27 @@ class EsMenu < ActiveRecord::Base
   end
     
   def self.get_code_menu_sidebar
-    EsMenu.where(:link_type => 'side').all.map{|element| element.name}.uniq
+    EsMenu.where(:link_type => 'side', :parent_id => 0).all.map{|element| element.name}.uniq
   end
 
   def self.get_code_menu_navigation
-    EsMenu.where(:link_type => 'navigation').all.map{|element| element.name}.uniq
+    EsMenu.where(:link_type => 'navigation', :parent_id => 0).all.map{|element| element.name}.uniq
   end
 
   def self.get_code_menu_dropdown
-    EsMenu.where(:link_type => 'dropdown').all.map{|element| element.name}.uniq
+    EsMenu.where(:link_type => 'dropdown', :parent_id => 0).all.map{|element| element.name}.uniq
   end
 
   def self.get_code_menu_vertical
-    EsMenu.where(:link_type => 'vertical_menu').all.map{|element| element.name}.uniq
+    EsMenu.where(:link_type => 'vertical_menu', :parent_id => 0).all.map{|element| element.name}.uniq
   end
 
   def self.get_code_menu_sheet
-    EsMenu.where(:link_type => 'sheet').all.map{|element| element.name}.uniq
+    EsMenu.where(:link_type => 'sheet', :parent_id => 0).all.map{|element| element.name}.uniq
   end
 
   def self.get_code_menu_horizontal
-    EsMenu.where(:link_type => 'horizontal').all.map{|element| element.name}.uniq
+    EsMenu.where(:link_type => 'horizontal', :parent_id => 0).all.map{|element| element.name}.uniq
   end
     
 end

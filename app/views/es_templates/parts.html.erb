@@ -5,6 +5,7 @@
 	
 <ul>
 	<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Nouvelle partie".trn,:image => "appli/new_32.png", :action => "new_part", :id => @template.id} %></li>
+	<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Placer les parties".trn,:image => "appli/execute_32.png", :action => "design_parts", :id => @template.id} %></li>
 	<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour".trn,:image => "appli/back_32.png", :action => "list"}%></li>
 </ul>
 	
