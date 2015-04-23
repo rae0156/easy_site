@@ -15,7 +15,7 @@
   def init_dynamic_attributes
     yml_file = File.join(Rails.root,"config","dynamic_attributes.yml")
     unless File.exist?(yml_file)
-      puts "Le fichier d'attributs dynamiques '#{yml_file}' n'existe pas"
+      log "Le fichier d'attributs dynamiques '#{yml_file}' n'existe pas"
       return false 
     end
     models_attrs = YAML.load(File.read(yml_file))  
@@ -31,7 +31,7 @@
             groups.each do |group,attrs|
               attrs.each do |attr,params|
                 
-                param_setup,type_setup,updatable,description,value_list,other_params,comments = nil,nil,'N','',nil,'',''
+                param_setup,type_setup,updatable,description,value_list,other_params,comments,length = nil,nil,'N','',nil,'','',nil
                 params = params.strip
                 if params.ends_with?(">>")
                   tmp_find = params.rindex('<<')
@@ -45,7 +45,9 @@
                 end
                 params =nil if params.blank?
                 unless param_setup.blank?
-                  type_setup  = param_setup[0]
+                  tmp_type_setup  = param_setup[0].split('/') #ex : string/50
+                  type_setup  = tmp_type_setup[0]
+                  length      = tmp_type_setup[1]
                   updatable   = param_setup[1] || 'Y'
                   description = param_setup[2] || ''
                   if ["file"].include?(type_setup)
@@ -59,6 +61,7 @@
                 model_class.define_attributes([{
                                                   :name          => attr, 
                                                   :type_data     => type_setup ,
+                                                  :length        => length ,
                                                   :mandatory     => "N",
                                                   :default_value => params,
                                                   :choices       => value_list, 
@@ -99,7 +102,13 @@
     if template  
       parts_containt = {}
       template.es_parts.each do |p|
-        parts_containt[p.name] = get_template_part(p.name) unless p.es_template_col_id == 0
+        unless p.es_template_col_id == 0
+          if template_name==Rails.application.config.current_template
+            parts_containt[p.name] = get_template_part(p.name)
+          else
+            parts_containt[p.name] = get_template_part(p.name,"parts",false,template_name)
+          end             
+        end
       end
       return render(:inline => template.generate_template_for_render(parts_containt))
     else
@@ -107,8 +116,8 @@
     end
   end
 
-  def get_template_part(part_name,directory = "parts",partial=false)
-    if part_name.is_a?(Integer)
+  def get_template_part(part_name,directory = "parts",partial=false,template_name=nil)
+    if part_name.is_a?(Integer) #content_detail_id
         es_content_detail = EsContentDetail.find_by_id(part_name)
         if es_content_detail.blank?
           #error part
@@ -119,19 +128,20 @@
           return render(:inline => es_content_details)
         end
     else
-      if caller.first.split('/')[-2] == "templates"
-        template_name = caller.first.split('/').last.split('.').first[1..-1]
-        #create template and part if does not exist    
-        template = EsTemplate.find_by_name(template_name)
-        template = EsTemplate.create({:name => template_name, :description => template_name, :es_category_id => EsCategory.get_id("Site","template")}) if template.blank?
-        if EsPart.is_dynamic(part_name, directory)
-          part = template.es_parts.find_by_name(part_name)
-          part = template.es_parts.create({:name => part_name, :description => part_name, :num => 0}) if part.blank?
+      if template_name.blank?
+        if caller.first.split('/')[-2] == "templates"
+          template_name = caller.first.split('/').last.split('.').first[1..-1]
+          #create template and part if does not exist    
+          template = EsTemplate.find_by_name(template_name)
+          template = EsTemplate.create({:name => template_name, :description => template_name, :es_category_id => EsCategory.get_id("Site","template")}) if template.blank?
+          if EsPart.is_dynamic(part_name, directory)
+            part = template.es_parts.find_by_name(part_name)
+            part = template.es_parts.create({:name => part_name, :description => part_name, :num => 0}) if part.blank?
+          end
+        else
+          template_name=Rails.application.config.current_template
         end
-      else
-        template_name=Rails.application.config.current_template
       end
-
       tmp_layout = directory + '/_' + part_name
       if lookup_context.find_all(tmp_layout).any?
         #find existing part
@@ -211,6 +221,7 @@
   
   
   def test_url(string)
+    return true if EsSetup.get_setup("test_url",'N')=='N'
     url = URI.parse(string)
     res_start = Net::HTTP.start(url.host, url.port) do |http|
       res = Net::HTTP.get_response(url)

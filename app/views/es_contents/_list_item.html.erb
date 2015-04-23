@@ -39,7 +39,7 @@
 	<%
 		tmp_links = []
 		if list_item.editable=="Y"
-			 tmp_links << link_to("<i class='glyphicon glyphicon-pencil'></i>".html_safe, { :action => 'design_content', :id => list_item.id},:title => "Modifier le contenu".trn)
+			 tmp_links << link_to("<i class='glyphicon glyphicon-pencil'></i>".html_safe, { :action => list_item.content_type == 'dynamic' ? 'dynamic_content' : 'design_content', :id => list_item.id},:title => "Modifier le contenu".trn)
 		elsif list_item.content_type == EsContent::CONTENT_TYPES_MODULE && EsModule.get_module_action_list.include?(list_item.module_action_name) && EsModule.is_params?(list_item.module_action_name)
 			 tmp_links << link_to("<i class='glyphicon glyphicon-wrench'></i>".html_safe, { :action => 'setup_module', :id => list_item.id},:title => "Paramétrer le module".trn)
 		end

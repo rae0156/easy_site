@@ -33,7 +33,9 @@
 
 
 <!-- Error messages -->	
-<%= errors_for(flash[:errors_destroy], "delete") if flash[:errors_destroy] %>
+<div id="error_destroy_div">
+  <%= render :partial => 'shared/dynamic/error_destroy' %>
+</div>
 
 
 

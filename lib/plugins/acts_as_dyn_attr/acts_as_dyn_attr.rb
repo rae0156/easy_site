@@ -273,6 +273,9 @@ private
             when 'file' 
               attr[:length] ||= 200 
               attr[:decimal_nbr]  = nil 
+            when 'html' 
+              attr[:length] ||= 10000 
+              attr[:decimal_nbr]  = nil 
             when 'integer' 
               attr[:length] ||= 10 
               attr[:decimal_nbr]  = nil 
@@ -403,7 +406,7 @@ private
   
         choices_list = tmp_attr_type[:choices].nil? ? nil : tmp_attr_type[:choices].split(',').map{|e| "'#{e}'"}.join(',')  
         
-        errors.add(description," n'est pas valide.'%{value}' n'est pas dans la liste %{value_list}".trn(:value=> tmp_value,:value_list =>choices_list)) if !tmp_attr_type[:choices].nil? && !tmp_attr_type[:choices].split(',').include?(tmp_value || '')
+        errors.add(description," n'est pas valide.'%{value}' n'est pas dans la liste %{value_list}".trn(:value=> tmp_value,:value_list =>choices_list)) if !tmp_attr_type[:choices].blank? && !tmp_attr_type[:choices].split(',').include?(tmp_value || '')
 
       end 
   
@@ -440,6 +443,8 @@ private
           when 'color' 
             error_type =  (value.blank? || !value.match(/^#(([0-9a-fA-F]{2}){3}|([0-9a-fA-F]){3})$/).nil?) ? false : true  
           when 'file' 
+            error_type = false 
+          when 'html' 
             error_type = false 
           when 'list' 
             error_type = false 

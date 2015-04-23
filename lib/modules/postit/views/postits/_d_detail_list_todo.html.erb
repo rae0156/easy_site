@@ -9,7 +9,7 @@
 			  <%@my_lists_to_do.each do |list_task|%>
 				<tr class="<%= cycle("row0", "row1") %>">
 				  <td><%= list_task.name%></td>
-				  <td><%= list_task.description.limit(50) %></td>
+				  <td><%= (list_task.description||"").limit(50) %></td>
 				  <td><%= list_task.owner_name %></td>
 				  <td><%= list_task.status_name %></td>
 				  <td>

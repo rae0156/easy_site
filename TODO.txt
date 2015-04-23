@@ -7,16 +7,15 @@ les thèmes :
 	à mettre dans stylesheets/themes
 	modifier les fonts (se baser sur les déjà fait) 
 
-
+templates et parties :
+	generate_template_render dans es_utils.rb pour la génération d'un template
+	get_template_part dans es_utils.rb pour la génération d'un es_part ou d'un fichier render ou d'un id de es_content_details
+	generate_module_part dans application_helper.rb pour la génération d'une part d'un module
 
 A FAIRE
 =======
 
-Réalisation d'un module 'page' permettant des pages dynamiques
-	exemple : Contact, Accueil, Info pratique
-	dans chaque page, on peut mettre des textes, des images ou des vidéos
-
-d'abord revoir le fonctionnement des contenus
+faire backup mysql + source + rails  
 
 ===========================	
 
@@ -27,9 +26,10 @@ Prévoir le site partie admin et partie user
 
 ===========================	
 
-faire backup mysql + source + rails  
-
-===========================	
-
 Commencer à planifier d'autres modules (module blog, diffusion d'articles/video/image)
+	gems interressant à installer :
+		blog management - https://github.com/publify/publify
+	 	ActiveAdmin - http://activeadmin.info/
+
+
 	

@@ -29,6 +29,11 @@
 		%>					
 	<%end%>				
   </td>
+  <td>	
+	<%= image_tag(list_item.is_a_template == 'N' ? "appli/cancel_32.png" : "appli/ok_32.png",
+						    {:alt => "", :align => "middle", :border => "0",
+						    :class => "app_tooltip", :title => list_item.is_a_template == 'Y' ? "C'est un modèle".trn : "Ce n'est pas un modèle".trn, "data-placement" => "left"}) %>  
+  </td>
   <td>
   	
   	<%if list_item.is_dynamic %>

@@ -17,6 +17,7 @@
 	controller = "" if controller.nil?  
 	action = "index" if action.nil? && !form.blank? && !controller.blank?
 	id = "" if id.nil?
+	javascript_function = "" if javascript_function.nil?
 
 	check = "false" if check.nil?
 	check = 'true' unless confirm.blank?
@@ -53,17 +54,22 @@
 		link = image_tag(image, {:alt => text}) + "#{'<br />' + text}".html_safe
 	end
 	
-	unless form.blank?
+	if !javascript_function.blank?
+		msg_confirm 	= option_hash[:confirm].presence || "Etes vous certain de vouloir exécuter cette action ?".trn
+		msg_confirm		= msg_confirm.gsub('"','')
+		javascript 		= 'questionAndFuntion("' + javascript_function + '", ' + check + ', "' + msg_confirm + '")'
+	else !form.blank?
 		url = url_hash.blank? ? "" : url_for(url_hash)
 		remote_option = ((remote==true) || (option_hash[:remote].present? ? (option_hash[:remote].presence==true) : false)) ? 'true' : 'false'
-		
 		if checkbox == 'true'
 			msg_confirm 	= option_hash[:confirm].presence || "Voulez vous vraiment exécuter cette action sur les éléments sélectionnés ?".trn
+			msg_confirm		= msg_confirm.gsub('"','')
 			msg_no_selected = "Aucun élément sélectionnés".trn
-		    javascript 		= "checkAndSubmitForm('#{form}', '#{url}', #{check}, '#{msg_confirm}', '#{msg_no_selected}', #{remote_option})"
+		    javascript 		= 'checkAndSubmitForm("' + form + '", "' + url + '", ' + check + ', "' + msg_confirm + '", "' + msg_no_selected + '", ' + remote_option + ')'
 		else
 			msg_confirm 	= option_hash[:confirm].presence || "Etes vous certain de vouloir exécuter cette action ?".trn
-		    javascript 		= "questionAndSubmitForm('#{form}', '#{url}', #{check}, '#{msg_confirm}', #{remote_option})" 
+			msg_confirm		= msg_confirm.gsub('"','')
+		    javascript 		= 'questionAndSubmitForm("' + form + '", "' + url + '", ' + check + ', "' + msg_confirm + '", ' + remote_option + ')' 
 		end
 	end 
 %>
@@ -72,11 +78,10 @@
 <%unless no_div%>
 <div class="<%=class_btn%>" <%=id_btn.blank? ? "" : "id='#{id_btn}'"%>>
 <%end%>
-
 	<%if form.blank? && controller.blank? && action.blank? && url_text.blank? %>
 		<%= submit_tag text %>
 	<%else%>
-		<%= !form.blank? ? link_to_function(link, javascript,option_hash ) : link_to(link, url_hash, option_hash) %>
+		<%= (!form.blank? || !javascript_function.blank?) ? link_to_function(link, javascript,option_hash ) : link_to(link, url_hash, option_hash) %>
 	<%end%>
 
 <%unless no_div%>

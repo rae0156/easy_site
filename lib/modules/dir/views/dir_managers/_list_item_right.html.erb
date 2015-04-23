@@ -3,7 +3,7 @@
   	<%= link_to list_item_right.name, :action => 'edit_right', :id => list_item_right.id%>
   </td>
   <td>
-	<%= list_item_right.description.limit(50) %>  
+	<%= (list_item_right.description||"").limit(50) %>  
   </td>
   <td>
 	<%= image_tag(list_item_right.all_role=='Y' ? "appli/ok_32.png" : "appli/cancel_32.png", 

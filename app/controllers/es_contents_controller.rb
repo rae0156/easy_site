@@ -64,6 +64,9 @@ class EsContentsController < ApplicationController
         module_action_name = @content.module_action_name.split(' ')
         @content.content = "<%= generate_module_part(" + '"' + module_action_name[0] + '","' + module_action_name[1] + '"' + ",#{@content.id})%>"
         @content.save
+      elsif @content.content_type == EsContent::CONTENT_TYPES_DYNAMIC
+        @content.content = "<%= generate_dynamic_part(#{@content.id})%>"
+        @content.save
       end
       flash[:notice] = "Le contenu '%{name}' a été créé.".trn(:name => @content.name)
       redirect_to :action => :list
@@ -90,6 +93,8 @@ class EsContentsController < ApplicationController
     if @content.content_type == EsContent::CONTENT_TYPES_MODULE
       module_action_name = @content.module_action_name.split(' ')
       @content.content = "<%= generate_module_part(" + '"' + module_action_name[0] + '","' + module_action_name[1] + '"' + ",#{@content.id})%>"
+    elsif @content.content_type == EsContent::CONTENT_TYPES_DYNAMIC
+      @content.content = "<%= generate_dynamic_part(#{@content.id})%>"
     end
 
     @content.valid? if @content.errors.empty?
@@ -147,6 +152,45 @@ class EsContentsController < ApplicationController
     send_data Iconv.conv('iso-8859-1//IGNORE', 'utf-8', csv_string), :filename => file_name, :disposition => 'attachment', :type => 'text/csv; charset=iso-8859-1; header=present'
   end
 
+  def dynamic_content
+    session[:dynamic_content_view_normal]=false
+    @content_detail_id = params[:id]
+    contentdetail = EsContentDetail.find(@content_detail_id)
+    if contentdetail
+      @content_detail = contentdetail
+    else
+      redirect_to :action => "list"
+    end
+  end
+
+  def change_dynamic_content_view
+    session[:dynamic_content_view_normal] = !session[:dynamic_content_view_normal] 
+
+    id = params[:id]
+    @content_detail = EsContentDetail.find_by_id(id)
+    respond_to do |format|
+      format.html {} # Do nothing, so Rails will render the view list.rhtml
+      format.js do 
+        @element_id, @partial = 'dynamic_content', 'dynamic_content'
+        render 'shared/replace_content'
+      end
+    end    
+  end
+
+  def update_dynamic_content_parts
+    id = params[:id]
+    @content_detail = EsContentDetail.find_by_id(id)
+    
+    @content_detail.save_design(params[:parts]) if params[:parts].present?
+    respond_to do |format|
+      format.html {} # Do nothing, so Rails will render the view list.rhtml
+      format.js do 
+        flash[:message_ajax] = "La disposition des parties du contenu '%{name}' a été correctement sauvée.".trn(:name => @content_detail.name) 
+        @element_id, @partial = 'message_ajax', 'layouts/part_message_ajax'
+        render 'shared/replace_content'
+      end
+    end    
+  end
 
   def design_content
     @content_detail_id = params[:id]
@@ -157,6 +201,62 @@ class EsContentsController < ApplicationController
     else
       redirect_to :action => "list"
     end
+  end
+
+  def update_element_parts
+    @content_detail_element = EsContentDetailElement.find(params[:id])
+    if @content_detail_element
+      @content_detail = @content_detail_element.es_content_detail
+      @content_detail_element.attributes = params[:content_detail_element]
+      
+      element = EsContent.save_properties("EsContentDetailElement"+@content_detail_element.element_type.classify, @content_detail_element.id, params["generated"])
+      if element.errors.empty? && @content_detail_element.valid? 
+        @content_detail_element.save
+        flash[:message_ajax] = "Les propriétés de la partie '%{name}' ont été correctement sauvées.".trn(:name => @content_detail_element.name) 
+      else
+        element.errors.full_messages.each do |m|
+          @content_detail_element.errors.add(:base, m) 
+        end
+      end
+
+    end
+    respond_to do |format|
+      format.html {} # Do nothing, so Rails will render the view list.rhtml
+      format.js do 
+        @element_id, @partial = 'dynamic_content', 'dynamic_content'
+        render 'shared/replace_content'
+      end
+    end    
+  end
+
+  def delete_element_parts
+    tmp_element = EsContentDetailElement.find(params[:id])
+    @content_detail_element = ("EsContentDetailElement"+tmp_element.element_type.classify).constantize.find_by_id(params[:id])
+    if @content_detail_element
+      @content_detail = tmp_element.es_content_detail
+      name = @content_detail_element.name
+      @content_detail_element.destroy 
+      @content_detail_element = nil
+      flash[:message_ajax] = "La partie '%{name}' a été correctement supprimée.".trn(:name => name) 
+    end
+    respond_to do |format|
+      format.html {} # Do nothing, so Rails will render the view list.rhtml
+      format.js do 
+        @element_id, @partial = 'dynamic_content', 'dynamic_content'
+        render 'shared/replace_content'
+      end
+    end    
+  end
+
+  def edit_element_parts
+    @content_detail_element = EsContentDetailElement.find(params[:id])
+    respond_to do |format|
+      format.html {} # Do nothing, so Rails will render the view list.rhtml
+      format.js do 
+        @element_id, @partial = 'element_properties', 'element_properties'
+        render 'shared/replace_content'
+      end
+    end    
   end
 
   def setup_module
@@ -213,7 +313,19 @@ class EsContentsController < ApplicationController
   end
 
 
-
+  def add_element
+    id = params[:id]
+    element_type = params[:element_type]
+    @content_detail = EsContentDetail.find_by_id(id)
+    @content_detail.add_element(element_type)
+    respond_to do |format|
+      format.html {} # Do nothing, so Rails will render the view list.rhtml
+      format.js do 
+        @element_id, @partial = 'dynamic_content', 'dynamic_content'
+        render 'shared/replace_content'
+      end
+    end    
+  end
 
 private
 

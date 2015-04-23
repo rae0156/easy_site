@@ -2,9 +2,10 @@
 
 class EsContent < ActiveRecord::Base
 
-  EDITABLE_CONTENT_TYPES  = ["free"]
+  EDITABLE_CONTENT_TYPES  = ["free","dynamic"]
   CONTENT_TYPES_MODULE    = "module"
-  CONTENT_TYPES           = ["module","free"]
+  CONTENT_TYPES_DYNAMIC   = "dynamic"
+  CONTENT_TYPES           = ["module","free","dynamic"]
 
   has_many :es_content_details, :order => "sequence"
   has_many :es_parts
@@ -78,23 +79,24 @@ class EsContent < ActiveRecord::Base
     return return_element
   end
 
-  def self.prepare_properties(element,properties={})
+  def self.prepare_properties(element,categories=[],properties={})
     if element.has_dyn_attributes?
-      element.dyn_attributes.each do |da|
-        css_attr,css_add,css_delimiter,css_value = prepare_one_properties(da.dyn_attribute_type.name,da.value)
-        if css_add
-          tmp_values  = properties[css_attr.to_sym].presence||""
-          tmp_values += css_delimiter unless tmp_values.blank?
-          tmp_values += css_value
-        else
-          tmp_values  = css_value
+      element.dyn_attributes.each do |da|        
+        if categories==[] || categories.include?(da.dyn_attribute_type.category)
+          css_attr,css_add,css_delimiter,css_value = prepare_one_properties(da.dyn_attribute_type.name,da.value)
+          if css_add
+            tmp_values  = properties[css_attr.to_sym].presence||""
+            tmp_values += css_delimiter unless tmp_values.blank?
+            tmp_values += css_value
+          else
+            tmp_values  = css_value
+          end
+          properties[css_attr.to_sym] = tmp_values
         end
-        properties[css_attr.to_sym] = tmp_values
       end
     end
     return properties
   end
-
 
 private
 
@@ -117,6 +119,16 @@ private
         tmp_css_attr      = "class"
         tmp_css_delimiter = " "
         tmp_css_value     = "alert-#{value}"
+      when "bootstrap_class"
+        tmp_css_attr      = "class"
+        tmp_css_delimiter = " "
+        tmp_css_value     = value.starts_with?( 'col') ? value.gsub("col","col-md-") : value
+      when "div_class"
+        tmp_css_attr      = "class"
+        tmp_css_delimiter = " "
+        tmp_css_value     = value.gsub(","," ")
+      when "div_style"
+        tmp_css_value     = value
       else
         if name.starts_with?( 'padding-', 'margin-')
             tmp_css_value     = "#{name}:#{value}px"
@@ -133,7 +145,6 @@ private
 
     DynAttributeType.all(:conditions => ["attribute_type = ?", element_type]).each do |at|
       category = at.category.split('/')
-
       
       new_tab = !tmp_info_tabs[category[0]].present?
       tmp_info_tabs[category[0]] = {:tab_num => tmp_info_tabs.size + 1} if new_tab
@@ -150,7 +161,7 @@ private
         tmp_tabs[category[0]]["group_#{num_group}".to_sym]=[]
       end
       tmp_value = !init_properties[at.name].nil? ? init_properties[at.name] : (element_type.constantize.find(element_id)[at.name] || at.default_value)
-      tmp_tabs[category[0]]["group_#{num_group}".to_sym]  << add_property(at.name   , tmp_value  , :description => at.comments, :format => at.type_data, :read_only => 'N', :addon_params => at.type_param, :value_list => (at.choices || "").split(','))
+      tmp_tabs[category[0]]["group_#{num_group}".to_sym]  << add_property(at.name   , tmp_value  , :description => at.comments, :format => at.type_data, :length => at.length, :read_only => 'N', :addon_params => at.type_param, :value_list => (at.choices || "").split(','))
 
     end if class_exists?(element_type.to_s)
 
@@ -166,10 +177,11 @@ private
   def self.add_property(name, value = "",options = {})
     options[:description] ||= ""
     options[:format]      ||= "string"
+    options[:length]      ||= 0
     options[:mandatory]   ||= "N"
     options[:read_only]   ||= "N"
     value=value.split(",") if options[:format] == "multiple_list"
-    return {:name => name ,:description=>options[:description].trn  ,:format => options[:format], :value => value,:read_only => options[:read_only], :mandatory => options[:mandatory], :value_list => options[:value_list] , :addon_params => options[:addon_params] }
+    return {:name => name ,:description=>options[:description].trn  ,:format => options[:format], :length => options[:length], :value => value,:read_only => options[:read_only], :mandatory => options[:mandatory], :value_list => options[:value_list] , :addon_params => options[:addon_params] }
   end  
 
 end

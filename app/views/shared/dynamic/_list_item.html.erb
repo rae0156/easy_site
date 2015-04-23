@@ -48,6 +48,8 @@ tmp_update = !(@setup_controller[:table_field_active] && list_item[:active]== 'N
 						if column[:name] != "parent_id" && tmp_update && column[:linked_to_model]				
 							tmp_value = link_to tmp_value, :controller => column[:linked_name].pluralize, :action => 'edit', :id => list_item.send(column[:name])
 					    end
+				    else
+				   		tmp_value=nil
 				    end
 				end
 			elsif !tmp_value.blank? && column[:type]=="datetime" 

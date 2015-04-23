@@ -7,7 +7,7 @@
   	<%end%>
   </td>
   <td>
-	<%= list_item.description.limit(50) %>  
+	<%= (list_item.description||"").limit(50) %>  
   </td>
   <td>
 	<%= list_item.postit_phase ? list_item.postit_phase.name : '/' %>  

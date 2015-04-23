@@ -13,6 +13,7 @@ class ErrorsController < ActionController::Base
       format.html do 
           if ["ActionController::RoutingError","ActionController::UnknownAction","AbstractController::ActionNotFound"].include?(@exception.class.name)
             redirect_to :controller => "sites", :action => "error", :error => "L'adresse '%{url}' n'est pas reconnue".trn(:url => request.env['REQUEST_URI']), :format => :post
+            #render :nothing=> true 
           else
             session[:custom_error]=true
             render "sites/custom_error", status: @status_code, layout: !request.xhr? 

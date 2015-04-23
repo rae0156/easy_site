@@ -3,7 +3,7 @@
   	<%= link_to list_item.name, :action => 'edit', :id => list_item.id%>
   </td>
   <td>
-	<%= list_item.description.limit(50) %>  
+	<%= (list_item.description||"").limit(50) %>  
   </td>
   <td>
 	<%= list_item.dir_base.name %>  

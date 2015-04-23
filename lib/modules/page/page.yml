@@ -1,0 +1,38 @@
+interface:
+  models: 
+    - DynPage   
+  controllers: 
+    - DynPagesController
+  mailers: / 
+
+version: 0.0.0.1
+
+installation:
+   table_verification:
+     - es_dyn_pages
+     - es_template_lines
+
+activated: Y<<boolean-N-Module actif>>
+
+setup:
+  admin:
+    title: module Page dynamique <<string-N-Titre du module>>
+
+menus:
+  menu_entry_points: Y <<boolean>>
+  menu_models: Y <<boolean>>
+  models:
+    - DynPage
+
+controllers: 
+  entry_point_names:
+    DynPagesController: Gestion des pages dynamiques
+  entry_points:
+    DynPagesController:    
+        list: Paramétrage des pages dynamiques
+  contents:
+    DynPagesController:    
+        get_part: 
+          description: Partie dynamique
+          params:
+            name: <<get-Y-Nom de la partie-DynPage,get_part_name>>

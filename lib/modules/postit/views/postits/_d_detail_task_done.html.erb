@@ -8,7 +8,7 @@
 			  <%@my_tasks_done.each do |task|%>
 				<tr class="<%= cycle("row0", "row1") %>">
 				  <td><%= task.name%></td>
-				  <td><%= task.description.limit(50) %></td>
+				  <td><%= (task.description||"").limit(50) %></td>
 				  <td><%= (task.close_date || Time.now).strftime("%d/%m/%Y %H:%M:%S") %></td>
 				  <td>
 					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-comment'></i>", 

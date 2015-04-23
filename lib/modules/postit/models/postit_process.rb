@@ -62,7 +62,7 @@ class PostitProcess < ActiveRecord::Base
   end
 
   def status
-    return "COMPLETE" if self.postit_phases.size == 0
+    #return "COMPLETE" if self.postit_phases.size == 0
     one_complete    =false
     one_not_complete=false
     self.postit_phases.each do |p|

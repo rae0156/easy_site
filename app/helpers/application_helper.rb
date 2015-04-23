@@ -2,23 +2,34 @@
 
 module ApplicationHelper
 
-  def generate_module_part(module_name,part_name,content_id)
+  def generate_module_part(controller_name,part_name,content_detail_id)
     result = ""
     begin
-      ctrl = module_name.constantize.new
+      ctrl = controller_name.constantize.new
     rescue => ex
       ctrl = nil
     end    
     if ctrl.respond_to?('module_action_part')
       ctrl.params       = params
-      session[:module_action_part]={:part_name => part_name,:content_id => content_id}
+      session[:module_action_part]={:part_name => part_name,:content_id => content_detail_id}
       session[:module_action_part][:current_user]=current_user if ctrl.respond_to?('current_user=')
       response = ctrl.dispatch("module_action_part",request)
       if response.is_a?(Array) && response.size > 2 && response[2].is_a?(ActionDispatch::Response) 
         result = response[2].body
       else
-        result = "Une erreur est survenue dans la génération de la partie %{part} pour le controlleur %{module}".trn(:module => module_name, :part => part_name)
+        result = "Une erreur est survenue dans la génération de la partie %{part} pour le controlleur %{controller}".trn(:controller => controller_name, :part => part_name)
       end
+    end
+    return result.html_safe
+  end
+
+  def generate_dynamic_part(content_detail_id)
+    result = ""
+    content_detail = EsContentDetail.find_by_id(content_detail_id)
+    if content_detail 
+      result = content_detail.generate_contain_template(true)
+    else
+      result = "Une erreur est survenue dans la génération de la partie dynamique (numéro %{part})".trn(:part => content_detail_id)
     end
     return result.html_safe
   end
@@ -50,8 +61,6 @@ module ApplicationHelper
       num=0
       tmp_list[1..-1].each do |id_image|
         element = collection[0].class.find(id_image)
-
-
         if !element.path.blank?
           url = ((element.path.downcase.starts_with?('http://') || element.path.downcase.starts_with?('https://')) ? '' : "http://") + element.path.to_s
           if test_url(url)
@@ -70,9 +79,7 @@ module ApplicationHelper
           element_html = generate_tag(:DIV, "Aucune image n'est renseignée".trn) 
         end
 
-
         html_element_text =  element_html + generate_tag(:DIV, generate_tag(:H4, "[title]") + generate_tag(:P, "[description]"),{:class=>"carousel-caption"}) 
-
 
         tmp_content = substitute_string(html_element_text,element,["title","description"])
         html_indicators_text += generate_tag(:LI, "", {"data-target"=> "#carousel_#{id_rand}", "data-slide-to"=> "#{num}", :class=>(num==0 ? "active": "")})
@@ -601,8 +608,9 @@ module ApplicationHelper
 
 
   def errors_for(object, message=nil)
-    model_name = object.class.name.underscore.humanize.downcase
-    model_name = model_name.split(' ')[1..-1].join(' ') if model_name.split(' ')[0]=='es'
+    tmp_model_name = object.class.name.underscore.humanize.downcase
+    tmp_model_name = tmp_model_name.split(' ')[1..-1].join(' ') if tmp_model_name.split(' ')[0]=='es'
+    model_name = tmp_model_name.trn
     html = ""
     unless object.errors.blank?
       html << "<div id = 'errorExplanation' class='alert alert-danger'>\n"

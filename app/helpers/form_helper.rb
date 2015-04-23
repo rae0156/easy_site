@@ -69,6 +69,7 @@ module FormHelper
         description = element[:description].presence || ""
         description += " : " unless description.blank?
         value       = element[:value].presence || ""
+        length      = element[:length].presence || 50
         format      = element[:format].presence || ""
         read_only   = (element[:read_only].presence||"N")=='Y'
         mandatory   = (element[:mandatory].presence||"N")=='Y'
@@ -103,7 +104,11 @@ module FormHelper
         when "link"
           text =  link_to(value, url_for(addon_param), :class => "control-label col-sm-12", :style => "text-align:left;")
         when "string"
-          text = easy_tag('text',:instance => "generated", :field => name,:value=> value, :read_only=> read_only)
+          if length<=200
+            text = easy_tag('text',:instance => "generated", :field => name,:value=> value, :read_only=> read_only)
+          else
+            text = easy_tag('long_text',:instance => "generated", :field => name,:value=> value, :read_only=> read_only,:cols=> 100)
+          end
         when "long_string"
           text = easy_tag('long_text',:instance => "generated", :field => name,:value=> value, :read_only=> read_only,:cols=> 100)
         when "list"
@@ -142,6 +147,9 @@ module FormHelper
           text = label_tag("", value, :class => "control-label")
         when "label"
           text = easy_tag('label',:label=> value)
+        when "html"
+          text = render(:partial => 'tinymce/content') 
+          text = easy_tag('long_text',:instance => "generated", :field => name,:value=> value, :read_only=> read_only,:cols=> 100,:class => "tinymce")
         else
           text = easy_tag('text',:instance => "generated", :field => name,:value=> value, :read_only=> true)
         end

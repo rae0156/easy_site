@@ -19,3 +19,49 @@ EsContent,EsContentDetail,EsTemplateCol,EsTemplateLine:
       padding-right: <<integer-Y-espace de droite>>
       padding-bottom: <<integer-Y-espace en bas>>
       padding-left: <<integer-Y-espace de gauche>>
+
+EsContentDetailElementParent:
+  présentation:
+    affichage:
+      bootstrap_class: <<list-Y-classe Bootstrap-,row,col1,col2,col3,col4,col5,col6,col7,col8,col9,col10,col11,col12>>
+      div_class: <<string/100-Y-liste de classes>>
+      div_style: <<string/200-Y-style libre>>
+
+EsContentDetailElementFree:
+  présentation:
+    contenu:
+      free_content: <<html-Y-contenu libre>>
+
+EsContentDetailElementImage:
+  présentation:
+    affichage:
+      image: <<file-Y-fichier image-public;/upload/content;jpg,png,[EMPTY],[DIR]>>
+
+EsContentDetailElementText:
+  présentation:
+    affichage:
+      text: <<string/4000-Y-texte>>
+
+EsContentDetailElementLink:
+  présentation:
+    affichage:
+      link: <<string/200-Y-lien internet>>
+      link_text: <<string/200-Y-texte du lien>>
+
+EsContentDetailElementVideo:
+  présentation:
+    affichage:
+      video: <<file-Y-fichier vidéo-public;/upload/content;avi,wmv,[EMPTY],[DIR]>>
+
+EsContentDetailElementImage,EsContentDetailElementText,EsContentDetailElementLink,EsContentDetailElementVideo,EsContentDetailElementFree,EsContentDetailElementParent:
+  taille:
+    marge:
+      margin-top: <<integer-Y-marge en haut>>
+      margin-right: <<integer-Y-marge de droite>>
+      margin-bottom: <<integer-Y-marge en bas>>
+      margin-left: <<integer-Y-marge de gauche>>
+    espace:
+      padding-top: <<integer-Y-espace en haut>>
+      padding-right: <<integer-Y-espace de droite>>
+      padding-bottom: <<integer-Y-espace en bas>>
+      padding-left: <<integer-Y-espace de gauche>>

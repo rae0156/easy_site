@@ -14,7 +14,7 @@
 			  <%@my_tasks_to_do.each do |task|%>
 				<tr class="<%= cycle("row0", "row1") %>">
 				  <td><%= task.name%></td>
-				  <td><%= task.description.limit(50) %></td>
+				  <td><%= (task.description||"").limit(50) %></td>
 				  <td>
 					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-comment'></i>", 
 																				:controller => "postits", :action => "view_task", :id => task['id'],

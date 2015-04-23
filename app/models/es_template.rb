@@ -8,7 +8,7 @@ class EsTemplate < ActiveRecord::Base
   belongs_to :es_category
 
   acts_as_multi_site
-  attr_accessible :name, :es_category_id, :description
+  attr_accessible :name, :es_category_id, :description,:is_a_template, :validated
 #  acts_as_dynamic_model 
  
   validates_presence_of :name, :message => '#' + 'Le nom est obligatoire'.trn
@@ -133,7 +133,7 @@ class EsTemplate < ActiveRecord::Base
         else
           col_id  = template_cols[num_part.to_i - 1]
         end
-        #puts "ici 1000 : #{part_id} #{part_caract[:num_row]} #{col_id}"
+
         EsPart.find(part_id).update_attributes({:es_template_col_id => col_id, :num => part_caract[:num_row]})
       end
     end
@@ -176,14 +176,14 @@ private
         end
         tmp_style = dr_dr ? "border:1px solid red;padding:5px;" : ""
         
-        properties = EsContent.prepare_properties(c,{:class => "col-md-#{c.width}",:style => tmp_style})
+        properties = EsContent.prepare_properties(c,nil,{:class => "col-md-#{c.width}",:style => tmp_style})
         text_line += generate_tag(:div, text_col, properties)
       end 
-      tmp_class = dr_dr ? "row drag_drop_template" : "row"
-      properties = EsContent.prepare_properties(l,{:class => tmp_class})
+      tmp_class = dr_dr ? "row drag_drop_template" : "row"      
+      properties = EsContent.prepare_properties(l,nil,{:class => tmp_class})
       text += generate_tag(:div, text_line, properties)      
     end
-    text = generate_tag(:div, text, {:class => "container"}) unless dr_dr
+    text = generate_tag(:div, text, {:class => (self.is_a_template=='Y' ? "container" : '')}) unless dr_dr
     return text
   end
 end

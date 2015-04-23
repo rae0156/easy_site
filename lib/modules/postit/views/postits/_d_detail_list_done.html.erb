@@ -9,7 +9,7 @@
 			  <%@my_lists_done.each do |list_task|%>
 				<tr class="<%= cycle("row0", "row1") %>">
 				  <td><%= list_task.name%></td>
-				  <td><%= list_task.description.limit(50) %></td>
+				  <td><%= (list_task.description||"").limit(50) %></td>
 				  <td><%= list_task.owner_name %></td>
 				  <td><%= (list_task.close_date || Time.now).strftime("%d/%m/%Y %H:%M:%S") %></td>
 				  <td>

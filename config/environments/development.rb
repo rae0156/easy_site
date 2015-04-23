@@ -34,7 +34,7 @@ EasySite::Application.configure do
   config.assets.compress = false
 
   # Expands the lines which load the assets
-  config.assets.debug = true
+  config.assets.debug = true #si on remet à false, le tinymce ne fonctionne plus 
   
   # Limit the log lines
   config.log_level = :warn #:warn :debug 

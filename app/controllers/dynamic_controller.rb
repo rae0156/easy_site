@@ -332,7 +332,6 @@ class DynamicController < ApplicationController
     params[:instance].merge! @setup_controller[:fixed_attributes] if @setup_controller[:fixed_attributes]
 
     transform_list(params[:instance])
-    
     @instance = @setup_controller[:model].new(params[:instance])
     if @instance.save
 
@@ -417,6 +416,9 @@ class DynamicController < ApplicationController
       if detect.blank? || @setup_controller[:delete_if_used]
         tmp_parent_id = @setup_controller[:parent_exists] ? @instance.parent_id : ''
         @instance.destroy unless @instance.blank?
+        @instance.errors.full_messages.each do |tmp_error| 
+          tmp_element_error.errors.add(:base, tmp_error)
+        end
         initial_sequence_for(tmp_parent_id) if @setup_controller[:sequence_exists]
       else
         tmp_element_error.errors.add(:base, "La suppresison de '%{element_dynamique}' ne peut être faite, car une ou plusieurs liaisons existent".trn(:element_dynamique => @setup_controller[:instance_name].humanize) + ". (#{detect.join(', ')})")
@@ -442,7 +444,7 @@ class DynamicController < ApplicationController
         init_info_for_list(session[:parent_id])
         conditions = DynamicSearch.new(@setup_controller[:model],session[:conditions]).build_conditions
         @instances = conditions.includes(session[:sort][1]).order(session[:sort][0]).page(params[:page])
-        @element_id, @partial = 'dynamic_list_div', 'shared/dynamic/list'
+        @element_id, @partial = ['error_destroy_div','dynamic_list_div'], ['shared/dynamic/error_destroy','shared/dynamic/list']
         render 'shared/replace_content'
       end
     end

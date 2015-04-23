@@ -60,7 +60,7 @@
 		      			value_list = []
 		      		end
 		      	%>
-	            <%=  select(:instance, column[:name], value_list, {:prompt => ""},:disabled => (tmp_readonly ? "disabled" : false), :class => "form-control") %>
+	            <%=  select(:instance, column[:name], value_list, {:include_blank => true},:disabled => (tmp_readonly ? "disabled" : false), :class => "form-control") %>
 		      <% when "list_group" 
 		      		if !column[:value_list].blank?
 		      			value_list = column[:value_list]
@@ -70,7 +70,7 @@
 		      			value_list = []
 		      		end
 		      	%>
-	            <%=  select(:instance, column[:name], grouped_options_for_select(value_list,value_field), {:prompt => ""},:disabled => (tmp_readonly ? "disabled" : false), :class => "form-control") %>
+	            <%=  select(:instance, column[:name], grouped_options_for_select(value_list,value_field), {:include_blank => true},:disabled => (tmp_readonly ? "disabled" : false), :class => "form-control") %>
 		      <% when "association" %>
 		       <%
 		             column_class = ( column[:model_linked].present? && Object.const_defined?(column[:model_linked])) ? column[:model_linked].constantize : nil

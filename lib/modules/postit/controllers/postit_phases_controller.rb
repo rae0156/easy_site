@@ -28,7 +28,7 @@ class PostitPhasesController < ApplicationController
 
   # Save the Setup to database -
   def create
-    params[:postit_phase][:completed]      = "N"
+    #params[:postit_phase][:completed]      = "N"
     
     @postit_phase = PostitPhase.new(params[:postit_phase])
     if @postit_phase.save

@@ -11,7 +11,7 @@
 			  <%@my_processes_to_do.each do |process|%>
 				<tr class="<%= cycle("row0", "row1") %>">
 				  <td colspan="2"><%= process.name%></td>
-				  <td><%= process.description.limit(50) %></td>
+				  <td><%= (process.description||"").limit(50) %></td>
 				  <td><%= process.owner_name %></td>
 				  <td><%= process.status_name %></td>
 				  <td><%= process.workflow_status_name %></td>				  
@@ -43,7 +43,7 @@
 					<tr class="<%= cycle("row0", "row1") %>">
 					  <td></td>
 					  <td><%= list.name%></td>
-					  <td><%= list.description.limit(50) %></td>
+					  <td><%= (list.description||"").limit(50) %></td>
 					  <td><%= list.owner_name %></td>
 					  <td><%= list.status_name %></td>
 					  <td>

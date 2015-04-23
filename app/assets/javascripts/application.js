@@ -286,6 +286,16 @@ function start_app()
 }
 
 
+function questionAndFuntion(function_name, confirmation,msg_confirm) {
+	ok_run = true;
+	if (confirmation) 
+	{
+		if (!confirm(msg_confirm)) 
+			ok_run=false;
+	}
+	if (ok_run)
+		window[function_name]();
+}
 
 /**
 * Check that at least one item has been selected, pops up a confirmation if needed
@@ -350,6 +360,26 @@ function init_tree_view_file() {
 		$("#tree_view_file").show();
 	} );
 }
+
+
+function init_toggle_by_ref() {
+	$( document ).ready(function() {    
+		
+
+        $(".toggle_by_ref").each(function(index, value) {      
+        	ref = $(this).data('reference-class');
+			new_html = "<small><a><span class='glyphicon glyphicon-plus " + ref + "'></span><span class='glyphicon glyphicon-minus " + ref + " init_hide'></span></a></small>"
+			$(this).append( new_html );
+	        $(this).on('click', function() {      
+	        	ref = $(this).data('reference-class');
+	            $('.' + ref).toggle('fast'); 
+	         }); 
+        }); 
+		
+        $(".init_hide").hide(); 
+	});
+};
+
 
 // démarrage de l'application
 $( document ).ready(function() {

@@ -1,0 +1,4 @@
+<%if !@dyn_page.blank? && @dyn_page.es_template%>
+	<%= generate_template_render(@dyn_page.es_template.name)%>
+<%end%>
+

@@ -1,26 +1,15 @@
+/*
 	.templet {
 	margin: 0 1em 1em 0;
 	padding: 0.3em;
-	}
-/*
-	.templet-header {
-	padding: 0.2em 0.3em;
-	margin-bottom: 0.5em;
-	position: relative;
-	}
-	.templet-toggle {
-	position: absolute;
-	top: 50%;
-	right: 0;
-	margin-top: -8px;
-	}
-	.templet-content {
-	padding: 0.4em;
 	}
 */
 	.templet-placeholder {
 	border: 1px dotted white;
 	background-color:black;
+	/*
 	margin: 0 1em 1em 0;
 	height: 50px;
+	*/
 	}
+

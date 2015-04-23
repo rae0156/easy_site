@@ -1,6 +1,6 @@
 <tr class="<%= cycle("row0", "row1") %>">
   <td><%= list_item_task_list.name%></td>
-  <td><%= list_item_task_list.description.limit(50) %></td>
+  <td><%= (list_item_task_list.description||"").limit(50) %></td>
   <td><%= list_item_task_list.sequence.to_i %></td>
   <td>
 	<%= image_tag(list_item_task_list.optional == 'N' ? "appli/ok_32.png" : "appli/cancel_32.png", 
