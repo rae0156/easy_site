@@ -6,14 +6,14 @@
 		    <%=
 		    			link_to("<div class='btn btn-primary'><i class='glyphicon glyphicon-remove-sign'></i> #{"Supprimer ce contenu".trn}</div>".html_safe, 
 							url_for(:action => "delete_element_parts", :id => @content_detail_element.id), 
-							:confirm =>"La disposition risque d'être perdue si elle n'a pas été sauvée. Voulez vous vraiment supprimer ce contenu ?".trn,
+							:confirm =>"Voulez vous vraiment supprimer ce contenu ?".trn,
 							:title =>"Supprimer ce contenu".trn, :remote => true)
 			%>
 			
 					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<div class='btn btn-primary'><i class='glyphicon glyphicon-floppy-disk'></i> #{"Sauver ce contenu".trn}</div>", 
 																				:action => "#",
 																				:no_div => true,
-																				:confirm =>"La disposition risque d'être perdue si elle n'a pas été sauvée. Voulez vous vraiment sauver ce contenu ?".trn,
+																				:confirm =>"Voulez vous vraiment sauver ce contenu ?".trn,
 																				:javascript_function => 'save_properties',
 																				:html_option =>{ 
 																									:remote => true, 

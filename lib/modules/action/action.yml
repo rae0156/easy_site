@@ -26,6 +26,9 @@ setup:
   admin:
     title: module Action <<string-Y-Titre du module>>
 
+menus:
+  menu_entry_points: Y <<boolean>>
+
 controllers: 
   entry_point_names:
     ActionUsersController: Action

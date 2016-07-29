@@ -1,0 +1,37 @@
+interface:
+  models: /
+  controllers: 
+    - EasySystemsController
+  mailers: / 
+
+version: 0.0.0.1
+
+activated: Y<<boolean-N-Module actif>>
+
+setup:
+  admin:
+    title: module Easy System <<string-N-Titre du module>>
+
+menus:
+  menu_entry_points: Y <<boolean>>
+
+controllers: 
+  entry_point_names:
+    EasySystemsController: Gestion des options systèmes
+  entry_points:
+    EasySystemsController:    
+        create_super_admin: Création du premier super admin
+        site_list: gestion des sites
+        init_admin_template: Retour au template admin
+        init_rails_var: Initialisation des variables Rails
+        site_wizard: Assistant de contruction de sites
+        change_template: Gestion des templates
+        change_theme: Gestion des thèmes
+        setup_list: Gestion des paramétrages
+        user_profil: Modification de son profile
+        user_password: Modification de son mot de passe
+        user_mail: Modification de son mail
+        user_disconnect: Déconnexion 
+        user_connect: Connexion 
+        user_password_lost: Retrouver son mot de passe perdu
+        user_signin: S'inscrire

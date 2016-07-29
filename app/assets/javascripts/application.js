@@ -19,7 +19,7 @@
 //= require ./bootstrap-datetimepicker/bootstrap-datetimepicker
 //= require_tree ./bootstrap-datetimepicker/locales/
 //= require jquery.inputmask
-//= require ./../tinymce/tinymce.min
+// require ./tinymce/tinymce.min
 //= require slide
 //= require drag_drop
 //= require jscolor/jscolor.js
@@ -330,16 +330,19 @@ function init_datepicker() {
 	$( document ).ready(function() {
 		$('[data-behaviour~=datetimepicker]').datetimepicker({
 		  language: 'fr',
+		  weekStart: 1,
 		  format: 'dd/MM/yyyy hh:mm:ss'
 		});
 		$('[data-behaviour~=timepicker]').datetimepicker({
 		  language: 'fr',
 		  pickDate: false,
+		  weekStart: 1,
 		  format: 'hh:mm:ss'
 		});
 		$('[data-behaviour~=datepicker]').datetimepicker({
 		  language: 'fr',
 		  pickTime: false,
+		  weekStart: 1,
 		  format: 'dd/MM/yyyy'
 		});
 	});
@@ -363,12 +366,14 @@ function init_tree_view_file() {
 
 
 function init_toggle_by_ref() {
-	$( document ).ready(function() {    
-		
+	$( document ).ready(function() {    		
 
         $(".toggle_by_ref").each(function(index, value) {      
         	ref = $(this).data('reference-class');
-			new_html = "<small><a><span class='glyphicon glyphicon-plus " + ref + "'></span><span class='glyphicon glyphicon-minus " + ref + " init_hide'></span></a></small>"
+        	if ($(this).hasClass( "init_view" ))
+				new_html = "<small><a><span class='glyphicon glyphicon-chevron-up " + ref + "'></span><span class='glyphicon glyphicon-chevron-down " + ref + " init_hide'></span></a></small>"
+			else
+				new_html = "<small><a><span class='glyphicon glyphicon-chevron-down " + ref + "'></span><span class='glyphicon glyphicon-chevron-up " + ref + " init_hide'></span></a></small>"
 			$(this).append( new_html );
 	        $(this).on('click', function() {      
 	        	ref = $(this).data('reference-class');

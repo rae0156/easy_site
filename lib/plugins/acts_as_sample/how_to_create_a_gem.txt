@@ -1,0 +1,24 @@
+creation dans le rep de easy_site :
+	commande : bundle gem xxxx
+	ensuite déplacer dans le répertoire tfe
+
+ouvrir dans aptana
+	cocher "I'll generate my own code"
+	
+modifier le fichier xxxx.gemspec  
+  gem.authors       = ["Régis André"]
+  gem.email         = ["regis.andre.home@gmail.com"]
+  gem.description   = %q{ma description}
+  gem.summary       = %q{mon résumé}
+
+créer le gem ou déplacer le code d'un plugin dans ce gem
+  
+construction le gem
+	gem build xxxx.gemspec
+	dans le rep du gem
+installer le gem en local
+	gem install xxxx
+	dans le rep du gem
+mettre le gem dans l'appli dans le gemfile
+	gem 'xxxx', '0.0.1'
+	bundle install

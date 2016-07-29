@@ -177,6 +177,7 @@ class EsContentsController < ApplicationController
     end    
   end
 
+
   def update_dynamic_content_parts
     id = params[:id]
     @content_detail = EsContentDetail.find_by_id(id)
@@ -185,8 +186,12 @@ class EsContentsController < ApplicationController
     respond_to do |format|
       format.html {} # Do nothing, so Rails will render the view list.rhtml
       format.js do 
-        flash[:message_ajax] = "La disposition des parties du contenu '%{name}' a été correctement sauvée.".trn(:name => @content_detail.name) 
-        @element_id, @partial = 'message_ajax', 'layouts/part_message_ajax'
+        if params[:parts].present?
+          flash[:message_ajax] = "La disposition des parties du contenu '%{name}' a été correctement sauvée.".trn(:name => @content_detail.name)
+          @element_id, @partial = 'message_ajax', 'layouts/part_message_ajax'
+        else
+          @element_id, @partial = 'dynamic_content', 'dynamic_content'
+        end
         render 'shared/replace_content'
       end
     end    
@@ -212,7 +217,8 @@ class EsContentsController < ApplicationController
       element = EsContent.save_properties("EsContentDetailElement"+@content_detail_element.element_type.classify, @content_detail_element.id, params["generated"])
       if element.errors.empty? && @content_detail_element.valid? 
         @content_detail_element.save
-        flash[:message_ajax] = "Les propriétés de la partie '%{name}' ont été correctement sauvées.".trn(:name => @content_detail_element.name) 
+        flash[:message_ajax] = "Les propriétés de la partie '%{name}' ont été correctement sauvées.".trn(:name => @content_detail_element.name)
+         @content_detail_element = nil 
       else
         element.errors.full_messages.each do |m|
           @content_detail_element.errors.add(:base, m) 
@@ -230,11 +236,14 @@ class EsContentsController < ApplicationController
   end
 
   def delete_element_parts
-    tmp_element = EsContentDetailElement.find(params[:id])
+    tmp_element = EsContentDetailElement.find_by_id(params[:id])
     @content_detail_element = ("EsContentDetailElement"+tmp_element.element_type.classify).constantize.find_by_id(params[:id])
     if @content_detail_element
       @content_detail = tmp_element.es_content_detail
       name = @content_detail_element.name
+      EsContentDetailElement.where(:parent_id => tmp_element.id).each do |e|
+        e.update_attribute('parent_id',-1)
+      end
       @content_detail_element.destroy 
       @content_detail_element = nil
       flash[:message_ajax] = "La partie '%{name}' a été correctement supprimée.".trn(:name => name) 

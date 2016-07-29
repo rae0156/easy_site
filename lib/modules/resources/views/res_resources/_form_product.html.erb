@@ -1,0 +1,12 @@
+	<h4><%= field_description "Données obligatoires".trn, true %></h4>
+
+	<%= easy_tag('text', 		:instance => "object", :field => "name", :maxlength => 255, :mandatory => true, :with_label => "Nom".trn, :bootstrap_form => true) %>
+	<%= easy_tag('long_text', 	:instance => "object", :field => "description", :cols => 80, :rows => 8,:maxlength => 1000, :with_label => "Description".trn, :bootstrap_form => true) %>
+	<hr />
+	<%= easy_tag('decimal', 	:instance => "object1", :field => "quantity", :with_label => "Quantité disponible".trn, :bootstrap_form => true, :value => @object1[:quantity]) %>
+
+<script>
+	init_datepicker();	
+	init_inputmask();		
+</script>
+

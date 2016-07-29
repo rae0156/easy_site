@@ -43,6 +43,7 @@ class MenuSub < ActiveRecord::Base
                           :dynamic_search_exists => false, 
                           :sequence_exists => true, 
                           :parent_exists => true,
+                          :children_exists => true,
                           :instance_name => "Sous menu"
 
                         }) 

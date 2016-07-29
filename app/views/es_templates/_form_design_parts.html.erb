@@ -7,14 +7,14 @@
 	<div class='ref_1 init_hide'>
 		<p><%="Faites glisser les parties disponnibles dans le dessin du template ci-dessous".trn%></p>
 		<!--%= select("template", :es_part_ids, EsPart.all(:conditions => {:es_template_id => @template.id}).map {|p| ["#{p.name} : #{p.description}", p.id]}, {}, :size => 5, :class => "form-control") %-->
-		<%= @template.generate_design_part_available %>
+		<%= generate_design_part_available(@template.name) %> 
 	</div>
 </div>
 <br/>
 
 <div>
 	<h3><%="Dessin du template".trn%></h3>
-	<%= @template.generate_design_with_part %>
+	<%= generate_design_with_part(@template.name) %>
 </div>
 
 <script>

@@ -1,0 +1,20 @@
+<% @title = "Paramétrage d'un modèle dynamique".trn %>
+
+
+
+    <h2><%= image_tag('appli/setup_48.png', {:alt => @title, :align => "middle"}) %><%= @title %></h2>
+	<ul>
+		<%unless @model.read_only=="Y"%>
+			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/save_32.png", :action => "update_setup_model", :id => @model.id,  :form => "setup_model"}%></li>
+		<%end%>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour".trn,:image => "appli/back_32.png", :action => "list_model"}%></li>
+	</ul>
+
+	<%= errors_for(@model) %>
+
+	<%= form_tag({ :action => 'update_setup_model', :if => @model.id}, { :name => 'setup_model' , :class => 'form-horizontal'}) do%>
+	
+	  <%= render 'form' %>
+
+	<% end %>
+

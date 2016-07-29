@@ -28,9 +28,8 @@
 	id_btn = "" if id_btn.nil?
 	param_goto = {} if param_goto.nil?
 	html_option = {} if html_option.nil?
-
 	no_div = false if no_div.nil?
-
+	
 	if back
 		controller 	= session[:back_controller] 
 		action 		= session[:back_action] 	
@@ -47,7 +46,13 @@
 	url_hash = "#" if action == "#"
 	option_hash = html_option
 	option_hash = option_hash.merge({:confirm => (confirm.blank? ? "Voulez vous vraiment réaliser cette action ?".trn : confirm)}) if check == 'true' && (form.blank? || !confirm.blank?)	
-
+	
+	if (remote==true || (option_hash[:remote].present? ? (option_hash[:remote].presence==true) : false))
+		option_hash[:remote], remote	= true, true
+	else
+		option_hash[:remote], remote 	= false, false
+	end
+	
 	if image.blank?
 		link = text
 	else
@@ -60,7 +65,7 @@
 		javascript 		= 'questionAndFuntion("' + javascript_function + '", ' + check + ', "' + msg_confirm + '")'
 	else !form.blank?
 		url = url_hash.blank? ? "" : url_for(url_hash)
-		remote_option = ((remote==true) || (option_hash[:remote].present? ? (option_hash[:remote].presence==true) : false)) ? 'true' : 'false'
+		remote_option = remote ? 'true' : 'false'
 		if checkbox == 'true'
 			msg_confirm 	= option_hash[:confirm].presence || "Voulez vous vraiment exécuter cette action sur les éléments sélectionnés ?".trn
 			msg_confirm		= msg_confirm.gsub('"','')

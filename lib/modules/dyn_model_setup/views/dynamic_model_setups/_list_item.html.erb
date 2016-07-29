@@ -1,0 +1,24 @@
+<tr class="<%= cycle("row0", "row1") %>">
+  <td>
+  	<%if list_item.read_only=='Y'%>
+		<%= list_item.model_name %>
+  	<%else%>
+	  	<%= link_to list_item.model_name, :controller => 'dynamic_model_setups', :action => 'setup_a_model', :id => list_item.id%>
+  	<%end%>
+  </td>
+  <td>
+	<%= list_item.label %>  
+  </td>
+  <td>
+	<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-share-alt'></i>", 
+																:action => "index", :controller => list_item.model_name.underscore.pluralize,
+																:no_div => true,
+																:html_option => {:title =>"Atteindre '%{label}'".trn(:label => list_item.label), :target=>"_blank"}}%>
+	<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-remove-circle'></i>", 
+																:action => "reinit_setup_model", :id => list_item.id,
+																:confirm => "Vous allez perdre vos adaptations. Voulez vous vraiment réinitialiser ce modèle ?".trn,
+																:no_div => true,
+																:html_option => {:title =>"Réinitialiser ce modèle".trn}}%>
+  </td>
+  
+</tr>

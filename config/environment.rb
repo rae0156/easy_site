@@ -36,3 +36,4 @@ init_dynamic_attributes
 require "#{Rails.root}/lib/modules/load_modules.rb" if File.exist?( "#{Rails.root}/lib/modules/load_modules.rb")
 
 EsTheme.load_themes
+EsTemplate.load_template_file

@@ -18,12 +18,12 @@
 									$body.append(obj);
 								}	
 							});
-							$( '#body_panel' ).before('<div id="slide_l" class="col-md-1" style="position:relative;left:1px;"><UL class="nav nav-pills" style="list-style:none outside none;"></UL></div>');
+							$( '#body_panel' ).before('<div id="slide_l" class="col-md-1" style="position:absolute;left:1px;z-index:100;"><UL class="nav nav-pills" style="list-style:none outside none;"></UL></div>');
 							$slide_l = $( '#slide_l > UL' ); 
 						}
 						if ($('.panel_t_slide,.panel_t_m_slide').length)
 						{
-							$( 'body' ).prepend('<div id="slide_t" style="position:relative;left:' + $('#slide_l').outerWidth() + 'px;"><UL class="nav nav-pills"></UL></div>');
+							$( 'body' ).prepend('<div id="slide_t" style="position:absolute;left:' + $('#slide_l').outerWidth() + 'px;z-index:100;"><UL class="nav nav-pills"></UL></div>');
 							$slide_t = $( '#slide_t > UL' ); 
 						}
 
@@ -50,7 +50,7 @@
                         $('.btn_slide_t_m').mouseenter(function() {
                         	id = 'panel_t_slide_' + $(this).attr('id').substring(12);
                             $div = $('#' + id);
-                            if ($div.offset().top == -($div.outerHeight() + 10)) { 
+                            if ($div.offset().top == -($div.outerHeight() + 100)) { 
 	                        	$('.panel_t_slide,.panel_t_m_slide').each(function( index ) {	    
 	                        		if ($( this ).parent().attr('id') != id)                    		
 		                        		$( this ).parent().animate({top: -($( this ).parent().outerHeight() + 100)}); 

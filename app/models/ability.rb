@@ -9,7 +9,7 @@ class Ability
     if no_signed
       roles=[0]
     else
-      roles = user.es_roles.collect(&:id)
+      roles = user.es_roles.collect(&:id) + [0]
     end
 
     #:manage, :read, :create, :update and :destroy 

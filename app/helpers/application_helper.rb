@@ -177,8 +177,8 @@ module ApplicationHelper
           url = adr[1]
         else
           url = ((adr[1].downcase.starts_with?('http://') || adr[1].downcase.starts_with?('https://')) ? '' : "http://") + adr[1]
-        end        
-        tmp_elem = generate_tag(:A, adr[0], {:href=>url})
+        end   
+        tmp_elem = generate_tag(:A, adr[0], {:href=>url, "data-remote" => ((adr.count>2 && adr[2]==true) ? "true" : "false")})
       else
         tmp_elem = adr.split.join
       end
@@ -274,21 +274,43 @@ module ApplicationHelper
     html_text = tmp_list[0]
     tmp_tab_html = ""
     num=0
-    tmp_list[1..-1].each do |elem|
-      menu = EsMenu.find(elem)
-      if menu.link_type=="separated"
-        html_text.gsub!("<LI>[#{elem}]</LI>",generate_tag(:LI, "", {:class => "divider"}))
-      else
-        tmp_link = generate_link(menu)
-        html_text.gsub!("[#{elem}]",tmp_link)
-      end
-      
-      if menu.link_type=="link_sheet"
-        tmp_media = EsMediaFile.find(:first, :conditions => {:name => menu.link_params, :media_type => "sheet"})
-        tmp_tab_html+=generate_tag(:DIV, tmp_media.description, {:id=> "tab_#{menu.link_params}",:class => "tab-pane fade #{(num==0 ? 'in active' : '')}"}) unless tmp_media.blank?
-      end
-    num+=1   
-    end if tmp_list.count > 1 
+
+    if tmp_list.count > 1 
+      tmp_array= tmp_list[1..-1]
+      EsMenu.order("sequence").all.each do |menu|
+        if tmp_array.include?(menu.id)
+          if menu.link_type=="separated"
+            html_text.gsub!("<LI>[#{menu.id}]</LI>",generate_tag(:LI, "", {:class => "divider"}))
+          else
+            tmp_link = generate_link(menu)
+            html_text.gsub!("[#{menu.id}]",tmp_link)
+          end
+          
+          if menu.link_type=="link_sheet"
+            tmp_media = EsMediaFile.find(:first, :conditions => {:name => menu.link_params, :media_type => "sheet"})
+            tmp_tab_html+=generate_tag(:DIV, tmp_media.description, {:id=> "tab_#{menu.link_params}",:class => "tab-pane fade #{(num==0 ? 'in active' : '')}"}) unless tmp_media.blank?
+          end
+          num+=1   
+        end
+      end 
+    end
+
+
+#    tmp_list[1..-1].each do |elem|
+#      menu = EsMenu.find(elem)
+#      if menu.link_type=="separated"
+#        html_text.gsub!("<LI>[#{menu.id}]</LI>",generate_tag(:LI, "", {:class => "divider"}))
+#      else
+#        tmp_link = generate_link(menu)
+#        html_text.gsub!("[#{menu.id}]",tmp_link)
+#      end
+#      
+#      if menu.link_type=="link_sheet"
+#        tmp_media = EsMediaFile.find(:first, :conditions => {:name => menu.link_params, :media_type => "sheet"})
+#        tmp_tab_html+=generate_tag(:DIV, tmp_media.description, {:id=> "tab_#{menu.link_params}",:class => "tab-pane fade #{(num==0 ? 'in active' : '')}"}) unless tmp_media.blank?
+#      end
+#      num+=1   
+#    end if tmp_list.count > 1 
 
     html_text += generate_tag(:DIV, tmp_tab_html, {:class => "tab-content"})
 
@@ -302,21 +324,36 @@ module ApplicationHelper
 
     html_text.gsub!("[BEFORE]",generate_link(element))
 
-    tmp_list[1..-1].each do |elem|
-      menu = EsMenu.find(elem)
-      if menu.link_type=="separated"
-        html_text.gsub!("<LI>[#{elem}]</LI>",generate_tag(:LI, "", {:class => "divider"}))
-      else
-        tmp_link = generate_link(menu)
-        html_text.gsub!("[#{elem}]",tmp_link)
-      end
-    end if tmp_list.count > 1 
+    if tmp_list.count > 1 
+      tmp_array= tmp_list[1..-1]
+      EsMenu.all.each do |menu|
+        if tmp_array.include?(menu.id)
+          if menu.link_type=="separated"
+            html_text.gsub!("<LI>[#{menu.id}]</LI>",generate_tag(:LI, "", {:class => "divider"}))
+          else
+            tmp_link = generate_link(menu)
+            html_text.gsub!("[#{menu.id}]",tmp_link)
+          end
+        end
+      end 
+    end
+
+#    tmp_list[1..-1].each do |elem|
+#      menu = EsMenu.find(elem)
+#      if menu.link_type=="separated"
+#        html_text.gsub!("<LI>[#{menu.id}]</LI>",generate_tag(:LI, "", {:class => "divider"}))
+#      else
+#        tmp_link = generate_link(menu)
+#        html_text.gsub!("[#{menu.id}]",tmp_link)
+#      end
+#    end if tmp_list.count > 1 
 
     html_text=generate_tag(:DIV, html_text, {:class => "dropdown"})    
     return html_text
   end
 
   def generate_vertical_menu(element,options={})
+
     tmp_list = generate_list(element,{:UL_LEVEL_1 => {:class => "dropdown-menu", :role=>"menu", "aria-labelledby"=>"dropdownMenu"},
                                       :UL_LEVEL_2 => {:class => "dropdown-menu"},
                                       :UL_LEVEL_OTHER => {:class => "dropdown-menu"},
@@ -326,16 +363,29 @@ module ApplicationHelper
                                       })
     html_text = tmp_list[0]
 
+    if tmp_list.count > 1 
+      tmp_array= tmp_list[1..-1]
+      EsMenu.all.each do |menu|
+        if tmp_array.include?(menu.id)
+          if menu.link_type=="separated"
+            html_text.gsub!("<LI>[#{menu.id}]</LI>",generate_tag(:LI, "", {:class => "divider"}))
+          else
+            tmp_link = generate_link(menu)
+            html_text.gsub!("[#{menu.id}]",tmp_link)
+          end
+        end
+      end 
+    end
 
-    tmp_list[1..-1].each do |elem|
-      menu = EsMenu.find(elem)
-      if menu.link_type=="separated"
-        html_text.gsub!("<LI>[#{elem}]</LI>",generate_tag(:LI, "", {:class => "divider"}))
-      else
-        tmp_link = generate_link(menu)
-        html_text.gsub!("[#{elem}]",tmp_link)
-      end
-    end if tmp_list.count > 1 
+#    tmp_list[1..-1].each do |elem|
+#      menu = EsMenu.find(elem)
+#      if menu.link_type=="separated"
+#        html_text.gsub!("<LI>[#{elem}]</LI>",generate_tag(:LI, "", {:class => "divider"}))
+#      else
+#        tmp_link = generate_link(menu)
+#        html_text.gsub!("[#{elem}]",tmp_link)
+#      end
+#    end if tmp_list.count > 1 
 
     html_text=generate_tag(:DIV, html_text, {:class => "dropdown menu"})    
     return html_text
@@ -372,11 +422,20 @@ module ApplicationHelper
     html_text = tmp_list[0]
     #html_text.gsub!("[FIRST]",generate_tag(:LI, element.description, {:class => "nav-header"}))
 
-    tmp_list[1..-1].each do |elem|
-      menu = EsMenu.find(elem)
-      tmp_link = generate_link(menu)
-      html_text.gsub!("[#{elem}]",tmp_link)
-    end if tmp_list.count > 1 
+    if tmp_list.count > 1 
+      tmp_array= tmp_list[1..-1]
+      EsMenu.all.each do |menu|
+        if tmp_array.include?(menu.id)
+          tmp_link = generate_link(menu)
+          html_text.gsub!("[#{menu.id}]",tmp_link)
+        end
+      end 
+    end
+#    tmp_list[1..-1].each do |elem|
+#      menu = EsMenu.find(elem)
+#      tmp_link = generate_link(menu)
+#      html_text.gsub!("[#{menu.id}]",tmp_link)
+#    end if tmp_list.count > 1 
 
     return generate_tag(:DIV,  generate_tag(:div, element.description) + html_text)
   end
@@ -394,21 +453,41 @@ module ApplicationHelper
     html_text = tmp_list[0]
     tmp_tab_html = ""
     num=0
-    tmp_list[1..-1].each do |elem|
-      menu = EsMenu.find(elem)
-      if menu.link_type=="separated"
-        html_text.gsub!("<LI>[#{elem}]</LI>",generate_tag(:LI, "", {:class => "divider"}))
-      else
-        tmp_link = generate_link(menu)
-        html_text.gsub!("[#{elem}]",tmp_link)
-      end
-      
-      if menu.link_type=="link_sheet"
-        tmp_media = EsMediaFile.find(:first, :conditions => {:name => menu.link_params, :media_type => "sheet"})
-        tmp_tab_html+=generate_tag(:DIV, tmp_media.description, {:id=> "tab_#{menu.link_params}",:class => "tab-pane fade #{(num==0 ? 'in active' : '')}"}) unless tmp_media.blank?
-      end
-    num+=1   
-    end if tmp_list.count > 1 
+    if tmp_list.count > 1 
+      tmp_array= tmp_list[1..-1]
+      EsMenu.order("sequence").all.each do |menu|
+        if tmp_array.include?(menu.id)
+          if menu.link_type=="separated"
+            html_text.gsub!("<LI>[#{menu.id}]</LI>",generate_tag(:LI, "", {:class => "divider"}))
+          else
+            tmp_link = generate_link(menu)
+            html_text.gsub!("[#{menu.id}]",tmp_link)
+          end
+          
+          if menu.link_type=="link_sheet"
+            tmp_media = EsMediaFile.find(:first, :conditions => {:name => menu.link_params, :media_type => "sheet"})
+            tmp_tab_html+=generate_tag(:DIV, tmp_media.description, {:id=> "tab_#{menu.link_params}",:class => "tab-pane fade #{(num==0 ? 'in active' : '')}"}) unless tmp_media.blank?
+          end
+          num+=1   
+        end
+      end 
+    end
+
+#    tmp_list[1..-1].each do |elem|
+#      menu = EsMenu.find(elem)
+#      if menu.link_type=="separated"
+#        html_text.gsub!("<LI>[#{menu.id}]</LI>",generate_tag(:LI, "", {:class => "divider"}))
+#      else
+#        tmp_link = generate_link(menu)
+#        html_text.gsub!("[#{menu.id}]",tmp_link)
+#      end
+#      
+#      if menu.link_type=="link_sheet"
+#        tmp_media = EsMediaFile.find(:first, :conditions => {:name => menu.link_params, :media_type => "sheet"})
+#        tmp_tab_html+=generate_tag(:DIV, tmp_media.description, {:id=> "tab_#{menu.link_params}",:class => "tab-pane fade #{(num==0 ? 'in active' : '')}"}) unless tmp_media.blank?
+#      end
+#      num+=1   
+#    end if tmp_list.count > 1 
 
     html_text += generate_tag(:DIV, tmp_tab_html, {:class => "tab-content"})
 
@@ -419,11 +498,21 @@ module ApplicationHelper
   def generate_navigation(element,options={})
     tmp_list = generate_list(element,{:UL => {:class => "nav nav-pills"}})
     html_text = tmp_list[0]
-    tmp_list[1..-1].each do |elem|
-      menu = EsMenu.find(elem)
-      tmp_link = generate_link(menu)
-      html_text.gsub!("[#{elem}]",tmp_link)
-    end if tmp_list.count > 1 
+    if tmp_list.count > 1 
+      tmp_array= tmp_list[1..-1]
+      EsMenu.all.each do |menu|
+        if tmp_array.include?(menu.id)
+          tmp_link = generate_link(menu)
+          html_text.gsub!("[#{menu.id}]",tmp_link)
+        end
+      end 
+    end
+    
+#    tmp_list[1..-1].each do |elem|
+#      menu = EsMenu.find(elem)
+#      tmp_link = generate_link(menu)
+#      html_text.gsub!("[#{menu.id}]",tmp_link)
+#    end if tmp_list.count > 1 
     
     return generate_tag(:div,html_text,:class => "navbar navbar-default navbar-fluid-top")
   end
@@ -606,30 +695,35 @@ module ApplicationHelper
     link_to(icon.html_safe + text, path, html_options)
   end
 
-
   def errors_for(object, message=nil)
-    tmp_model_name = object.class.name.underscore.humanize.downcase
-    tmp_model_name = tmp_model_name.split(' ')[1..-1].join(' ') if tmp_model_name.split(' ')[0]=='es'
+    if object.class.respond_to?('setup_model') && object.class.setup_model.is_a?(Hash) && !object.class.setup_model[:instance_name].presence.blank?
+      tmp_model_name = object.class.setup_model[:instance_name].presence
+    else
+      tmp_model_name = object.class.name.underscore.humanize.downcase
+      tmp_model_name = tmp_model_name.split(' ')[1..-1].join(' ') if tmp_model_name.split(' ')[0]=='es'
+    end
+    
     model_name = tmp_model_name.trn
     html = ""
     unless object.errors.blank?
       html << "<div id = 'errorExplanation' class='alert alert-danger'>\n"
+      html << "<button data-dismiss='alert' class='close' type='button'><span aria-hidden='true'>×</span></button>\n"
       if message.blank?
         if object.new_record?
           html << "<h4>" + "%{nbr_error} erreur(s) pour '%{model_name}'".trn(:nbr_error => object.errors.full_messages.length, :model_name => model_name) + " </h4>"
-          html << "\t\t<p>" + "Il y a un problème lors de la création de %{model_name}".trn(:model_name => model_name) + "</p>\n"
+          html << "\t\t<p>" + "Il y a un problème lors de la création".trn + "</p>\n"
         else
           html << "<h4>" + "%{nbr_error} erreur(s) pour '%{model_name}'".trn(:nbr_error => object.errors.full_messages.length, :model_name => model_name) + " </h4>"
-          html << "\t\t<p>" + "Il y a un problème lors de la modification de %{model_name}".trn(:model_name => model_name) + "</p>\n"
+          html << "\t\t<p>" + "Il y a un problème lors de la modification".trn + "</p>\n"
         end    
+      elsif message == "delete"
+        html << "<h4>" + "%{nbr_error} erreur(s) pour '%{model_name}'".trn(:nbr_error => object.errors.full_messages.length, :model_name => model_name) + " </h4>"
+        html << "\t\t<p>" + "Il y a un problème lors de la suppression".trn + "</p>\n"
+      elsif message == "[NO_MESSAGE]"
+        html << "<h4>" + "%{nbr_error} erreur(s) :".trn(:nbr_error => object.errors.full_messages.length, :message => message) + " </h4>"
       else
-        if message == "delete"
-          html << "<h4>" + "%{nbr_error} erreur(s) pour '%{model_name}'".trn(:nbr_error => object.errors.full_messages.length, :model_name => model_name) + " </h4>"
-          html << "\t\t<p>" + "Il y a un problème lors de la suppression de %{model_name}".trn(:model_name => model_name) + "</p>\n"
-        else
-          html << "<h4>" + "%{nbr_error} erreur(s) pour %{message}".trn(:nbr_error => object.errors.full_messages.length, :message => message) + " </h4>"
-          html << "<p>" + "Détail".trn + " :</p>"
-        end
+        html << "<h4>" + "%{nbr_error} erreur(s) %{message}".trn(:nbr_error => object.errors.full_messages.length, :message => message) + " </h4>"
+        html << "<p>" + "Détail".trn + " :</p>"
       end  
       html << "\t\t<ul>\n"
 #      object.errors.full_messages.each do |error|

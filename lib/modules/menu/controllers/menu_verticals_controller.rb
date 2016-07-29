@@ -7,8 +7,6 @@ class MenuVerticalsController < EsMenusController
                        :max_level => 5,
                        :model_level => ['MenuVertical',['MenuElement','MenuSub','MenuDetail','MenuSep','MenuDetailActCtrl']]
                        }
-                       
-    @columns_screen = []
     super
   end 
   

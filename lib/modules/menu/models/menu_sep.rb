@@ -15,8 +15,8 @@ class MenuSep < ActiveRecord::Base
                            :order             => 1
                           },       
                           {:name              => "name",
-                           :label_name        => "Code",
-                           :column_name       => "Code",
+                           :label_name        => "Code du séparateur",
+                           :column_name       => "Code du séparateur",
                            :sort              => false,
                            :field_key         => true,
                            :mandatory         => true,

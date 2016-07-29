@@ -1,0 +1,67 @@
+interface:
+  models: 
+    - ResCategory
+    - ResCategoryYear
+    - ResResource
+    - ResAction
+    - ResEval
+    - ResPriority
+    - ResStatus
+    - ResProduct
+    - ResWhen
+    - ResStock
+  controllers: 
+    - ResResourcesController
+    - ResCategoryYearsController
+    - ResPrioritiesController
+    - ResStatusesController
+    - ResProductsController
+    - ResWhensController
+  mailers: / 
+
+version: 0.0.0.7
+
+installation:
+   table_verification:
+     - res_categories
+     - res_resources
+     - res_actions
+     - res_evals
+     - res_priorities
+     - res_statuses
+     - res_products
+     - res_whens
+     - res_stocks
+     - es_users
+     
+activated: Y<<boolean-Y-Module actif>>
+
+menus:
+  menu_entry_points: Y <<boolean>>
+  menu_models: N <<boolean>>
+
+setup:
+  admin:
+    title: Module de gestion de ressources <<string-Y-Titre du module>>
+
+controllers: 
+  entry_point_names:
+    ResResourcesController: Gestion de ressources
+    ResCategoryYearsController: Gestion des catégorie de ressources
+    ResPrioritiesController: Gestion des priorités
+    ResStatusesController: Gestion des statuts
+    ResProductsController: Gestion des produits des ressources
+    ResWhensController: Gestion des moments
+  entry_points:
+    ResResourcesController:    
+        show_resources: Liste des ressources 
+    ResCategoryYearsController:
+        list: Liste des catégories de ressources 
+    ResPrioritiesController:
+        list: Liste des priorités 
+    ResStatusesController:
+        list: Liste des statuts 
+    ResProductsController:
+        list: Liste des produits des ressources
+    ResWhensController:
+        list: Liste des moments

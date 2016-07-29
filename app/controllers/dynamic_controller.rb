@@ -6,6 +6,7 @@ class DynamicController < ApplicationController
   
   before_filter :init_parent_id_for_bad_model
   before_filter :init_model_level
+  before_filter :init_type_respond
 
   before_filter :init_back, :only => ["list","index"]
   before_filter :get_by_id, :only => ["edit", "update", "destroy","down","up","activate"]
@@ -31,7 +32,7 @@ class DynamicController < ApplicationController
     end unless @setup_controller[:model].setup_model.blank?     
 
     column_setup = @setup_controller[:model].columns_setup
-    columns_screen_forced = @columns_screen||[]
+    #columns_screen_forced = @columns_screen||[]
     field_defined_model_or_ctrl = []
     @columns_screen = []
     @setup_controller[:model].columns.each do |column|
@@ -40,6 +41,7 @@ class DynamicController < ApplicationController
 
 #      get attribute from model
       exist_column_setup = column_setup.select{|col| col[:name]==column.name}
+
       field_defined_model_or_ctrl << column.name unless exist_column_setup.blank?
       exist_column_setup = exist_column_setup.blank? ? {} : exist_column_setup[0]
       exist_column_setup.each do |key,value|
@@ -47,14 +49,15 @@ class DynamicController < ApplicationController
       end unless exist_column_setup.blank?     
                
 #      merge forced attribute
-      new_columns_screen = {}
-      exist_columns_screen = columns_screen_forced.select{|col| col[:name]==column.name}
-      field_defined_model_or_ctrl << column.name unless exist_columns_screen.blank?
-      exist_columns_screen = exist_columns_screen.blank? ? {} : exist_columns_screen[0]
-      columns_screen_forced.delete_if{ |col| col[:name]==column.name}
-      tmp_columns_screen.each do |key,value|
-        new_columns_screen[key] = exist_columns_screen[key].nil? ? value : exist_columns_screen[key] 
-      end      
+#      new_columns_screen = {}
+#      exist_columns_screen = columns_screen_forced.select{|col| col[:name]==column.name}
+#      field_defined_model_or_ctrl << column.name unless exist_columns_screen.blank?
+#      exist_columns_screen = exist_columns_screen.blank? ? {} : exist_columns_screen[0]
+#      columns_screen_forced.delete_if{ |col| col[:name]==column.name}
+#      tmp_columns_screen.each do |key,value|
+#        new_columns_screen[key] = exist_columns_screen[key].nil? ? value : exist_columns_screen[key] 
+#      end      
+      new_columns_screen = tmp_columns_screen
       
       new_columns_screen[:hidden] = true if @setup_controller[:only_field_defined] && !field_defined_model_or_ctrl.include?(column.name)
       @columns_screen << new_columns_screen                          
@@ -63,7 +66,7 @@ class DynamicController < ApplicationController
 
     #insert column added into the model with no field in the table
     #insert column added into the controller with no field in the table
-    manage_field_out_of_table(column_setup,columns_screen_forced)
+    manage_field_out_of_table(column_setup) #,columns_screen_forced)
 
     #remove hide column
     @columns_screen.select! { |hsh| (hsh[:hidden]||false)==false } 
@@ -87,6 +90,7 @@ class DynamicController < ApplicationController
     @setup_controller[:delete_multi]             = @setup_controller[:delete_multi].nil? ? false : @setup_controller[:delete_multi] 
     @setup_controller[:readonly_exists]        ||= @columns_screen.collect{ |col| col[:name]}.include?("read_only")
     @setup_controller[:search_exists]            = @setup_controller[:search_exists].nil? ? @columns_screen.select{ |col| col[:search]}.count > 0 : @setup_controller[:search_exists]
+    @setup_controller[:parent_column_name]     ||= @setup_controller[:default_column_name]
 
     @setup_controller[:children_exists]          = @setup_controller[:children_exists].nil? ? @setup_controller[:parent_exists] : @setup_controller[:children_exists]
 
@@ -161,7 +165,6 @@ class DynamicController < ApplicationController
   # Load the pages -
   def list
     
-        
     param_dir = params[:dir]||''
     unless param_dir.blank?
       param_dir.end_with?('/') ? params[:parent_id] = param_dir[0...-1].to_i : params[:id] = param_dir    
@@ -187,6 +190,7 @@ class DynamicController < ApplicationController
     sorting :default => "#{@setup_controller[:model].table_name}.#{@setup_controller[:default_sort]}"
     
     ####################################### condition ####################################### 
+
     
     tmp_search={}
     if(!params[:global_search].blank?)
@@ -231,13 +235,18 @@ class DynamicController < ApplicationController
 
 
     ####################################### retour ####################################### 
-#    @element_id, @partial = 'dynamic_list_div', 'shared/dynamic/list'
-#    render 'shared/replace_content', :formats => [:js]
 
     respond_to do |format|
-      format.html {render "shared/dynamic/list"} 
-      format.js do 
-        @element_id, @partial = 'dynamic_list_div', 'shared/dynamic/list'
+      format.html do 
+        render "shared/dynamic/list"
+      end         
+      format.js do
+        index_page =params[:index_page]||'show_all' 
+        if index_page == 'show_all' 
+          @element_id, @partial = 'list_main_div', 'shared/dynamic/list_main'
+        elsif index_page == 'list_item'
+          @element_id, @partial = 'dynamic_list_div', 'shared/dynamic/list'
+        end
         render 'shared/replace_content'
       end
     end
@@ -246,9 +255,15 @@ class DynamicController < ApplicationController
   alias index list
 
   def show
-      @instance = @setup_controller[:model].find_by_id(params[:id])
+    @instance = @setup_controller[:model].find_by_id(params[:id])
   
-      render "shared/dynamic/show"
+    respond_to do |format|
+      format.html {render "shared/dynamic/show"} 
+      format.js do 
+        @element_id, @partial = 'list_main_div', 'shared/dynamic/show_main'
+        render 'shared/replace_content'
+      end
+    end
   end
 
 
@@ -259,14 +274,23 @@ class DynamicController < ApplicationController
     @setup_controller.sort.each do |k,v|
       tmp_text += "#{k} : #{v}<BR>"
     end
-    tmp_text += "<H2>Column screen setup :</H2>" 
+    tmp_text += "<H2>Column screen setup :</H2>"
+    get_get_list_for_procs = [] 
     @columns_screen.each do |elem|
+      get_get_list_for_procs << "get_list_for_#{elem[:name]}" if elem[:type]=="association" || (elem[:type]=="integer" && elem[:foreign]) 
       tmp_text += "<H3>#{elem[:name]} : </H3>"
       elem.sort.each do |k,v| 
         tmp_text += "#{k} : #{v}<BR>"
       end
     end
     tmp_text+="<BR>"
+    tmp_text += "<H2>Dynamic procedure :</H2>"
+    get_get_list_for_procs.each do |p|
+      tmp_text += "def self.#{p}<BR>"
+    end
+    tmp_text+="<BR>"
+    
+    
     @text_setup = tmp_text.html_safe
     render 'shared/dynamic/show_setup'
   end
@@ -274,14 +298,24 @@ class DynamicController < ApplicationController
   #move down
   def down
     order = @instance.sequence
-    element = @setup_controller[:model].find(:first, :conditions => ["parent_id = ? and sequence=?","#{@instance.parent_id}",@instance.sequence + 1])
+    if @setup_controller[:parent_exists]
+      element = @setup_controller[:model].find(:first, :conditions => ["parent_id = ? and sequence=?","#{@instance.parent_id}",@instance.sequence + 1])
+    else
+      element = @setup_controller[:model].find(:first, :conditions => ["sequence=?",@instance.sequence + 1])
+    end
     unless element.blank?
       element.update_attribute("sequence",order) 
       @instance.update_attribute("sequence",order + 1) 
     end
 
     respond_to do |format|
-      format.html {redirect_to :action => "list", :parent_id => @instance.parent_id} 
+      format.html do
+        if @setup_controller[:parent_exists]
+          redirect_to :action => "list", :parent_id => @instance.parent_id
+        else
+          redirect_to :action => "list"
+        end
+      end         
       format.js do 
         init_info_for_list(session[:parent_id])
         conditions = DynamicSearch.new(@setup_controller[:model],session[:conditions]).build_conditions
@@ -296,14 +330,24 @@ class DynamicController < ApplicationController
   #move up
   def up
     order = @instance.sequence
-    element = @setup_controller[:model].find(:first, :conditions => ["parent_id = ? and sequence=?","#{@instance.parent_id}",@instance.sequence - 1])
+    if @setup_controller[:parent_exists]
+      element = @setup_controller[:model].find(:first, :conditions => ["parent_id = ? and sequence=?","#{@instance.parent_id}",@instance.sequence - 1])
+    else
+      element = @setup_controller[:model].find(:first, :conditions => ["sequence=?",@instance.sequence - 1])
+    end
     unless element.blank?
       element.update_attribute("sequence",order) 
       @instance.update_attribute("sequence",order - 1) 
     end
 
     respond_to do |format|
-      format.html {redirect_to :action => "list", :parent_id => @instance.parent_id} 
+      format.html do
+        if @setup_controller[:parent_exists]
+          redirect_to :action => "list", :parent_id => @instance.parent_id
+        else
+          redirect_to :action => "list"
+        end
+      end 
       format.js do 
         init_info_for_list(session[:parent_id])
         conditions = DynamicSearch.new(@setup_controller[:model],session[:conditions]).build_conditions
@@ -322,7 +366,15 @@ class DynamicController < ApplicationController
     @instance = @setup_controller[:model].new()
     @parent = @setup_controller[:parent_exists] && params[:parent_id] && params[:parent_id].to_i > 0 ? @setup_controller[:model].find_by_id(params[:parent_id]) : nil 
     @back_to_parent = (@parent.blank? || @parent.ancestors.count == 0 ? "" : (@parent.children.count == 0 ? @parent.ancestors[0].id : @parent.id))
-    render "shared/dynamic/new"
+
+
+    respond_to do |format|
+      format.html {render "shared/dynamic/new"} 
+      format.js do 
+        @element_id, @partial = 'list_main_div', 'shared/dynamic/new_main'
+        render 'shared/replace_content'
+      end
+    end
   end
    
   # Save the New to database -
@@ -348,12 +400,25 @@ class DynamicController < ApplicationController
       params[:action]="new"
       @parent = @setup_controller[:parent_exists] && params[:instance][:parent_id] && params[:instance][:parent_id].to_i > 0 ? @setup_controller[:model].find_by_id(params[:instance][:parent_id]) : nil 
       @back_to_parent = (@parent.blank? || @parent.ancestors.count == 0 ? "" : (@parent.children.count == 0 ? @parent.ancestors[0].id : @parent.id))
-      render "shared/dynamic/new"
+
+      respond_to do |format|
+        format.html {render "shared/dynamic/new"} 
+        format.js do 
+          @element_id, @partial = 'list_main_div', 'shared/dynamic/new_main'
+          render 'shared/replace_content'          
+        end
+      end
     end
   end
   
-  def edit
-    render "shared/dynamic/edit"
+  def edit    
+    respond_to do |format|
+      format.html {render "shared/dynamic/edit"} 
+      format.js do 
+        @element_id, @partial = 'list_main_div', 'shared/dynamic/edit_main'
+        render 'shared/replace_content'
+      end
+    end
   end
   
   def update
@@ -367,7 +432,13 @@ class DynamicController < ApplicationController
       end
     else
       params[:action]="edit"
-      render "shared/dynamic/edit"
+      respond_to do |format|
+        format.html {render "shared/dynamic/edit"} 
+        format.js do 
+          @element_id, @partial = 'list_main_div', 'shared/dynamic/edit_main'
+          render 'shared/replace_content'
+        end
+      end
     end
   end
   
@@ -444,7 +515,8 @@ class DynamicController < ApplicationController
         init_info_for_list(session[:parent_id])
         conditions = DynamicSearch.new(@setup_controller[:model],session[:conditions]).build_conditions
         @instances = conditions.includes(session[:sort][1]).order(session[:sort][0]).page(params[:page])
-        @element_id, @partial = ['error_destroy_div','dynamic_list_div'], ['shared/dynamic/error_destroy','shared/dynamic/list']
+        #@element_id, @partial = ['error_destroy_div','dynamic_list_div'], ['shared/dynamic/error_destroy','shared/dynamic/list']
+        @element_id, @partial = 'list_main_div', 'shared/dynamic/list_main'
         render 'shared/replace_content'
       end
     end
@@ -599,9 +671,9 @@ class DynamicController < ApplicationController
     tmp_child=[]
     instances.each do |elem|
       if elem.children.count > 0
-        tmp_parent << [elem.id,elem.name]
+        tmp_parent << [elem.id,elem[@setup_controller[:default_column_name]]]
       else
-        tmp_child << [elem.id,elem.name]
+        tmp_child << [elem.id,elem[@setup_controller[:default_column_name]]]
       end               
     end
     @trees = [tmp_parent,tmp_child]
@@ -640,7 +712,11 @@ private
 
   def init_parent_id_for_bad_model
     #si on change de sorte de liste avec parent/enfant, on réinitialise le parent_id à vide si on ne trouve rien comme enfants
-    params[:parent_id] = 0 if @setup_controller[:parent_exists] && @setup_controller[:model].column_names.include?('model_type') && !@setup_controller[:model_level].empty? && @setup_controller[:model_level][0] != get_old_ancestor(params[:parent_id].presence||session[:parent_id].presence||0).model_type
+    params[:parent_id] = 0 if @setup_controller[:parent_exists] && 
+                              @setup_controller[:model].column_names.include?('model_type') && 
+                              !@setup_controller[:model_level].empty? && 
+                              @setup_controller[:model_level][0] != get_old_ancestor(params[:parent_id].presence||session[:parent_id].presence||0).model_type
+ 
   end
     
 
@@ -734,7 +810,7 @@ private
     @setup_controller[:instance_name]  ||= @setup_controller[:model].table_name.gsub("es_","").humanize.singularize
 
     column_setup    = @setup_controller[:model].columns_setup
-    columns_screen_forced = []
+    #columns_screen_forced = []
     field_defined_model_or_ctrl = []
     @columns_screen = []
     @setup_controller[:model].columns.each do |column|
@@ -758,7 +834,7 @@ private
     
     #insert column added into the model with no field in the table
     #insert column added into the controller with no field in the table
-    manage_field_out_of_table(column_setup,columns_screen_forced)
+    manage_field_out_of_table(column_setup) #,columns_screen_forced)
 
     #remove hide column
     @columns_screen.select! { |hsh| (hsh[:hidden]||false)==false } 
@@ -866,11 +942,11 @@ private
       @parent = @setup_controller[:model].find_by_id(parent_id)
       @parent_info = "#{@setup_controller[:instance_name]} : " + (@parent.blank? ? "Origine".trn : "")
       unless @parent.blank? 
-        @breadcrumb = [["Début".trn,url_for(:action=>'list',:parent_id=>0)]]
+        @breadcrumb = [["Début".trn,url_for(:action=>'list',:parent_id=>0),true]]
         @parent.ancestors.reverse.each do |elem|
-          @breadcrumb << [elem.send(@setup_controller[:column_name_exists] ? "name" : "id"),url_for(:action=>'list',:parent_id=>elem.id)]
+          @breadcrumb << [elem.send(@setup_controller[:column_name_exists] ? "name" : "id"),url_for(:action=>'list',:parent_id=>elem.id),true]
         end 
-        @breadcrumb << [@parent.send(@setup_controller[:column_name_exists] ? "name" : "id")] 
+        @breadcrumb << [@parent.send(@setup_controller[:column_name_exists] ? "name" : "id"),url_for(:action=>'list',:parent_id=>@parent.id),true] 
       else
         @breadcrumb = nil
       end
@@ -994,16 +1070,21 @@ private
                   } 
   end
 
-  def manage_field_out_of_table(column_screen_model,columns_screen_ctrl)
+  def manage_field_out_of_table(column_screen_model) #,columns_screen_ctrl)
     #insert column added into the model with no field in the table
     column_screen_model.select{|col| !@setup_controller[:model].column_names.include?(col[:name]||'')}.each do |new_column|
       @columns_screen << new_column      
     end
 
     #insert column added into the controller with no field in the table
-    columns_screen_ctrl.each do |new_column|
-      @columns_screen << new_column      
-    end    
+    #columns_screen_ctrl.each do |new_column|
+    #  @columns_screen << new_column      
+    #end    
   end
+
+
+  def init_type_respond
+    @type_request= request.xhr? ? 'ajax' : 'html'
+  end  
     
 end

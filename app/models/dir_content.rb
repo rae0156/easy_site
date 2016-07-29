@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 class DirContent
   
   def initialize(root, typefile)
@@ -98,6 +100,14 @@ class DirContent
     end
     txt << "</UL>"
     txt
+  end
+
+
+  def self.get_sound_for_site
+    setup_dir_musique = EsSetup.get_setup("répertoire_musique","public/")
+    content = DirContent.new(setup_dir_musique,"mp3,ogg,wav")
+    files = content.get_files.map{|f| f[0..-5] }
+    files.uniq.sort
   end
     
 end

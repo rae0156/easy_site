@@ -40,7 +40,7 @@ class DynPage < ActiveRecord::Base
   end
 
   def template_list
-    EsTemplate.find(:all,:conditions => {:is_a_template => 'N'}).map{|e|[e.name,e.id]}
+    EsTemplate.find(:all,:conditions => {:template_type => 'PAGE'}).map{|e|[e.name,e.id]}
   end
 
   #attr_accessible :name, :description, :page_type
@@ -58,7 +58,7 @@ class DynPage < ActiveRecord::Base
   
   def create_template
     if !self.es_template && self.new_record?
-      template = EsTemplate.create({:name => "tmp_dyn_page",:description =>  "Création du modèle pour la page dynamique %{name}".trn(:name=> self.name), :validated => "Y", :is_a_template => 'N', :es_category_id => 0})
+      template = EsTemplate.create({:name => "tmp_dyn_page",:description =>  "Création du modèle pour la page dynamique %{name}".trn(:name=> self.name), :validated => "Y", :template_type => 'PAGE', :es_category_id => 0})
       template.update_attribute('name',"dyn_page_#{template.id}")
       self.es_template_id = template.id
     end

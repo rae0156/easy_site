@@ -1,9 +1,9 @@
-<%="Bonjour".trn%> <%=@name%>,
-<%="Vous venez d'activer votre nouvelle adresse mail sur le site".trn%> <%=@web_site_name%>.
-<%="Ancienne adresse désactivée".trn%> : <%= @old_mail %>
-<%="Nouvelle adresse à utilisée".trn%> : <%= @new_mail %>
+<%="Bonjour".trn.html_safe%> <%=@name%>,
+<%="Vous venez d'activer votre nouvelle adresse mail sur le site".trn.html_safe%> <%=@web_site_name%>.
+<%="Ancienne adresse désactivée".trn.html_safe%> : <%= @old_mail %>
+<%="Nouvelle adresse à utilisée".trn.html_safe%> : <%= @new_mail %>
 
-<%="Veuillez conserver ce mail".trn%>.
+<%="Veuillez conserver ce mail".trn.html_safe%>.
 
-<%="Bien à vous".trn%>,
-  <%="L'équipe".trn%> <%=@web_site_name%>.
+<%="Bien à vous".trn.html_safe%>,
+  <%="L'équipe".trn.html_safe%> <%=@web_site_name%>.

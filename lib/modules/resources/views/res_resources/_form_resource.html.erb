@@ -1,0 +1,45 @@
+	<h4><%= field_description "Données obligatoires".trn, true %></h4>
+
+	<%= easy_tag('text_only',{:value => @object.res_category.description.presence || @object.res_category.name, :with_label => "Catégorie".trn, :bootstrap_form => true}) %>
+	<%= easy_tag('list', 		:instance => "object", :field => "res_priority_id",:value_list_array => ResPriority.where(:type_priority => "R").order("sequence asc").all.map{|p| [p.code + ' - ' + p.description,p.id]},:number_of_line=>1, :include_blank => true, :mandatory => true, :with_label => "Priorité".trn, :bootstrap_form => true) %>
+	<%= easy_tag('list', 		:instance => "object", :field => "res_status_id",:value_list_array => ResStatus.order("sequence desc").all.map{|s| [s.code + ' - ' + s.description,s.id]},:number_of_line=>1, :include_blank => true, :mandatory => true, :with_label => "Statut".trn, :bootstrap_form => true) %>
+	<hr />
+	<%= easy_tag('decimal', 	:instance => "object", :field => "quantity", :mandatory => true, :with_label => "Besoin".trn, :bootstrap_form => true) %>
+	<%= easy_tag('check_box', 	:instance => "object", :field => "stockable", :mandatory => true, :with_label => "Gestion de stock".trn, :bootstrap_form => true, :ajax_action => "resource_refresh_stock") %>
+	<div id="form_resource_stock">
+	  	<%= render :partial => "form_resource_stock" %>
+	</div>
+	<hr />
+	<%= easy_tag('list', 		:instance => "object", :field => "res_product_id",:value_list_array => ResProduct.order("name asc").all.map{|p| [p.name,p.id]},:number_of_line=>1, :include_blank => true, :mandatory => false, :with_label => "Produit".trn, :bootstrap_form => true) %>
+	<%= easy_tag('text_only', 	:value => "ou".trn, :bootstrap_form => true, :with_label => "[EMPTY]") %>	
+	<%= easy_tag('long_text', 	:instance => "object", :field => "description", :cols => 80, :rows => 8,:maxlength => 1000, :mandatory => false, :with_label => "Description".trn, :bootstrap_form => true) %>
+	<hr />
+	<%= easy_tag('list', 		:instance => "object", :field => "res_when_start_id",:value_list_array => ResWhen.order("sequence asc").all.map{|p| [p.name,p.id]},:number_of_line=>1, :include_blank => true, :mandatory => false, :with_label => "Quand (moment)".trn, :bootstrap_form => true) %>
+	<%= easy_tag('text_only', 	:value => "ou".trn, :bootstrap_form => true, :with_label => "[EMPTY]") %>	
+	<%= easy_tag('date', 		:instance => "object", :field => "start_date", :mandatory => false, :with_label => "Quand (date)".trn, :bootstrap_form => true) %>
+	<hr />
+	<%= easy_tag('list', 		:instance => "object", :field => "res_when_end_id",:value_list_array => ResWhen.order("sequence asc").all.map{|p| [p.name,p.id]},:number_of_line=>1, :include_blank => true, :mandatory => false, :with_label => "Pour quand (moment)".trn, :bootstrap_form => true) %>
+	<%= easy_tag('text_only', 	:value => "ou".trn, :bootstrap_form => true, :with_label => "[EMPTY]") %>	
+	<%= easy_tag('date', 		:instance => "object", :field => "end_date", :mandatory => false, :with_label => "Pour quand (date)".trn, :bootstrap_form => true) %>
+	<hr />
+	<%= easy_tag('list', 		:instance => "object", :field => "es_user_id",:value_list_array => EsUser.order("name asc, firstname asc").map{|u| [u.complete_name,u.id]},:number_of_line=>1, :include_blank => true, :mandatory => true, :with_label => "Responsable".trn, :bootstrap_form => true) %>
+	<%= easy_tag('list', 		:instance => "object", :field => "res_action_id",:value_list_array => ResAction.where(:res_category_id => @object.res_category_id).order("sequence asc").all.map{|a| [a.sequence.to_i.to_s + ' - ' + truncate(a.description,:length => 50),a.id]},:number_of_line=>1, :include_blank => true, :mandatory => true, :with_label => "Action".trn, :bootstrap_form => true) %>
+
+<script>
+	init_datepicker();	
+	init_inputmask();		
+
+	$(document).ready(function() {
+		$('#object_stockable').on("change",function(e) { 	  
+			var data = $("#resource_form").serialize();
+			$.ajax({
+	        url: '/res_resources/resource_refresh_stock/<%=@object.id%>',
+	        data:       data,
+	        dataType: 'script',
+		    });	    
+		    return false;
+		  }
+		);	
+	});
+</script>
+

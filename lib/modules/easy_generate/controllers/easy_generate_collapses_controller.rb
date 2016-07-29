@@ -7,8 +7,6 @@ class EasyGenerateCollapsesController < EsMediaFilesController
                        :max_level => 2,
                        :model_level => ['EasyGenerateCollapse','EasyGenerateCollapseDetail']
                        }
-                       
-    @columns_screen = []
     super
   end 
   

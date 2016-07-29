@@ -4,7 +4,7 @@
 	  <div class="form-group">
 	    <label for="admin_template" class="col-sm-2 control-label"><%="Template".trn%> :</label>
 		<div class="col-sm-5">
-		    <%=  collection_select(:admin, :template, EsTemplate.all(:conditions => {:validated => 'Y',:is_a_template=>'Y'}).sort_by{|t| t.name}, :name, :name, {:selected => @template},{ :class => "form-control"}) %>
+		    <%=  collection_select(:admin, :template, EsTemplate.all(:conditions => {:validated => 'Y',:template_type=>'TEMPLATE'}).sort_by{|t| t.name}, :name, :name, {:selected => @template},{ :class => "form-control"}) %>
 	    </div>
 		<div class="col-sm-1 btn btn-default">
 			<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn, :action => "save_template",  :form => "admin_form"}%>

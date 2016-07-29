@@ -1,0 +1,14 @@
+<!-- Data table header and content -->
+<table cellpadding="4" width="100%" class='table'>
+  <tr>
+	<th><%= sort_link_remote :text => "Nom du modèle".trn, :column => "model_name", :controller =>  "dynamic_model_setups", :action => 'list'%></th>
+    <th><%= sort_link_remote :text => "Libellé".trn, :column => "label", :controller => "dynamic_model_setups", :action => 'list' %></th>
+    <th><%= "Options".trn%></th>
+  </tr>
+  <%= render :partial => 'list_item', :collection => @models %>
+</table>
+
+<%= will_paginate @models, :params => params, :previous_label => '<< ' + "Précédent".trn, :next_label => "Suivant".trn + ' >>' %>
+<%= page_entries_info @models, :model => "modèle".trn %>
+
+

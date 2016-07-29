@@ -7,8 +7,6 @@ class MenuSheetsController < EsMenusController
                        :max_level => 5,
                        :model_level => ['MenuSheet',['MenuElement','MenuSub','MenuDetailSheet','MenuSep']]
                        }
-                       
-    @columns_screen = []
     super
   end 
     

@@ -4,7 +4,11 @@
 		$(document).ready(function() { 
 			
 			$( ".drag_drop_template > div" ).addClass( "drag_drop" );
-			$( ".drag_drop > div" ).addClass( "templet" );
+			$( ".drag_drop > [id^=element_part_]" ).addClass( "templet" ); // id commence par 'element_part_'    
+			$( ".drag_drop > [id^=template_part_]" ).addClass( "templet" ); // id commence par 'element_part_'    
+
+			$( ".drag_drop > div.no_drag_drop" ).removeClass( "templet" );
+
 			
 			set_id_grag_drop();
 			
@@ -12,7 +16,7 @@
 						connectWith: ".drag_drop",
 		//				handle: ".templet-header",
 						cancel: ".label.label-info",
-						items: "div.templet",
+						items: ".templet",  //div.templet
 						cursor: "move",
 						opacity: 0.5,
 						revert: true,

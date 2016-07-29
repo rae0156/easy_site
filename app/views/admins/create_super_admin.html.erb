@@ -1,0 +1,4 @@
+<h1><%="Creation du premier super administrateur".trn%></h1>
+<div>
+	<label><%="Placer %{user} comme super administrateur".trn(:user => EsUser.current_user.firstname + ' ' + EsUser.current_user.name)%></label> : <span class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Valider".trn,:image => "appli/ok_32.png", :action => "save_super_admin"} %></span>	
+</div>

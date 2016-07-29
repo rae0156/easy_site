@@ -16,21 +16,37 @@
   <td>
 	<%= image_tag(list_part_item.content ? "appli/ok_32.png" : "appli/cancel_32.png",
 						    {:alt => "", :align => "middle", :border => "0",
-						    :class => "app_tooltip", :title => list_part_item.content ? "Contenu existant".trn : "Pas de contenu".trn, "data-placement" => "left"}) %>  
+						    :class => "app_tooltip", :title => list_part_item.content ? (list_part_item.es_content ? "Attaché au contenu '%{content}'".trn(:content => list_part_item.es_content.name) : "Contenu fichier".trn)  : "Pas de contenu".trn, "data-placement" => "left"}) %>  
 	
   </td>
   <td>
-	<%= link_to("<i class='glyphicon glyphicon-remove-sign'></i>".html_safe, 
-				url_for(:action => "destroy_part", :id => list_part_item['id']), 
-				:confirm =>"Voulez vous vraiment supprimer cette partie ?".trn,
-				:title =>"Supprimer".trn)
-	%>					
+	<%if @template.is_dynamic || (list_part_item.is_dynamic && list_part_item.es_content.blank?)%>
+		<%= link_to("<i class='glyphicon glyphicon-remove-sign'></i>".html_safe, 
+					url_for(:action => "destroy_part", :id => list_part_item['id']), 
+					:confirm =>"Voulez vous vraiment supprimer cette partie ?".trn,
+					:title =>"Supprimer".trn)
+		%>					
+  	<%end%>
   	<%if list_part_item.is_dynamic && list_part_item.is_editable %>
 		<%= link_to("<i class='glyphicon glyphicon-pencil'></i>".html_safe, 
 					url_for(:action => "design_content", :id => list_part_item['id']),
 					:title =>"Modifier le contenu".trn)
 		%>					
   	<%end%>
+	<%if !(@template.is_dynamic) && list_part_item.is_dynamic %>
+		<%if list_part_item.es_content.blank?%>
+			<%= link_to("<i class='glyphicon glyphicon-plus'></i>".html_safe, 
+						url_for(:action => "new_content", :id => list_part_item['id']),
+						:title =>"Créer le contenu".trn)
+			%>					
+	  	<%else%>
+			<%= link_to("<i class='glyphicon glyphicon-remove-circle'></i>".html_safe, 
+						url_for(:action => "detach_content", :id => list_part_item['id']),
+						:confirm =>"Voulez vous vraiment détacher le contenu de cette partie ?".trn,
+						:title =>"Détacher le contenu".trn)
+			%>					
+	  	<%end%>
+	<%end%>
   </td>
   
 </tr>

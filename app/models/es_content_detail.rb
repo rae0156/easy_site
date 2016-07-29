@@ -126,36 +126,38 @@ private
     parts       = EsContentDetailElement.all(:conditions => {:es_content_detail_id => content_detail_id, :parent_id => parent_id}, :order => "num")
     text        = pre_text
     parts.each_with_index do |p,i|
-      tmp_display = ["image","link"].include?(p.element_type) ? "inline-block" : "block" 
-      categories  = ['taille/marge','taille/espace',"présentation/affichage"]
-      
+      categories  = ['taille/marge','taille/espace',"taille/dimension","présentation/affichage"]
+       
       element     = generate_element(p)
-      properties  = EsContent.prepare_properties(element,categories,{:id => "element_part_#{p.id}", :style => "display:#{tmp_display};position:relative;"})    
+
+      #init_style  = normal ? "" : ("display:" + (["image","link"].include?(p.element_type)  ? "inline-block" : "block") + ";position:relative;")
+      init_style  = "display:" + (["image","link"].include?(p.element_type) || get_property(element,'parent_style') == 'span' ? "inline-block" : "block") + ";position:relative;"
+
+      properties  = EsContent.prepare_properties(element,categories,{:id => "element_part_#{p.id}", :style => init_style})
       element_part = generate_element_part(element,normal)
 
+      parent_style = (properties.delete(:parent_style) || 'div').to_sym
       if normal
         text_part   = element_part
       else
-        text_part   = generate_tag(:div, generate_tag(:a, p.name,{:class => 'edit_element', :href => '#', "data-reference" => p.id}), {:class => "label label-info", :style => "position:absolute;top:-5px;left:-5px;"}) + \
+        text_part   = generate_tag(:div, generate_tag(:a, p.name,{:style => "display:none;", :class => 'edit_element', :href => '#', "data-reference" => p.id}), {:class => "label label-info label-info-hiden", :style => "position:absolute;top:-5px;left:-5px;"}) + \
                       element_part
       end
-      text_part   = generate_tag(:div, text_part, properties)
+      text_part   = generate_tag(parent_style, text_part, properties)
 
-#        text_part   = generate_tag(:div, generate_tag(:a, p.name,{:class => 'edit_element', :href => '#', "data-reference" => p.id}), {:class => "label label-info"}) + \
-#                      generate_tag(:div, p.description + (normal ? ' [NORMAL]' : ''))
-#        text_part   = generate_tag(:div, text_part, {:id => "element_part_#{p.id}"})
-      
-                    
       text       += text_part
     end 
     
 
-#      text = generate_tag(:div, text, {:class => "col-md-12",:style => "padding:5px;"}) 
-#      text = generate_tag(:div, text, {:class => "row"})      
-    if !normal && parent_id<=0
-      text = generate_tag(:div, "<br/>" + text, {:style => "border:1px solid red;"}) #padding:5px;
-      text = generate_tag(:div, text, {:class => "drag_drop_template"})      
+    if !normal
+      if parent_id<=0
+        text = generate_tag(:div, "<br/>" + text, {:style => "border:1px solid red;", :class => "row"}) 
+        text = generate_tag(:div, text, {:class => "drag_drop_template",:style => "height:auto;"} )
+      else
+        text = generate_tag(:span, "&nbsp;".html_safe) + text  #necessaire pour drag and drop
+      end      
     end
+    
     return text.html_safe
 
 
@@ -175,15 +177,16 @@ private
     when "image"
       tmp_url     = get_property(tmp_element,"image")
       tmp_url     = tmp_url[6..-1] if tmp_url.starts_with?('public/')
-      html_text   = generate_tag(:IMG, "", {:src=>tmp_url})
+      html_text   = generate_tag(:IMG, "", {:src=>tmp_url, :style => 'width:100%;'})
     when "link"
       tmp_text    = get_property(tmp_element,"link_text","Lien".trn)
       tmp_url     = get_property(tmp_element,"link")
+      target      = get_property(tmp_element,"target","same")=='new' ? "_blank" : "_self"
       tmp_url     = ((tmp_url.downcase.starts_with?('http://') || tmp_url.downcase.starts_with?('https://')) ? '' : "http://") + tmp_url
-      html_text   = generate_tag(:a, tmp_text, {:href => tmp_url})
+      html_text   = generate_tag(:a, tmp_text, {:href => tmp_url, :target => target})
     when "text"
       tmp_text    = get_property(tmp_element,"text","Texte".trn)
-      html_text   = generate_tag(:p, tmp_text).gsub(/\n/,"<BR>")
+      html_text   = tmp_text.gsub(/\n/,"<BR>") #generate_tag(:p, tmp_text).gsub(/\n/,"<BR>")
     when "video"
       tmp_url     = get_property(tmp_element,"video")
       if File.file?(File.join(Rails.root,tmp_url))
@@ -197,15 +200,17 @@ private
       html_text   = generate_tag(:DIV, tmp_text.html_safe)
     when "parent"
       tmp_content = generate_contain(self.id, :parent_id => tmp_element.id, :mode_normal => normal)
+      tmp_url     = get_property(tmp_element,"link")
+      target      = get_property(tmp_element,"target","same")=='new' ? "_blank" : "_self"
+      tmp_content = generate_tag(:a, tmp_content, {:href => tmp_url, :target => target}) unless tmp_url.blank?
       if normal
-        style = ""
-        tmp_class = ""
+        html_text   = tmp_content
       else
-        tmp_content = generate_tag(:p, "&nbsp;".html_safe) + tmp_content
+        #tmp_content = generate_tag(:span, "&nbsp;".html_safe) + tmp_content  #necessaire pour drag and drop
         style = "background-color:#777;padding:5px;"
         tmp_class = "drag_drop_template"
+        html_text   = generate_tag(:div, generate_tag(:div, tmp_content,:parent_id => tmp_element.id),:class => tmp_class,:style => style)
       end
-      html_text   = generate_tag(:DIV, generate_tag(:DIV, tmp_content,:parent_id => tmp_element.id),:class => tmp_class,:style => style)
     else
       html_text = generate_tag(:p, tmp_element.element_type)
     end

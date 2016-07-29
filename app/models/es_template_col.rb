@@ -22,7 +22,11 @@ class EsTemplateCol < ActiveRecord::Base
  
   # it is an example, but not necessary if you have a field called 'ISO','CODE' or 'NAME'
   def get_audit_label
-    "#{self.es_template_line.es_template.name} #{self.es_template_line.num.to_i} #{self.num}"
+    if self.es_template_line && self.es_template_line.es_template
+      "#{self.es_template_line.es_template.name} #{self.es_template_line.num.to_i} #{self.num}"
+    else
+      "[template] [template_line] #{self.num}"
+    end
   end
 
 end

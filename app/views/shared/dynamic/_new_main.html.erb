@@ -1,0 +1,18 @@
+<% @title = "Nouvel élément '%{element}'".trn(:element =>@setup_controller[:instance_name]) %>
+<h2><%=@title%></h2>
+<%= form_tag({}, { :name => 'create_form', :class => 'form-horizontal' }) do%>
+    <ul>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/save_32.png", :action => "create",  :form => "create_form", :remote => @type_request=='ajax'}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:back => true, :text => "Retour".trn,:image => "appli/back_32.png", :action => "list", :param_goto => {:parent_id => @back_to_parent}, :html_option => {:remote => @type_request=='ajax'}}%></li>
+    </ul>
+	
+	<!-- Error messages -->
+	<%= errors_for(@instance) %>
+	
+	<div>
+	  <%= render :partial => 'shared/dynamic/form' %>
+	</div>
+
+
+
+<% end %>

@@ -1,0 +1,71 @@
+
+	<div id="message_ajax">
+		  <%= render :partial => 'layouts/part_message_ajax' %>
+	</div>
+	<%case (@mode||'design')
+	    when 'design'%>
+			<div>
+				<h3 class="toggle_by_ref" data-reference-class='ref_1'>
+				  <%="Parties disponibles pour ce template".trn%>
+				</h3>
+			
+				<div class='ref_1 init_hide'>
+					<p><%="Faites glisser les parties disponnibles dans le dessin du template ci-dessous".trn%></p>
+					<%= generate_design_part_available(@template.name) %> 
+				</div>
+			</div>
+			<div>
+				<h3><%="Dessin du template".trn%></h3>
+				<div class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver le dessin".trn,:image => "appli/save_32.png", :action => "#",:html_option => {:id => "save_design_wizard"}}%></div>
+				<%= generate_design_wizard(@template.name) %>
+			</div>
+	  <%when 'rename'%>
+			  <%= render :partial => 'rename_part' %>
+	  <%when 'part_file'%>
+			  <%= render :partial => 'add_choosing_part' %>
+	  <%when 'module'%>
+			  <%= render :partial => 'add_choosing_module' %>
+	  <%when 'edit_free'%>
+			  <%= render :partial => 'edit_free_elem' %>
+	  <%when 'edit_dynamic'%>
+			  <%= render :partial => 'edit_dynamic_elem' %>
+	  <%when 'edit_module'%>
+			  <%= render :partial => 'edit_module_elem' %>
+	  <%when 'edit_not_possible'%>
+			  <%= render :partial => 'no_edit_elem' %>
+	<%end%>
+
+
+<script>
+	init_toggle_by_ref();
+
+	$(document).ready(function() {
+		$( "#save_design_wizard" ).click(function() {
+			$.ajax({
+		        url: "/es_templates/update_design_wizard_parts/<%=@template.id%>",
+		        data: { parts: get_template_parts() },
+		        dataType: 'script'
+		    });	    
+			return false;
+		});		
+	});
+	
+	//uniquement à cause du js, car après recharge, il faut initialiser le drag_drop
+	init_dragdrop_template();
+</script>
+
+<script>
+	$(document).ready(function() {
+		$('.label-info-hiden').hover(	  	  
+		  function () {
+			$(this).children("span:first").show();
+			$(this).css("z-index", "99");
+		  }, 
+		  function () {
+			$(this).css("z-index", "0");
+			$(this).children("span:first").hide();
+		  }
+		);	
+	});
+</script>
+

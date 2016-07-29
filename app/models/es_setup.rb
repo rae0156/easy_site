@@ -6,16 +6,16 @@ class EsSetup < ActiveRecord::Base
   
   acts_as_dynamic_model([
                       {:name              => "name",
-                       :label_name        => "Name",
+                       :column_name       => "Name",
                        :field_key         => false,
                        :mandatory         => true
                       }, 
                       {:name              => "type_data",
-                       :label_name        => "Type",
+                       :column_name       => "Type",
                        :mandatory         => true
                       }, 
-                      {:name              => "Path",
-                       :label_name        => "Type",
+                      {:name              => "path",
+                       :column_name       => "Chemin",
                        :field_key         => true,
                        :field_key_scope   => "name"
                       } 
@@ -33,7 +33,7 @@ class EsSetup < ActiveRecord::Base
   
   def self.get_setup(setup_name,default="")
     tmp_setup = self.find(:first, :conditions => ["name = ?", setup_name] )
-    return tmp_setup.blank? ? default : tmp_setup.value
+    return (tmp_setup.blank? || tmp_setup.value.nil?) ? default : tmp_setup.value
   end
 
   def validate

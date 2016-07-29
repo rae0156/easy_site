@@ -1,0 +1,27 @@
+ 		<%= errors_for(@part, "lors de la création".trn) %>
+	    <h3><%="Ajout d'un élément système dans %{name}".trn(:name => @template_col.description)%></h3>
+		<div class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Ajouter l'élément".trn,:image => "appli/save_32.png", :action => "#",:html_option => {:id => "add_part_element"}}%></div>
+		<div class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour au dessin".trn,:image => "appli/back_32.png", :action => "#",:html_option => {:id => "back_design"}}%></div>
+	    <%= render :partial => 'form_part' %>
+
+<script>
+
+	$(document).ready(function() {
+		$( "#add_part_element" ).click(function() {
+			$.ajax({
+		        url: "/es_templates/save_part_elem/<%=@template_col.id%>",
+		        data: $('#admin_form').serialize(),
+		        dataType: 'script'
+		    });	    
+			return false;
+		});		
+		$( "#back_design" ).click(function() {
+			$.ajax({
+		        url: "/es_templates/refresh_design/<%=@template.id%>",
+		        dataType: 'script'
+		    });	    
+			return false;
+		});		
+	});
+	
+</script>

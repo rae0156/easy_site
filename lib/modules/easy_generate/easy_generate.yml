@@ -12,6 +12,9 @@ setup:
   admin:
     title: module Easy Generate <<string-N-Titre du module>>
 
+menus:
+  menu_entry_points: Y <<boolean>>
+
 controllers: 
   entry_point_names:
     EasyGeneratesController: Citation, Liste d'image, Carousel, Blog, Adresse, Lorem ipsum, etc..
@@ -27,6 +30,8 @@ controllers:
         setup_image_list: Paramétrage des listes d'images
         setup_video: Paramétrage des vidéos
         setup_sheet: Paramétrage des feuilles de menu
+        setup_css_file: Paramétrage des fichiers de feuilles de style
+        setup_js_file: Paramétrage des fichiers javascript
   contents:
     EasyGeneratesController:    
         get_lorem_ipsum: 
@@ -67,3 +72,11 @@ controllers:
           description: Video
           params:
             code_video: <<get-Y-Code de la video-EsMediaFile,get_code_video>>
+        get_css: 
+          description: Feuille de style
+          params:
+            file_name: <<get-Y-Code du fichier CSS-EsMediaFile,get_code_css>>
+        get_js: 
+          description: Fichier JavaScript
+          params:
+            file_name: <<get-Y-Code du fichier JavaScript-EsMediaFile,get_code_js>>

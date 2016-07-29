@@ -56,7 +56,7 @@ class EsUsersController < ApplicationController
   def edit
     id = params[:id].nil? ? params[:cid][0] : params[:id]
     @user = EsUser.find_by_id(id)
-    @roles        = EsRole.find :all, :order => 'description'
+    @roles        = EsRole.find :all, :order => 'description', :conditions=> {:role_site => "N"}
   end
   
   # Update the user in the database -
@@ -64,7 +64,7 @@ class EsUsersController < ApplicationController
     @user = EsUser.find_by_id(params[:id])
     mail = send_mail_activation(@user, params[:user][:active])
     @user.special_action="update" 
-    @roles        = EsRole.find :all, :order => 'description'
+    @roles        = EsRole.find :all, :order => 'description', :conditions=> {:role_site => "N"}
     
     params[:user][:es_role_ids] = []  if params[:user].blank? || !params[:user].include?(:es_role_ids) && !EsUser.current_user.id == params[:id]
     if @user.update_attributes(params[:user])
@@ -153,20 +153,31 @@ class EsUsersController < ApplicationController
   end
   
   def login_connect
-
-    user = EsUser.find_by_pseudo(params[:user][:mail].downcase) 
-    if user.blank?
-      mail = params[:user][:mail].downcase
-      user = EsUser.find_by_mail(params[:user][:mail].downcase)
-    else
+    if (first_user=EsUser.find(:all).size == 0 && !params[:user][:mail].blank? && !params[:user][:password].blank?)      
+      user = EsUser.new(:pseudo => params[:user][:mail], :password => params[:user][:password], :mail => "x.x@x.com", :name => "nom".trn, :firstname => "prénom".trn)
+      role_ids = EsRole.find(:all,:conditions=> {:read_only => "Y"}).map(&:id)
+      user.es_role_ids = role_ids
+      user.save 
       mail = user.mail
+    else
+      user = EsUser.find_by_pseudo(params[:user][:mail].downcase) 
+      if user.blank?
+        mail = params[:user][:mail].downcase
+        user = EsUser.find_by_mail(params[:user][:mail].downcase)
+      else
+        mail = user.mail
+      end
     end
     unless user.blank? 
       self.current_user = EsUser.authenticate(mail, params[:user][:password])
       if self.current_user
         if self.current_user.active == "Y"
           create_dir("public","content","users","#{current_user.id}") unless current_user.blank? 
-          flash[:notice] = "Bonjour".trn + " #{self.current_user.firstname} #{self.current_user.name}"
+          if first_user
+            flash[:notice] = "Bienvenue %{user}, vous êtes le premier utilisateur du site".trn(:user => params[:user][:mail])
+          else
+            flash[:notice] = "Bonjour".trn + " #{self.current_user.firstname} #{self.current_user.name}"
+          end
           if session[:return_to].blank?
             redirect_to :controller => :sites, :action => :index
           else  
@@ -207,8 +218,14 @@ class EsUsersController < ApplicationController
 
     if @user.save
       @user.es_roles.push EsRole.find_by_name("user")
-      UserMailer.validation_new_user(@user,request.protocol + request.host_with_port).deliver
-      flash[:notice] = "L'utilisateur '%{mail}' a été créé. Un mail vient de lui être envoyé.".trn(:mail => @user.mail)
+
+      begin 
+        UserMailer.validation_new_user(@user,request.protocol + request.host_with_port).deliver
+        flash[:notice] = "L'utilisateur '%{mail}' a été créé. Un mail vient de lui être envoyé.".trn(:mail => @user.mail)
+      rescue Exception => e 
+        flash[:error] = "Une erreur est apparue lors de l'envoie de mail.".trn
+      end    
+
       redirect_to :controller => :sites, :action => :index
     else
       render :action  => 'new_user'
@@ -230,8 +247,12 @@ class EsUsersController < ApplicationController
     if @user.update_attributes(params[:user]) 
       @user.update_attribute(:password, @user.password1)
       @user.tempo_password = @user.password1
-      UserMailer.new_psw_user(@user).deliver
-      flash[:notice] = "Le mot de passe de l'utilisateur '%{mail}' a été modifié. Un mail vous a été envoyé.".trn(:mail => @user.mail)
+      begin 
+        UserMailer.new_psw_user(@user).deliver
+        flash[:notice] = "Le mot de passe de l'utilisateur '%{mail}' a été modifié. Un mail vous a été envoyé.".trn(:mail => @user.mail)
+      rescue Exception => e 
+        flash[:error] = "Une erreur est apparue lors de l'envoie de mail.".trn
+      end    
       redirect_to :controller => :sites, :action => :index
     else
       @user.oldpassword=""
@@ -252,9 +273,13 @@ class EsUsersController < ApplicationController
     params[:user][:newmail].strip!
     if @user.update_attributes(params[:user]) 
       @user.update_attribute("activemail", generate_activation_code(16))
-      UserMailer.mail_change_instructions(@user, request.protocol + request.host_with_port).deliver
-      UserMailer.mail_change_instructions(@user).deliver
-      flash[:notice] = "La demande de changement de mail '%{mail}' est enregistrée. Un mail vous a été envoyé.".trn(:mail => @user.newmail)
+      begin 
+        UserMailer.mail_change_instructions(@user, request.protocol + request.host_with_port).deliver
+        UserMailer.mail_change_instructions(@user).deliver
+        flash[:notice] = "La demande de changement de mail '%{mail}' est enregistrée. Un mail vous a été envoyé.".trn(:mail => @user.newmail)
+      rescue Exception => e 
+        flash[:error] = "Une erreur est apparue lors de l'envoie de mail.".trn
+      end    
       redirect_to :controller => :sites, :action => :index
     else
       @user.newmail=""
@@ -265,10 +290,14 @@ class EsUsersController < ApplicationController
   def confirm_mail
       user = EsUser.find_by_activemail(params[:id])    
       unless user.blank?
-        UserMailer.activation_new_mail(user,'mail').deliver
-        UserMailer.activation_new_mail(user,'newmail').deliver
+        begin 
+          UserMailer.activation_new_mail(user,'mail').deliver
+          UserMailer.activation_new_mail(user,'newmail').deliver
+          flash[:notice] = "Votre nouvelle adresse mail '%{mail}' est maintenant active.".trn(:mail => user.mail)
+        rescue Exception => e 
+          flash[:error] = "Une erreur est apparue lors de l'envoie de mail.".trn
+        end    
         user.update_attributes({:mail => user.newmail,:newmail => "", :activemail => ""})
-        flash[:notice] = "Votre nouvelle adresse mail '%{mail}' est maintenant active.".trn(:mail => user.mail)
       else
         flash[:error] = "Aucun utilisateur ne correspond à cette activation de mail.".trn
       end
@@ -279,9 +308,13 @@ class EsUsersController < ApplicationController
       user = EsUser.find_by_active(params[:id])    
       unless user.blank?
         user.update_attribute(:active, "Y")
-        UserMailer.confirm_new_user(user).deliver
+        begin 
+          UserMailer.confirm_new_user(user).deliver
+          flash[:notice] = "L'inscription de '%{mail}' est validée.".trn(:mail => user.mail)
+        rescue Exception => e 
+          flash[:error] = "Une erreur est apparue lors de l'envoie de mail.".trn
+        end    
         user.update_attribute(:tempo_password, "")
-        flash[:notice] = "L'inscription de '%{mail}' est validée.".trn(:mail => user.mail)
       else
         flash[:error] = "Aucun utilisateur ne correspond à cette validation.".trn
       end
@@ -297,8 +330,12 @@ class EsUsersController < ApplicationController
     unless user.blank?
       tmp_password = generate_activation_code(6)
       user.update_attribute(:password, tmp_password)
-      UserMailer.password_reset_instructions(user,tmp_password).deliver
-      flash[:notice] = "Un mail vous a été envoyé à l'adresse '%{mail}'.".trn(:mail => user.mail)
+      begin 
+        UserMailer.password_reset_instructions(user,tmp_password).deliver
+        flash[:notice] = "Un mail vous a été envoyé à l'adresse '%{mail}'.".trn(:mail => user.mail)
+      rescue Exception => e 
+        flash[:error] = "Une erreur est apparue lors de l'envoie de mail.".trn
+      end    
       redirect_to :controller => :sites, :action => :index    
     else
       flash[:error] = "Aucun utilisateur ne correspond à ce mail.".trn
@@ -321,8 +358,13 @@ private
         tmp_password = user.tempo_password
         user.update_attribute(:tempo_password, "")
       end
-      UserMailer.activation_user(user, tmp_password).deliver
-      flash[:notice] += " Un mail vient d'être envoyé à l'utilisateur.".trn
+      
+      begin 
+        UserMailer.activation_user(user, tmp_password).deliver
+        flash[:notice] += " Un mail vient d'être envoyé à l'utilisateur.".trn
+      rescue Exception => e 
+        flash[:error] = "Une erreur est apparue lors de l'envoie de mail.".trn
+      end    
     end
     
   end

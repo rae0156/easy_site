@@ -1,0 +1,21 @@
+<% 
+	@title 		= "Nouvelles ressources".trn
+%>
+
+<div class="center-menu">
+    <h2><%= @title %></h2>
+	<ul>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/save_32.png", :action => "save_other", :param_goto => {:year => @year},  :form => "resource_name_form", :remote => true}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour".trn,:image => "appli/back_32.png", :action => "show_resources", :html_option => {:remote => true}}%></li>
+	</ul>
+	<div class="clearer"></div>
+</div>
+
+<%= form_tag({}, { :name => 'resource_name_form', :id => 'resource_name_form', :class => 'form-horizontal' }) do%>
+	<h4><%= field_description "Données obligatoires".trn, true %></h4>
+	<%= errors_for(@object) %>
+
+	<%= easy_tag('text_only', 	:value => @year, :bootstrap_form => true, :with_label => "Copie de l'année".trn) %>	
+	<%= easy_tag('text', 	:instance => "object", :field => "name", :maxlength => 1000, :mandatory => true, :with_label => "Nouvelle année".trn, :bootstrap_form => true) %>
+	
+<% end %>

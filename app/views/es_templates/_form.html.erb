@@ -1,3 +1,4 @@
+<%tmp_readonly = ['update','edit'].include?(params[:action])%>
 
 	  <h4><%= field_description "Données obligatoires", true %></h4>
 	  
@@ -14,8 +15,14 @@
 		</div>
 	  </div>
 	  <div class="form-group">
-	    <label for="template_es_category_id" class="col-sm-4 control-label"><%= field_description "", true %> <%="Catégorie".trn%> : </label>
+	    <label for="template_es_category_id" class="col-sm-4 control-label"><%="Catégorie".trn%> : </label>
 	    <div class="col-sm-8">
 	      	<%= select("template", :es_category_id, @categories.map {|c| [c.name, c.id]}, {}, :class => "form-control") %>
+		</div>
+	  </div>
+	  <div class="form-group">
+	    <label for="template_template_type" class="col-sm-4 control-label"><%= field_description "", true %> <%="Type".trn%> : </label>
+	    <div class="col-sm-8">
+	      	<%= select("template", :template_type,["TEMPLATE", "PAGE_MODEL"].map{|e| [EsTemplate.template_type_txt(e),e]}, {}, :class => "form-control", :disabled =>tmp_readonly ? "disabled" : false) %>
 		</div>
 	  </div>

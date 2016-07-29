@@ -1,17 +1,17 @@
-<%="Bonjour".trn%> <%=@name%>,
-<%="Une demande de changement de mail vient d'être faite sur le site".trn%> <%=@web_site_name%>.
+<%="Bonjour".trn.html_safe%> <%=@name%>,
+<%="Une demande de changement de mail vient d'être faite sur le site".trn.html_safe%> <%=@web_site_name%>.
 <%if @confirm_new_mail.blank?%>
-	<%="Votre nouvelle adresse".trn%> : <%= @new_mail %>
-<%="Si vous n'avez pas effectué cette demande, merci de nous le signaler via notre site".trn%>.
+	<%="Votre nouvelle adresse".trn.html_safe%> : <%= @new_mail %>
+<%="Si vous n'avez pas effectué cette demande, merci de nous le signaler via notre site".trn.html_safe%>.
 <%else%>
 
-<%="Si vous avez effectué cette demande, il vous suffit de cliquer sur le lien ci-dessous pour activer cette nouvelle adresse".trn%>.
+<%="Si vous avez effectué cette demande, il vous suffit de cliquer sur le lien ci-dessous pour activer cette nouvelle adresse".trn.html_safe%>.
 <%= @confirm_new_mail %>
 <%end%>
 
-<%="Si le lien ci-dessus ne fonctionne pas, tentez de le copier / coller directement dans votre navigateur".trn%>.
-<%="Si vous rencontrez un problème, n'hésitez pas à nous contacter".trn%>.
+<%="Si le lien ci-dessus ne fonctionne pas, tentez de le copier / coller directement dans votre navigateur".trn.html_safe%>.
+<%="Si vous rencontrez un problème, n'hésitez pas à nous contacter".trn.html_safe%>.
 
-<%="Bien à vous".trn%>,
-  <%="L'équipe".trn%> <%=@web_site_name%>.
+<%="Bien à vous".trn.html_safe%>,
+  <%="L'équipe".trn.html_safe%> <%=@web_site_name%>.
 

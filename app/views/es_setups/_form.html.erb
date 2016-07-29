@@ -1,58 +1,47 @@
-
   <h4><%= field_description "Données obligatoires".trn, true %></h4>
 
-		    <div class="form-group">
-		      <label for="roles_es_role_ids" class="col-sm-2 control-label"><%="Chemin".trn%> : </label>
-			  <div class="col-sm-10">
-			  	<p class="form-control-static"><%= @setup.path.blank? ? '*' : @setup.path %></p>				
-			  </div>
-  			</div>
+			<%= easy_tag('text_only',{:value => @setup.path.blank? ? '*' : @setup.path, :with_label => "Chemin".trn, :bootstrap_form => true}) %>
 
-		    <div class="form-group">
-		      <label for="roles_es_role_ids" class="col-sm-2 control-label"><%="Nom".trn%> : </label>
-			  <div class="col-sm-10">
-			  	<p class="form-control-static"><%=@setup.name%></p>						      	
-			  </div>
-  			</div>
+			<%= easy_tag('text_only',{:value => @setup.name, :with_label => "Nom".trn, :bootstrap_form => true}) %>
 
-		    <div class="form-group">
-		      <label for="roles_es_role_ids" class="col-sm-2 control-label"><%= field_description "", true %> <%="Valeur".trn%> : </label>
-			  <div class="col-sm-9">
+
 				<%case @setup.type_data
 				  when "text"%>
-					<%= text_field "setup", "value", "maxlength" => 60, :class => "form-control" %>
-				  
+					<%= easy_tag('text', :instance => "setup", :field => "value", :mandatory => true, :with_label => "Valeur".trn, :bootstrap_form => true) %>
 				<%when "long text"%>
-					<%= text_area "setup", "value", {:cols => 80, :rows => 15,:maxlength => 1000, :class => "form-control"} %>
-				
+					<%= easy_tag('long_text', :instance => "setup", :field => "value", :cols => 80, :rows => 15,:maxlength => 1000, :mandatory => true, :with_label => "Valeur".trn, :bootstrap_form => true) %>
 				<%when "choice"%>
-				    <%= select("setup", "value", @setup.possible_values.split("|").map {|u| [u, u]}, {}, :size => 5, :class => "form-control") %>
-				  
+					<%= easy_tag('list', :instance => "setup", :field => "value",:value_list_array => @setup.possible_values.split("|").map {|u| [u, u]},:number_of_line=>5, :include_blank => false, :mandatory => true, :with_label => "Valeur".trn, :bootstrap_form => true) %>
 				<%when "color"%>
-					<%= text_field "setup", "value", "size" => 6, "maxlength" => 6, :class => 'form-control colorpicker' %>
+					<%= easy_tag('color', :instance => "setup", :field => "value", :mandatory => true, :with_label => "Valeur".trn, :bootstrap_form => true) %>
+				<%when "date_time"%>
+					<%= easy_tag('date_time', :instance => "setup", :field => "value", :mandatory => true, :with_label => "Valeur".trn, :bootstrap_form => true) %>
 				<%when "date"%>
-					<%= text_field "setup", "value", "size" => 10, "maxlength" => 10, :class => 'form-control datepicker' %>
+					<%= easy_tag('date', :instance => "setup", :field => "value", :mandatory => true, :with_label => "Valeur".trn, :bootstrap_form => true) %>
 				<%when "time"%>
-					<%= text_field "setup", "value", "size" => 10, "maxlength" => 10, :class => 'form-control timepicker' %>
-				<%when "image", "css"%>
-					<%= text_field "setup", "value", "size" => 60, "maxlength" => 200, :class => 'form-control filepicker', :rel => @setup.possible_values.blank? ? '' : @setup.possible_values%>
-				<%when "number"%>
-					<%= text_field "setup", "value", "size" => 20, "maxlength" => 20, :class => 'form-control numberpicker', :rel => @setup.possible_values.blank? ? '0' : @setup.possible_values %>
+					<%= easy_tag('time', :instance => "setup", :field => "value", :mandatory => true, :with_label => "Valeur".trn, :bootstrap_form => true) %>
+				<%when "image"%>
+					<%= easy_tag('image', :instance => "setup", :field => "value", :directory => @setup.possible_values.blank? ? '' : @setup.possible_values, :mandatory => true, :with_label => "Valeur".trn, :bootstrap_form => true) %>
+				<%when "css"%>
+					<%= easy_tag('css', :instance => "setup", :field => "value", :directory => @setup.possible_values.blank? ? '' : @setup.possible_values, :mandatory => true, :with_label => "Valeur".trn, :bootstrap_form => true) %>
+				<%when "video"%>
+					<%= easy_tag('video', :instance => "setup", :field => "value", :directory => @setup.possible_values.blank? ? '' : @setup.possible_values, :mandatory => true, :with_label => "Valeur".trn, :bootstrap_form => true) %>
+				<%when "decimal", "number", "float"%>
+					<%= easy_tag('decimal', :instance => "setup", :field => "value", :mandatory => true, :with_label => "Valeur".trn, :bootstrap_form => true) %>
 				<%when "integer"%>
-					<%= text_field "setup", "value", "size" => 20, "maxlength" => 20, :class => 'form-control integerpicker' %>
-				<%when "alpha"%>
-					<%= text_field "setup", "value", "size" => 20, "maxlength" => 20, :class => 'form-control alphapicker' %>
+					<%= easy_tag('integer', :instance => "setup", :field => "value", :mandatory => true, :with_label => "Valeur".trn, :bootstrap_form => true) %>
 				<%when "font"%>
-					<%= text_field "setup", "value", "size" => 60, "maxlength" => 60, :class => 'form-control fontpicker' %>
+					<%= easy_tag('font', :instance => "setup", :field => "value", :mandatory => true, :with_label => "Valeur".trn, :bootstrap_form => true) %>
 				<%when "directory"%>
-					<%= text_field "setup", "value", "size" => 60, "maxlength" => 200, :class => 'form-control filepicker', :rel => @setup.possible_values.blank? ? '' : @setup.possible_values%>
+					<%= easy_tag('file', :instance => "setup", :field => "value", :option_file => @setup.possible_values.blank? ? '' : @setup.possible_values, :mandatory => true, :with_label => "Valeur".trn, :bootstrap_form => true) %>
 				<%when "sound"%>
-					<%= text_field "setup", "value", "size" => 60, "maxlength" => 200, :class => 'form-control filepicker', :rel => @setup.possible_values.blank? ? '' : @setup.possible_values%>
+					<%= easy_tag('sound', :instance => "setup", :field => "value", :directory => @setup.possible_values.blank? ? '' : @setup.possible_values, :mandatory => true, :with_label => "Valeur".trn, :bootstrap_form => true) %>
 				<%else%>
-				  	<p class="form-control-static"><%=@setup.value%></p>	
+					<%= easy_tag('text_only',{:value => @setup.value, :with_label => "Valeur".trn, :bootstrap_form => true}) %>
 				<%end%>
-			  </div>			  
-  			</div>
 
 
-
+<script>
+	init_datepicker();	
+	init_inputmask();		
+</script>

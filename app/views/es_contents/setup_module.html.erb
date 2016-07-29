@@ -9,8 +9,6 @@
 	</ul>
 
     <h3><%= "Contenu n° %{num} de '%{content}'".trn(:content => @contentdetail.name, :num => @contentdetail.sequence.to_i) %></h3>
-    <!--%= "%{controller_name} - %{action_name}".trn(:controller_name => @module_action_name[0],:action_name => @module_action_name[1]) %-->
-	<!-- Error messages -->
 	<%= errors_for(@contentdetail) %>
 
 	<%= form_tag({ :action => 'update_setup_module', :if => @contentdetail.id}, { :name => 'setup_form' , :class => 'form-horizontal'}) do%>

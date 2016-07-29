@@ -9,8 +9,8 @@ module PDFHelper
 #    pdf.image(file_pdf_background, :justification => :center, :scale => 0.55) 
 
 
-    file_pdf_background = File.join(Rails.root,'app','assets','images','rails.png')
-    pdf.image(file_pdf_background, :scale => 0.5) 
+    file_pdf_background = EsSetup.get_setup("image_header_pdf","") #File.join(Rails.root,'app','assets','images','rails.png')
+    pdf.image(File.join(Rails.root,file_pdf_background), :scale => 0.5) unless file_pdf_background.blank?
 
 
     pdf.fill_color("0060A9")

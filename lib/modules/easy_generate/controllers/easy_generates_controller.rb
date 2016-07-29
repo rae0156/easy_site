@@ -44,6 +44,14 @@ class EasyGeneratesController < ApplicationController
     redirect_to :controller => "easy_generate_sheets", :action => "list"
   end
 
+  def setup_css_file
+    redirect_to :controller => "easy_generate_css_files", :action => "list"
+  end
+
+  def setup_js_file
+    redirect_to :controller => "easy_generate_js_files", :action => "list"
+  end
+
 private  
 
   def get_lorem_ipsum(options)
@@ -103,6 +111,28 @@ private
   def get_video(options)
     @video = EsMediaFile.find(:first,:conditions => ["name=? and media_type = 'video'",options['code_video'].presence||''])
     get_template_part("video","easy_generates",true)
+  end
+
+  def get_css(options)
+    @css_file = nil
+    css_file = EsMediaFile.find(:first,:conditions => ["name=? and media_type = 'css_file'",options['file_name'].presence||''])
+    if css_file
+      public_dir = File.join(Rails.root,'public')
+      file_name = File.join(Rails.root,css_file.reference) 
+      @css_file = file_name[public_dir.length..-1] if File.file?(file_name) && file_name.starts_with?(public_dir)
+    end
+    get_template_part("css_file","easy_generates",true)
+  end
+
+  def get_js(options)
+    @js_file = nil
+    js_file = EsMediaFile.find(:first,:conditions => ["name=? and media_type = 'js_file'",options['file_name'].presence||''])
+    if js_file
+      public_dir = File.join(Rails.root,'public')
+      file_name = File.join(Rails.root,js_file.reference) 
+      @js_file = file_name[public_dir.length..-1] if File.file?(file_name) && file_name.starts_with?(public_dir)
+    end
+    get_template_part("js_file","easy_generates",true)
   end
 
 end

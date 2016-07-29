@@ -1,0 +1,19 @@
+<%
+	array_years = []
+	(Date.today.year - 10 .. Date.today.year + 1).each {|i| array_years << i}
+%>
+	<h4><%= field_description "Données obligatoires".trn, true %></h4>
+
+	<%= easy_tag('text_only',{:value => @object.res_category.description.presence || @object.res_category.name, :with_label => "Catégorie".trn, :bootstrap_form => true}) %>
+	<%= easy_tag('long_text', 	:instance => "object", :field => "description", :cols => 80, :rows => 10,:maxlength => 1000, :mandatory => true, :with_label => "Description".trn, :bootstrap_form => true, :class => 'tinymce') %>
+	<%= easy_tag('list', 		:instance => "object", :field => "year",:value_list_array => array_years.reverse ,:number_of_line=>1, :include_blank => true, :mandatory => true, :with_label => "Année".trn, :bootstrap_form => true) %>
+
+<script>
+	init_datepicker();	
+	init_inputmask();		
+</script>
+
+
+
+<%= render "shared/tinymce_script"%>
+

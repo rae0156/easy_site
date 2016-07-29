@@ -7,8 +7,6 @@ class EasyGenerateImagelistsController < EsMediaFilesController
                        :max_level => 2,
                        :model_level => ['EasyGenerateImagelist','EasyGenerateImagelistDetail']
                        }
-                       
-    @columns_screen = []
     super
   end 
 

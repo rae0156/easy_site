@@ -6,8 +6,6 @@ class EasyGenerateBlogsController < EsMediaFilesController
     @setup_controller={:delete_multi => false,
                        :model_level => ['EasyGenerateBlog','EasyGenerateBlogDetail']
                        }
-                       
-    @columns_screen = []
     super
   end  
 end

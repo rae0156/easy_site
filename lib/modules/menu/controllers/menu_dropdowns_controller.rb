@@ -7,8 +7,6 @@ class MenuDropdownsController < EsMenusController
                        :max_level => 2,
                        :model_level => ['MenuDropdown',['MenuElement','MenuDetail','MenuSep','MenuDetailActCtrl']]
                        }
-                       
-    @columns_screen = []
     super
   end 
   

@@ -1,0 +1,70 @@
+<% 
+	@title 		 = "Besoins pour l'année '%{year}'".trn(:year => @year) 
+	@title 		+= " - " + "Utilisateur '%{user}'".trn(:user => EsUser.find_by_id(@user).complete_name) unless @user == 0%>
+
+<div class="center-menu">
+    <h2><%= @title %></h2>
+	<ul>		
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Vérifier".trn,:image => "appli/process_32.png", :action => "save_need", :param_goto => {:year => @year, :check => 'Y'},  :form => "stock_form", :remote => true}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/save_32.png", :action => "save_need", :param_goto => {:year => @year, :check => 'N'},  :form => "stock_form", :remote => true}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour".trn,:image => "appli/back_32.png", :action => "show_resources", :html_option => {:remote => true}}%></li>
+	</ul>
+	<div class="clearer"></div>
+</div>
+
+<!-- Error messages -->	
+<div id="message_ajax">
+	  <%= render :partial => 'layouts/part_message_ajax' %>
+</div>
+
+<%= form_tag({}, { :name => 'stock_form', :id => 'stock_form', :class => 'form-horizontal' }) do%>
+
+	<!-- Error messages -->
+	<%= errors_for(@object) %>
+	
+	<%@object.children.each do |category|
+		tmp_resources = category.get_resources(@user) %>
+		<%if tmp_resources.size > 0%>
+		<div class="alert alert-info">
+			<span class="toggle_by_ref" data-reference-class='ref_ressource_action_<%=category.id%>'>		  		
+			  <%=@year%> - <%=category.description.trn%>
+			</span>
+			<span style="float:right;"><%=category.responsible_text%></span>
+		</div>
+		<div>
+			<table cellpadding="4" width="100%" class='table'>
+			  <tr>
+			    <th width=1><%="Priorité".trn%></th>
+			    <th width=1><%="Statut".trn%></th>
+			    <th><%="Description".trn%></th>
+			    <th><%="Qui".trn%></th>
+			    <th><%="Reste".trn%></th>
+			    <th><%="Besoin".trn%></th>
+			  </tr>
+			  <%tmp_resources.each do |resource|%>
+				  <tr>
+				    <td style="background-color:<%=resource.res_priority.color%>;color:#000000;text-align:center;"><span title="<%=resource.res_priority.description%>"><%=resource.res_priority.code%></span></td>
+				    <td style="background-color:<%=resource.res_status.color%>;color:#000000;text-align:center;"><span title="<%=resource.res_status.description%>"><%=resource.res_status.code%></span></td>
+				    <td><%=truncate(resource.get_description,:length => 40)%> - <%=truncate(resource.res_action.description,:length => 40)%></td>				    
+				    <td><%=resource.es_user.complete_name%></td>
+				    <td width="100" style="background-color:<%=@stock_error.include?(resource.id) ? '#FF0000' : ''%>">
+						<%if resource.stockable=='Y'%>
+							<%= easy_tag('decimal', :mandatory => false, :bootstrap_form => false, :bootstrap_length => false, :id => "stock[id_#{resource.id}]", :value => @stock["id_#{resource.id}"]) %>
+						<%end%>
+				    </td>
+				    <td><%=resource.quantity%></td>
+				  </tr>
+			  <%end%>
+			</table>
+		</div>
+		<%end%>
+	
+	
+	<%end unless @object.blank?%>
+	
+<% end %>
+
+<script>
+	init_datepicker();	
+	init_inputmask();		
+</script>

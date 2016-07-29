@@ -2,7 +2,7 @@
 action = "list" if action.nil?
 %>
 
-<%= form_tag({:action => action}, :id => 'search_form', :class => 'form-horizontal', :remote => true) do %>
+<%= form_tag({:action => action, :index_page => 'list_item'}, :id => 'search_form', :class => 'form-horizontal', :remote => true) do %>
 	  <div class="form-group">
 	    <label for="global_search" class="col-sm-2 control-label"><%="Recherche".trn%> : </label>
 		<div class="col-sm-3">

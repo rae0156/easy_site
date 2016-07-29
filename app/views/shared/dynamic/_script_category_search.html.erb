@@ -1,11 +1,12 @@
 <script type="text/javascript">
     $('#fileTree_element').fileTree({ root: '', script: '/<%=@setup_controller[:controller_name]%>/contenttree' }, function(dir) {
 		$.ajax('/<%=@setup_controller[:controller_name]%>/list', {
-		    data: { dir: dir},
+		    data: { dir: dir, index_page: 'list_item'},
 		    dataType: 'script'
 		});
     });
-        
+
+	$(document ).off('click','#view_hide')
 	$(document ).on('click','#view_hide', function() {
 		$('#fileTree_element').toggle();
 	});

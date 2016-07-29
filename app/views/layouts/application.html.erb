@@ -19,6 +19,8 @@
 	<%end%>
 	<!-- File Tree -->
 	<%= stylesheet_link_tag 'jqueryFileTree.css' %>		
+
+	<%= stylesheet_link_tag 'application_ajust.css' %>		
 		
 	<!-- favicon(s) -->
 	<link href="/favicon.ico" rel="shortcut icon">
@@ -26,12 +28,17 @@
 	<link href="/favicon.png" type="image/png" rel="icon">
 
     <%= javascript_include_tag "application" %>
+    <%= javascript_include_tag "/javascripts/tinymce/tinymce.min.js" %>
     
   </head>
   
   <body>
   	
   	<%= render :partial => "shared/spinner" %>
+	
+	<%if !current_user.nil? && current_user.role?("superadmin")%>
+		<%= get_template_part("part_system") %>
+	<%end%>
 	<%= render "layouts/part_message" %>
 	
     <%if session[:custom_error].presence==true
@@ -41,12 +48,19 @@
     	<%if EsTemplate.is_dynamic(Rails.application.config.current_template)%>
     		<%= generate_template_render(Rails.application.config.current_template)  %>
 		<%else%>
-			<%= render "templates/#{Rails.application.config.current_template}" %>
+			<%= render "templates/#{Rails.application.config.current_template.downcase}" %>
 		<%end%>
+    	<%unless @system_yield_exists%>
+			<h3 style="color:red;text-align: center"><%="ATTENTION : Le template ne contient pas de partie dynamique.".trn%><br /><%="Elle a été automatiquement ajoutée.".trn%></h3>
+			<%= render "layouts/basic" %>
+    	<%end%>
 	<%else%>
 		<%= yield %>
 	<%end%>
 
+	<div id='div_sound'>
+		<%= render :partial => 'shared/sound' %>
+	</div>
 
 
 <%if "#{Rails.env}".upcase == "DEVELOPMENT"%>

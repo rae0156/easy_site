@@ -1,0 +1,26 @@
+<% @title = "Modèles dynamiques".trn %>
+
+<div class="center-menu">
+    <h2><%= image_tag("appli/setup_48.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
+	
+	
+	<!-- Search -->
+	<%= render :partial => 'shared/search' %>
+	
+	<div class="clearer"></div>	
+</div>
+
+<!-- Error messages -->	
+<%= errors_for(flash[:errors_destroy], "delete").html_safe if flash[:errors_destroy] %>
+
+<%= form_tag({ :action => 'new' }, { :name => 'dyn_model_list_form'}) do%>
+
+<!-- Data table -->
+<div id="dyn_model_div">
+  <%= render :partial => 'list' %>
+</div>
+
+
+
+<% end %>
+

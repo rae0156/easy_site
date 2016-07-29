@@ -1,21 +1,43 @@
+  # encoding: UTF-8
   
   WillPaginate.per_page = 20
   
   require 'lorem'
 
+  require 'spreadsheet' 
+  Spreadsheet.client_encoding = 'UTF-8' 
+
   def init_workspace_easysite
+    musique = EsSetup.get_setup("musique_site","")
     Rails.application.config.default_site             = EsSite.first(:conditions=>{:set_as_default => 'Y'}).id
     Rails.application.config.current_template         = ""
     Rails.application.config.current_theme            = ""
+    Rails.application.config.current_musique          = musique.blank? ? "" : (EsSetup.get_setup("répertoire_musique","public/") + musique)
     Rails.application.config.default_locale_easysite  = :fr
     Rails.application.config.translation_mode         = EsSetup.get_setup("translation_mode","") #debug / with / [empty] = without    
   end
   
+  def change_site_number(site_id,current_user)
+    session[:current_site_id] = site_id
+    EsSite.current_site_id=session[:current_site_id]
+    
+    #for user inputted, initialize default_site into db and reset session
+    unless current_user.blank?
+      EsSite.find_by_id(Rails.application.config.default_site).update_attribute('set_as_default','N')
+      EsSite.find_by_id(site_id).update_attribute('set_as_default','Y')
+      reset_session     
+      init_workspace_easysite
+    end
+  end  
   
-  def init_dynamic_attributes
-    yml_file = File.join(Rails.root,"config","dynamic_attributes.yml")
+  def init_dynamic_attributes(file_to_load=nil)
+    if file_to_load.blank?
+      yml_file = File.join(Rails.root,"config","dynamic_attributes.yml")
+    else
+      yml_file = file_to_load
+    end
     unless File.exist?(yml_file)
-      log "Le fichier d'attributs dynamiques '#{yml_file}' n'existe pas"
+      puts "ERROR : Le fichier d'attributs dynamiques '#{yml_file}' n'existe pas"
       return false 
     end
     models_attrs = YAML.load(File.read(yml_file))  
@@ -25,13 +47,18 @@
             model_class = model.constantize
         rescue 
         end
-  
-        if class_exists?(model.to_s) && model_class.respond_to?("help_dyn_attr") 
+
+
+        if !class_exists?(model.to_s)
+          puts "ERROR : Le modèle '#{model.to_s}' n'existe pas"  
+        elsif !model_class.respond_to?("help_dyn_attr")
+          puts "ERROR : Les attributs dynamiques ne sont pas activés pour le modèle '#{model.to_s}'" 
+        else 
           categories.each do |category,groups|
             groups.each do |group,attrs|
               attrs.each do |attr,params|
                 
-                param_setup,type_setup,updatable,description,value_list,other_params,comments,length = nil,nil,'N','',nil,'','',nil
+                param_setup,type_setup,updatable,description,value_list,other_params,comments,length,mandatory = nil,nil,'Y','',nil,'','',nil,'N'
                 params = params.strip
                 if params.ends_with?(">>")
                   tmp_find = params.rindex('<<')
@@ -54,7 +81,9 @@
                     other_params  = param_setup[3] || ''
                   else
                     value_list = param_setup[3]
+                    value_list.gsub!('[[DASH]]','-') unless value_list.blank?
                   end
+                  mandatory = param_setup[4] || 'N'
                 end
                 
                 # puts "ici :  #{type_setup.inspect} #{updatable.inspect} #{description.inspect} #{value_list.inspect}#{other_params.inspect} #{category}/#{group}"
@@ -67,7 +96,9 @@
                                                   :choices       => value_list, 
                                                   :category      => "#{category}/#{group}",
                                                   :type_param    => other_params,
-                                                  :comments      => description
+                                                  :comments      => description,
+                                                  :read_only     => (updatable=='Y') ? "N" : "Y",
+                                                  :mandatory     => mandatory
                                              }]) 
                 
               end
@@ -88,32 +119,14 @@
   
   
   def get_lorem
-    Lorem::Base.new('words', 100).output
+    Lorem::Base.new('words', 1000).output
   end
 
+  #n'est utilisé que dans index de la vue site
   def get_content_detail(content_name,sequence=1)
     es_content = EsContent.find_by_name(content_name)
     es_content_detail = (es_content && !es_content.es_content_details.blank?) ? es_content.es_content_details.find_by_sequence(sequence) : nil
     return es_content_detail.blank? ? "" : get_template_part(es_content_detail.id)
-  end
-
-  def generate_template_render(template_name)
-    template = EsTemplate.find_by_name(template_name)
-    if template  
-      parts_containt = {}
-      template.es_parts.each do |p|
-        unless p.es_template_col_id == 0
-          if template_name==Rails.application.config.current_template
-            parts_containt[p.name] = get_template_part(p.name)
-          else
-            parts_containt[p.name] = get_template_part(p.name,"parts",false,template_name)
-          end             
-        end
-      end
-      return render(:inline => template.generate_template_for_render(parts_containt))
-    else
-      return render(:inline => "<p>" + "Le template %{name} n'existe pas".trn(:name=> template_name) +"</p>")
-    end
   end
 
   def get_template_part(part_name,directory = "parts",partial=false,template_name=nil)
@@ -148,7 +161,7 @@
         if partial          
           return render(:partial=> tmp_layout.gsub('/_','/'))
         else
-          return render tmp_layout.gsub('/_','/')
+          return render(tmp_layout.gsub('/_','/'))
         end
       else
         #find setup for current template
@@ -176,15 +189,12 @@
           return render(:inline => es_content_text)
         end
       end
-
     end
-    
-    
   end
 
   def create_dir(*tmp_dirs)    
     tmp_dirs = File.join(Rails.root,tmp_dirs)
-    FileUtils.mkdir_p(tmp_dirs)
+    FileUtils.mkdir_p(tmp_dirs) unless File.exist?(tmp_dirs)
   end      
 
   def remove_file(file_name)
@@ -198,6 +208,15 @@
     path = File.join(directory, name)
     # write the file
     File.open(path, "wb") { |f| f.write(upload['datafile'].read) }
+  end
+
+
+  def generate_anchor(part_name,link_text='')
+    if link_text.blank?
+      return "<a name='anchor_#{part_name}'></a>".html_safe
+    else
+      return link_to(link_text,url_for(:anchor => 'anchor_' + part_name)) 
+    end
   end
 
 

@@ -1,0 +1,14 @@
+	<h4><%= field_description "Données obligatoires".trn, true %></h4>
+
+	<%= easy_tag('text_only',{:value => @object.description.presence || @object.name, :with_label => "Catégorie".trn, :bootstrap_form => true}) %>
+	<%= easy_tag('long_text', 	:instance => "object", :field => "long_description", :cols => 80, :rows => 10,:maxlength => 1000, :mandatory => false, :with_label => "Description".trn, :bootstrap_form => true, :class => 'tinymce') %>
+
+<script>
+	init_datepicker();	
+	init_inputmask();		
+</script>
+
+
+
+<%= render "shared/tinymce_script"%>
+

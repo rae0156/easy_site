@@ -13,10 +13,10 @@ tmp_update = !(@setup_controller[:table_field_active] && list_item[:active]== 'N
     <%if @setup_controller[:parent_exists] %>
 		<td>
 			<%if tmp_update && @current_level < @setup_controller[:max_level]%>
-				<%if list_item.children.count>0%>
-					<%= link_to "<i class='glyphicon glyphicon-indent-left'></i>".html_safe,  {:action => 'list'.trn, :parent_id => list_item.id}, {:title => "Afficher %{element}".trn(:element => (@setup_controller[:column_name_exists] ? list_item.name : "l'enfant".trn))} %> 
+				<%if list_item.children.count>0 || (list_item.respond_to?("model_type") && list_item.can_have_children?)%>
+					<%= link_to "<i class='glyphicon glyphicon-indent-left'></i>".html_safe,  {:action => 'list'.trn, :parent_id => list_item.id}, {:remote => true, :title => "Afficher %{element}".trn(:element => (@setup_controller[:column_name_exists] ? list_item.name : "l'enfant".trn))} %> 
 				<%elsif list_item.can_have_children?%>
-					<%= link_to "<i class='glyphicon glyphicon-plus-sign'></i>".html_safe,  {:action => 'new'.trn, :parent_id => list_item.id}, {:title => "Créer un enfant".trn} %>
+					<%= link_to "<i class='glyphicon glyphicon-plus-sign'></i>".html_safe,  {:action => 'new'.trn, :parent_id => list_item.id}, {:remote => true, :title => "Créer un enfant".trn} %>
 				<%end%>
 			<%end%>
 		</td>  
@@ -29,22 +29,33 @@ tmp_update = !(@setup_controller[:table_field_active] && list_item[:active]== 'N
 			tmp_value = "/" if tmp_value.blank?
 			tmp_value = tmp_value.limit(50,column[:type]) if ["text","list_free","list_multi"].include?(column[:type]) 		
 			if column[:link_update] && tmp_update				
-				tmp_value= link_to tmp_value,  :action => 'edit', :id => list_item.id unless (@setup_controller[:readonly_exists] && list_item["read_only"]=='Y')
+				tmp_value= link_to(tmp_value,  {:action => 'edit', :id => list_item.id},{:remote=>true}) unless (@setup_controller[:readonly_exists] && list_item["read_only"]=='Y')
 			elsif column[:name] == 'sequence'
 				tmp_value = tmp_value.to_s
-				if !@parent.blank? && tmp_update 
+				
+				if @setup_controller[:parent_exists]
+					if !@parent.blank? && tmp_update 
+					    if list_item.sequence > 1
+							 tmp_value+=link_to("<i class='glyphicon glyphicon-arrow-up'></i>".html_safe, {:action => 'up', :id => list_item.id, :page => params[:page]},{:remote=>true})
+						end
+						if list_item.sequence < @parent.children.count 
+							 tmp_value+=link_to("<i class='glyphicon glyphicon-arrow-down'></i>".html_safe, {:action => 'down', :id => list_item.id, :page => params[:page]},{:remote=>true})
+						end
+					end
+				else
 				    if list_item.sequence > 1
 						 tmp_value+=link_to("<i class='glyphicon glyphicon-arrow-up'></i>".html_safe, {:action => 'up', :id => list_item.id, :page => params[:page]},{:remote=>true})
 					end
-					if list_item.sequence < @parent.children.count 
+					if list_item.sequence < @setup_controller[:model].count 
 						 tmp_value+=link_to("<i class='glyphicon glyphicon-arrow-down'></i>".html_safe, {:action => 'down', :id => list_item.id, :page => params[:page]},{:remote=>true})
 					end
-				end
+				end				
 			elsif column[:foreign] 
 				unless tmp_value.blank?
 					tmp_model_link = list_item.send(column[:name][0..-4])
 					unless tmp_model_link.nil?
-						tmp_value = tmp_model_link.class.column_names.include?(column[:model_linked_field]) ? tmp_model_link[column[:model_linked_field]] : tmp_model_link.id
+						#class.column_names.include?(column[:model_linked_field])
+						tmp_value = tmp_model_link.respond_to?(column[:model_linked_field]) ? tmp_model_link.send(column[:model_linked_field]) : tmp_model_link.id
 						if column[:name] != "parent_id" && tmp_update && column[:linked_to_model]				
 							tmp_value = link_to tmp_value, :controller => column[:linked_name].pluralize, :action => 'edit', :id => list_item.send(column[:name])
 					    end
@@ -52,6 +63,8 @@ tmp_update = !(@setup_controller[:table_field_active] && list_item[:active]== 'N
 				   		tmp_value=nil
 				    end
 				end
+			elsif !tmp_value.blank? && column[:type]=="color"
+				 tmp_value = "<span style='background-color:#{tmp_value};'>" + tmp_value + "</span>"
 			elsif !tmp_value.blank? && column[:type]=="datetime" 
 				 tmp_value = tmp_value.strftime("%d/%m/%Y %H:%M:%S") 
 			elsif !tmp_value.blank? && column[:type]=="date" 

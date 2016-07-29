@@ -6,7 +6,6 @@ class DynPagesController < DynamicController
   
   def initialize()
     @setup_controller={:delete_multi => false,:instance_name => 'Pages dynamiques'}
-    @columns_screen = []
     super
   end 
 

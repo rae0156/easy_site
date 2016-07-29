@@ -1,0 +1,2 @@
+  	<%= "Catégorie".trn%> :  
+	<%= easy_tag('list',:instance => "filter", :field => "category",:value_list_array => ResCategory.get_category(@year), :selected_value => @category,:number_of_line=>1,:multiple => false)%>

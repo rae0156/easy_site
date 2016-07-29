@@ -1,0 +1,31 @@
+	  <h3><%="Modification de la partie dynamique '%{name}'".trn(:name => @part.name)%></h3>
+	  <div class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour au dessin".trn,:image => "appli/back_32.png", :action => "#",:html_option => {:id => "back_design"}}%></div>
+
+	<div id="dynamic_content">
+		  <%= render :partial => 'es_contents/dynamic_content' %>
+	</div>
+
+
+<script>
+
+	$(document).ready(function() {
+
+		$( "#back_design" ).click(function() {
+			$.ajax({
+		        url: "/es_contents/update_dynamic_content_parts/<%=@content_detail.id%>",
+		        data: { parts: get_template_parts() },
+		        proccessData: false,
+		        type: "POST",
+		        dataType: 'script'
+		    }).done(function() {
+				$.ajax({
+			        url: "/es_templates/refresh_design/<%=@template.id%>",
+			        dataType: 'script'
+			    });	    
+			});
+		   	return false;  			
+		});		
+
+	});
+	
+</script>

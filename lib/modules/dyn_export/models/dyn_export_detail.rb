@@ -1,3 +1,4 @@
+# encoding: UTF-8
 class DynExportDetail < ActiveRecord::Base
 
   has_es_interface_models

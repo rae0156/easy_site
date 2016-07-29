@@ -1,5 +1,6 @@
 # activate PUTS_TIMING function 
-PUTS_TIMING_ACTIVE = false 
+PUTS_TIMING_ACTIVE = true # default is deactivate
+PUTS_TIMING_MODES  = ['ADD_TO_LOG'] # ADD_TO_LOG is default if activated. TIMING is possible to add timing
 
 require File.expand_path('../boot', __FILE__)
 

@@ -1,0 +1,26 @@
+
+<div class="alert alert-info">
+	<%unless category.long_description.blank?%>
+		<%if EsUser.role?('admin') || (!current_user.blank? && (category.responsible_a_id = current_user.id || category.responsible_b_id = current_user.id))%>
+			<span style="float:right;"><%= link_to("<i class='glyphicon glyphicon-pencil'></i>".html_safe, {:action => 'update_description', :id => category.id},{:remote=>true, :title => "Modifier la description".trn})%></span>
+		<%end%>
+		<p class="toggle_by_ref" data-reference-class='ref_ressource_description_<%=category.id%>'>		  		
+		  <%="Description de la catégorie '%{cat}'".trn(:cat => category.description)%>
+		</p>
+	<%else%>
+		<%if EsUser.role?('admin') || (!current_user.blank? && (category.responsible_a_id = current_user.id || category.responsible_b_id = current_user.id))%>
+			<span style="float:right;"><%= link_to("<i class='glyphicon glyphicon-plus'></i>".html_safe, {:action => 'update_description', :id => category.id},{:remote=>true, :title => "Ajouter une description".trn})%></span>
+		<%end%>
+		<p>		  		
+		  <%="Description de la catégorie '%{cat}'".trn(:cat => category.description)%>
+		</p>
+	<%end%>
+</div>
+<%unless category.long_description.blank?%>
+	<div class='ref_ressource_description_<%=category.id%>'>
+	    <div>
+		    <%=category.long_description.html_safe%>
+	    </div>
+	    <br />
+	</div>
+<%end%>

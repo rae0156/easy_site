@@ -15,8 +15,8 @@ class MenuDetailActCtrl < ActiveRecord::Base
                            :order             => 1
                           },       
                           {:name              => "name",
-                           :label_name        => "Code",
-                           :column_name       => "Code",
+                           :label_name        => "Libellé",
+                           :column_name       => "Libellé",
                            :sort              => false,
                            :field_key         => true,
                            :field_key_scope   => "parent_id",

@@ -3,9 +3,7 @@
 class EsSitesController < ApplicationController
   
   def change_default_site
-    session[:current_site_id] =params[:site][:id]
-    EsSite.current_site_id=session[:current_site_id]
-    reset_session unless current_user.blank?
+    change_site_number(params[:site][:id], self.current_user)
     self.current_user = nil
 
     respond_to do |format|

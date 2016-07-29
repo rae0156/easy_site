@@ -12,6 +12,9 @@ setup:
   admin:
     title: module Menu <<string-N-Titre du module>>
 
+menus:
+  menu_entry_points: Y <<boolean>>
+
 controllers: 
   entry_point_names:
     MenusController: Gestion des menus

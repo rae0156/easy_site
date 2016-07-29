@@ -1,0 +1,56 @@
+<tr class="<%= cycle("row0", "row1") %>">
+  <td>
+  	<%= link_to list_item.code, :action => 'edit_site', :id => list_item.id%>
+  </td>
+  <td>
+	<%= list_item.description.limit(50) %>  
+  </td>
+  <td>
+	<%= list_item.active == 'Y' ? "<i class='glyphicon glyphicon-ok'></i>".html_safe : "" %>  
+  </td>
+  <td>
+	<%= list_item.set_as_default == 'Y' ? "<i class='glyphicon glyphicon-ok'></i>".html_safe : "" %>  
+  </td>
+  <td>
+	<%= list_item.protected == 'Y' ? "<i class='glyphicon glyphicon-ok'></i>".html_safe : "" %>  
+  </td>
+  <td>
+	<%if list_item.active=='Y' && list_item.protected=='N'%>
+		<%= link_to("<i class='glyphicon glyphicon-refresh'></i>".html_safe, 
+					url_for(:action => "refresh_site", :id => list_item['id']), 
+					:confirm =>"Voulez vous vraiment actualiser ce site ?".trn,
+					:title =>"Actualiser ce site".trn)
+		%>					
+	<%end%>
+	<%if list_item.set_as_default=='N'%>
+		<%if list_item.active=='Y'%>
+			<%= link_to("<i class='glyphicon glyphicon-flag'></i>".html_safe, 
+						url_for(:action => "change_site", :id => list_item['id']), 
+						:confirm =>"Cette option doit être utilisée avec beaucoup d'attention.Voulez vous basculer vers ce site ?".trn,
+						:title =>"Basculer vers ce site".trn)
+			%>					
+		<%end%>
+		<%if list_item.protected=='N'%>
+			<%= link_to("<i class='glyphicon glyphicon-remove-sign'></i>".html_safe, 
+						url_for(:action => "destroy_site", :id => list_item['id']), 
+						:confirm =>"Voulez vous vraiment supprimer ce site ?".trn,
+						:title =>"Supprimer ce site".trn)
+			%>					
+			<%if list_item.active=='Y'%>
+				<%= link_to("<i class='glyphicon glyphicon-ban-circle'></i>".html_safe, 
+							url_for(:action => "de_activate_site", :id => list_item['id'], :page => params[:page]), 
+							:confirm =>"Voulez vous vraiment désactiver ce site ?".trn,
+							:title =>"Désactiver ce site".trn)
+				%>					
+			<%else%>
+				<%= link_to("<i class='glyphicon glyphicon-ok-circle'></i>".html_safe, 
+							url_for(:action => "de_activate_site", :id => list_item['id'], :page => params[:page]), 
+							:confirm =>"Voulez vous vraiment activer ce site ?".trn,
+							:title =>"Activer ce site".trn)
+				%>					
+			<%end%>
+		<%end%>
+	<%end%>
+  </td>
+  
+</tr>

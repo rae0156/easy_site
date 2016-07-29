@@ -1,0 +1,33 @@
+interface:
+  models: 
+    - DynamicModelSetup
+    - DynamicModelFieldSetup
+  controllers: 
+    - DynamicModelSetupsController
+  mailers: / 
+
+version: 0.0.0.2
+
+installation:
+   table_verification:
+     - dynamic_model_setups
+     - dynamic_model_field_setups
+     
+activated: Y<<boolean-N-Module actif>>
+
+menus:
+  menu_entry_points: Y <<boolean>>
+  menu_models: Y <<boolean>>
+  models:
+    - DynamicModelSetup
+
+setup:
+  admin:
+    title: Module paramétrage des modèles dynamiques <<string-Y-Titre du module>>
+
+controllers: 
+  entry_point_names:
+    DynamicModelSetupsController: Modèle dynamique - Paramétrage
+  entry_points:
+    DynamicModelSetupsController:    
+        list_model: Liste des modèles dynamiques à paramétrer 

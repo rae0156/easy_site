@@ -1,3 +1,5 @@
+<div class='container'>
+	
 	<% unless flash[:notice].nil? or flash[:notice].blank? %>
 		<div role="alert" class="alert alert-success fade in">
 	      <button data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>
@@ -10,6 +12,7 @@
   		  <%= flash[:error] %>
 	    </div>
 	<% end %>
+</div>
 
 
 

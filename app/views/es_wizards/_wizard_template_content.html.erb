@@ -1,0 +1,19 @@
+
+<%= form_tag({}, { :name => 'admin_form', :id => 'admin_form',:class => 'form-horizontal'}) do%>
+
+	<div id='div_wizard'>
+	  	<%= render :partial => 'es_templates/form_design_wizard' %>
+	</div>
+
+	<p>
+	<p><%="Vous pouvez créer ou modifier vous-même".trn%> <%=link_to("un contenu".trn,{:controller => "es_contents", :action => "list"})%>.
+	<br>
+	<%if @template.is_dynamic%>
+		<%="Vous pouvez également créer ou modifier vous-même".trn%> <%=link_to("une partie du modèle".trn,{:controller => "es_templates", :action => "parts", :id => @template.id})%>.
+	<%else%>
+		<%="Le modèle '%{template}' ne peut pas être modifié.".trn(:template => @template.description)%>.
+	<%end%>
+	<br>
+	<%="Ensuite, vous pourrez revenir dans cet assistant.".trn%></p>
+<% end %>
+	  

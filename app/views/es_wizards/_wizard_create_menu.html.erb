@@ -1,0 +1,75 @@
+<%@menu = EsTemplate.new unless @menu%>	
+<%= errors_for(@menu, "[NO_MESSAGE]").html_safe %>
+
+<h3><%="Liste des menus existants".trn%> :</h3>		 
+
+<%= form_tag({}, { :name => 'admin_form', :id => 'admin_form',:class => 'form-horizontal'}) do%>
+
+
+	<table cellpadding="4" width="100%" class='table'>
+	  <tr>
+	    <th><%="Nom du menu".trn%></th>
+	    <th><%="Orientation".trn%></th>
+	    <th><%="Description".trn%></th>
+	    <th><%="Options".trn%></th>
+	  </tr>
+	  <%EsMenu.where(:link_type => ['vertical_menu','horizontal']).each do |m|%>
+		<tr class="<%= cycle("row0", "row1") %>">
+		  <td><%=m.name%></td>
+		  <td><%=case m.link_type
+ 				 when 'vertical_menu'
+				 	 "Verticale".trn
+				 when 'horizontal'
+					 "Horizontale".trn
+				 else
+					 ""
+				 end %></td>
+		  <td><%=m.description.limit(50) %></td>
+		  <td>
+			<%= link_to("<i class='glyphicon glyphicon-list-alt'></i>".html_safe, 
+						url_for(:action => "wizard_content_menu", :id => m['id']), 
+						:title => "Travailler le contenu de ce menu".trn,
+						:remote => true)
+			%>		
+			<%= link_to("<i class='glyphicon glyphicon-retweet'></i>".html_safe, 
+						{:action => "wizard_kind_of_menu", :id => m['id']}, 
+						:confirm =>"Voulez vous vraiment modifier l'orientation de ce menu ?".trn,
+						:title => ( case m.link_type
+									when 'vertical_menu'
+										"Changer en menu horizontal".trn
+									when 'horizontal'
+										"Changer en menu vertical".trn
+									else
+										"Vertical/Horizontal".trn
+									end
+								  ),
+						:remote => true
+						)
+			%>		
+		  </td>
+		</tr>
+	  <%end%>
+	</table>
+
+<% end %>
+
+<h3><%="Création et modification des menus".trn%> :</h3>		 
+<div id="list_main_div">
+	<p><%="Choisissez d'abord un menu ci-dessus pour le gérer ensuite".trn%></p>
+</div>
+
+<br>
+<p><%="Vous pouvez également créer ou modifier vous-même d'autres menus".trn%> :<br />		 
+<ul>
+<%EsModule.get_menu_list('menu').each_with_index do |m,j|%>
+	<li><%=link_to(m[0],m[1])%></li>
+<%end%>
+</ul>
+<br>
+<%="Ensuite, vous pourrez revenir dans cet assistant.".trn%></p>
+
+	  
+	<script>
+		initajaxplus();			
+	</script>
+

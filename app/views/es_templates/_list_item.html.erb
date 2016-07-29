@@ -30,9 +30,10 @@
 	<%end%>				
   </td>
   <td>	
-	<%= image_tag(list_item.is_a_template == 'N' ? "appli/cancel_32.png" : "appli/ok_32.png",
-						    {:alt => "", :align => "middle", :border => "0",
-						    :class => "app_tooltip", :title => list_item.is_a_template == 'Y' ? "C'est un modèle".trn : "Ce n'est pas un modèle".trn, "data-placement" => "left"}) %>  
+	<%= EsTemplate.template_type_txt(list_item.template_type)%>
+  	<%unless list_item.is_dynamic %>
+		<%= "par fichier".trn %>  
+  	<%end%>
   </td>
   <td>
   	
@@ -42,16 +43,18 @@
 					url_for(:action => "design", :id => list_item['id']), 
 					:title =>"Dessiner le template".trn)
 		%>					
-	
-		<%= link_to("<i class='glyphicon glyphicon-list'></i>".html_safe, 
-					url_for(:action => "parts", :id => list_item['id']), 
-					:title =>"Définir les parties".trn)
-		%>					
-	  	
-		<%= link_to("<i class='glyphicon glyphicon-list-alt'></i>".html_safe, 
-					url_for(:action => "design_parts", :id => list_item['id']), 
-					:title =>"Placer les parties".trn)
-		%>					
+
+		<%unless list_item.template_type == 'PAGE_MODEL'%>
+			<%= link_to("<i class='glyphicon glyphicon-list'></i>".html_safe, 
+						url_for(:action => "parts", :id => list_item['id']), 
+						:title =>"Définir les parties".trn)
+			%>					
+		  	
+			<%= link_to("<i class='glyphicon glyphicon-list-alt'></i>".html_safe, 
+						url_for(:action => "design_parts", :id => list_item['id']), 
+						:title =>"Placer les parties".trn)
+			%>					
+		<%end%>
 	  	
 		<%= link_to("<i class='glyphicon glyphicon-remove-sign'></i>".html_safe, 
 					url_for(:action => "destroy", :id => list_item['id']), 
@@ -59,7 +62,20 @@
 					:title =>"Supprimer".trn)
 		%>					
 	<%else%>
-		<%= "Fichier template".trn %>  
+	  	<%if list_item.name != 'admin' %>
+			<%unless list_item.template_type == 'PAGE_MODEL'%>
+				<%= link_to("<i class='glyphicon glyphicon-list'></i>".html_safe, 
+							url_for(:action => "parts", :id => list_item['id']), 
+							:title =>"Définir les parties".trn)
+				%>					
+			<%end%>
+	
+			<%= link_to("<i class='glyphicon glyphicon-remove-sign'></i>".html_safe, 
+						url_for(:action => "destroy", :id => list_item['id']), 
+						:confirm =>"Voulez vous vraiment supprimer ce template ?".trn,
+						:title =>"Supprimer".trn)
+			%>					
+		<%end%>				
 	<%end%>				
 
 

@@ -1,5 +1,6 @@
 # encoding: UTF-8
 
+
 class EsTemplate < ActiveRecord::Base
 
   has_many :es_pages
@@ -8,12 +9,13 @@ class EsTemplate < ActiveRecord::Base
   belongs_to :es_category
 
   acts_as_multi_site
-  attr_accessible :name, :es_category_id, :description,:is_a_template, :validated
+  attr_accessible :name, :es_category_id, :description,:template_type, :validated, :es_template_line_ids
 #  acts_as_dynamic_model 
  
   validates_presence_of :name, :message => '#' + 'Le nom est obligatoire'.trn
   validates_presence_of :description, :message => '#' + 'La description est obligatoire'.trn
-  validates_presence_of :es_category_id, :message => '#' + 'La catégorie est obligatoire'.trn
+#  validates_presence_of :es_category_id, :message => '#' + 'La catégorie est obligatoire'.trn
+  validates_presence_of :template_type, :message => '#' + 'Le type est obligatoire'.trn
   validates_uniqueness_of :name, :message => "#" + "Ce template existe déjà".trn,:scope => :es_site_id
     
   before_destroy :check_dependances
@@ -37,8 +39,42 @@ class EsTemplate < ActiveRecord::Base
     return self.find_by_name(template_name).is_dynamic
   end
   
+  def self.change_musique(new_musique)
+    setup = EsSetup.find_by_name('musique_site')
+    if setup
+      setup.update_attribute('value',new_musique)
+      musique = EsSetup.get_setup("musique_site","")
+      Rails.application.config.current_musique = musique.blank? ? "" : (EsSetup.get_setup("répertoire_musique","public/") + musique)
+    end
+  end
+  
+  def self.change_template(new_template)
+    template_from = EsTemplate.find_by_name(Rails.application.config.current_template)
+    template_to = EsTemplate.find_by_name(new_template)
+    EsPage.where(:es_template_id => template_from.id).each do |page|
+      page.update_attribute(:es_template_id,template_to.id)
+    end
+    EsPage.all.each do |page|
+      page.update_attribute(:es_template_id,template_to.id) if page.es_template.blank?
+    end
+    Rails.application.config.current_template = template_to.name
+  end
+  
   def is_dynamic
-    return !File.exist?("#{Rails.root}/app/views/templates/_#{self.name}.html.erb")
+    return !File.exist?("#{Rails.root}/app/views/templates/_#{self.name.downcase}.html.erb")
+  end
+  
+  def self.template_type_txt(type_of_template)
+    return (case type_of_template
+                when "TEMPLATE"
+                  "Template"
+                when "PAGE"
+                  "Page"
+                when "PAGE_MODEL"
+                  "Modèle de page"
+                else
+                  list_item.template_type
+                end).trn
   end
   
   def check_dependances
@@ -59,7 +95,7 @@ class EsTemplate < ActiveRecord::Base
     self.es_template_lines.each_with_index do |l,i|
       l.update_attribute("num",i+1)
     end
-  end
+  end 
 
   def add_line(param_line)
     column_width        = []
@@ -82,43 +118,7 @@ class EsTemplate < ActiveRecord::Base
     
   end
 
-  
 
-  def generate_template_for_render(parts_containt)
-    text = generate_lines(self.id,0,{:empty => false,:drag_drop => false, :parts_containt => parts_containt})
-    return text.html_safe
-  end
-
-
-
-  def generate_design_empty
-    text = generate_lines(self.id,0,{:empty => true,:drag_drop => true})
-    return text.html_safe
-  end
-
-  def generate_design_with_part
-    text = generate_lines(self.id,0,{:empty => false,:drag_drop => true})
-    return text.html_safe    
-  end
-
-  def generate_design_part_available
-    parts = EsPart.all(:conditions => {:es_template_id => self.id})
-    
-    text = generate_tag(:p, "Partie(s) non placée(s) dans le template".trn)
-    parts.each_with_index do |p,i|
-      if (p.es_template_col_id.blank? || p.es_template_col_id == 0)
-        text_col   = generate_tag(:div, p.name, {:class => "label label-info"}) + \
-                     generate_tag(:div, p.description)
-        text_col   = generate_tag(:div, text_col, {:id => "template_part_#{p.id}"})
-        text       += text_col
-      end 
-    end 
-    text = generate_tag(:div, text, {:class => "col-md-12",:style => "border:1px solid red;padding:5px;"})
-    text = generate_tag(:div, text, {:class => "row drag_drop_template"})      
-
-    return text.html_safe
-  end
-  
   
   def save_design(containers)
     template_cols = []
@@ -133,57 +133,20 @@ class EsTemplate < ActiveRecord::Base
         else
           col_id  = template_cols[num_part.to_i - 1]
         end
-
         EsPart.find(part_id).update_attributes({:es_template_col_id => col_id, :num => part_caract[:num_row]})
       end
     end
   end
   
-  
-
-private
-
-  def generate_lines(template_id, parent_id,options={})
-    empty          = options[:empty].presence
-    empty          = false if empty.nil?
-    dr_dr          = options[:drag_drop].presence
-    dr_dr          = false if dr_dr.nil?
-    parts_containt = options[:parts_containt].presence||{}
-    
-    text = ""
-    tmp_lines = EsTemplateLine.all(:conditions => {:es_template_id => template_id, :es_col_parent_id => parent_id}, :order => "num")  
-    tmp_lines.each_with_index do |l,y|
-      text_line = ""
-      l.es_template_cols.each_with_index do |c,x|
-        if dr_dr
-          text_col = c.description.blank? ? "ligne %{line} colonne %{col}".trn(:line => y + 1, :col => x + 1) : c.description.limit(30)
-          text_col = generate_tag(:p, text_col)
-        else
-          text_col = ""
-        end
-        unless empty
-          c.es_parts.order('num').each do |p|
-            if dr_dr
-              text_part = generate_tag(:div, p.name, {:class => "label label-info"}) + \
-                          generate_tag(:div, p.description)
-                          
-              text_part = generate_tag(:div, text_part, {:id => "template_part_#{p.id}"})
-            else
-              text_part = parts_containt[p.name].presence || ""
-            end
-            text_col += text_part            
-          end
-        end
-        tmp_style = dr_dr ? "border:1px solid red;padding:5px;" : ""
-        
-        properties = EsContent.prepare_properties(c,nil,{:class => "col-md-#{c.width}",:style => tmp_style})
-        text_line += generate_tag(:div, text_col, properties)
-      end 
-      tmp_class = dr_dr ? "row drag_drop_template" : "row"      
-      properties = EsContent.prepare_properties(l,nil,{:class => tmp_class})
-      text += generate_tag(:div, text_line, properties)      
+  def self.load_template_file
+    tmp_dir = File.join(Rails.root,"app","views","templates")
+    Dir.entries(tmp_dir).each do |file|
+      if File.file?(File.join(tmp_dir, file)) && (File.extname(file)=='.erb' && file.starts_with?('_'))
+        name = file.split('.')[0][1..-1]
+        EsTemplate.create(:name => name, :description => "Fichier template '%{temp}'".trn(:temp => name), :validated => 'N', :es_category_id => 0,:template_type => 'TEMPLATE')  unless EsTemplate.where(:name => name).first
+      end
     end
-    text = generate_tag(:div, text, {:class => (self.is_a_template=='Y' ? "container" : '')}) unless dr_dr
-    return text
   end
+
+
 end

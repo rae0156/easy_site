@@ -6,28 +6,31 @@ class ModuleLoader
   LOAD_DIR      = ['initializers','mailers','models','controllers']
   INTERFACE_DIR = ['models','controllers','mailers']
 
-  def self.load_all_module
+  def self.load_all_module(module_name=nil, reload_version=false)
     module_dir = "#{Rails.root}/lib/modules"
     if File.directory?(module_dir) 
+      @modules_path=[]
       Dir.glob("#{module_dir}/*").each do |file|
         if  File.directory?(file)
           @module = file.split("/").last
-          load_one_module(file)
+          load_one_module(file,reload_version) if module_name.nil? || module_name==@module
         end           
       end
+      execute_install_to_end(@modules_path)
     end
   end  
   
   private
   
-  def self.load_one_module(module_path)  
+  def self.load_one_module(module_path,reload_version)  
     puts "======================================================="
     puts " Module : #{@module}"
     puts "======================================================="
     if check_module(module_path)  
       load_module_detail(module_path)
       loaded = load_interface
-      self.load_setup(module_path) if loaded && self.test_version
+      self.load_setup(module_path) if loaded && (reload_version==true || self.test_version)
+      @modules_path << module_path if EsModule.activated(@module)
     end     
     puts " "
   end
@@ -126,12 +129,14 @@ class ModuleLoader
   end
   
   def self.load_module_detail(module_path)
+    puts "Load elements for module"
     LOAD_DIR.each do |sub_rep|
-      Dir.glob("#{File.join(module_path,sub_rep)}/*").each do |file|
+      puts "  Load #{sub_rep}"
+      Dir.glob("#{File.join(module_path,sub_rep)}/*.rb").each do |file|
+        puts "    - #{file}"
         require file
       end
-    end
-    
+    end    
   end
 
   def self.test_version
@@ -166,9 +171,21 @@ class ModuleLoader
   def self.execute_install(module_path)
     rb_file = File.join(module_path,"install.rb")
     if File.exist?(rb_file)
-      puts "Exécution du programme d'installation pour le module '@module'"  
+      puts "Exécution du programme d'installation pour le module '#{@module}'"  
       load(rb_file)
     end    
+  end
+  
+  def self.execute_install_to_end(modules_path)
+    puts "Exécution des installations en fin de démarrage"
+    modules_path.each do |module_path|
+      rb_file = File.join(module_path,"install_end.rb")
+      if File.exist?(rb_file)
+        puts "  Installation de fin pour le module '#{module_path.split('/').last}'"  
+        load(rb_file)
+      end    
+    end    
+    puts " "
   end
   
   def self.delete_old_setup_part(paths=[])

@@ -1,0 +1,15 @@
+
+	  <h4><%= field_description "Données obligatoires", true %></h4>
+	  
+	  <div class="form-group">
+	    <label for="site_code" class="col-sm-4 control-label"><%= field_description "", true %> <%="Nom du site".trn%> : </label>
+		<div class="col-sm-8">
+			<%= text_field "site", "code", :maxlength => 20, :class => "form-control" %>
+	    </div>
+	  </div>
+	  <div class="form-group">
+	    <label for="site_description" class="col-sm-4 control-label"><%= field_description "", true %> <%="Description".trn%> : </label>
+	    <div class="col-sm-8">
+			<%= text_field "site", "description", :maxlength => 400, :class => "form-control" %>
+		</div>
+	  </div>

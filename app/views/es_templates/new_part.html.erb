@@ -9,7 +9,7 @@
 																							    }%></li>
 		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour".trn,:image => "appli/back_32.png", :action => "parts", :id => @template.id}%></li>
     </ul>
-	<%= errors_for(@part, "la création d'une partie".trn) %>
+	<%= errors_for(@part, "lors de la création d'une partie".trn) %>
 
 	<%= form_tag({ :action => 'create'}, { :name => 'template_part_form', :class => 'form-horizontal' }) do%>
 		

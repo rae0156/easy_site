@@ -7,8 +7,6 @@ class EasyGenerateCarouselsController < EsMediaFilesController
                        :max_level => 2,
                        :model_level => ['EasyGenerateCarousel','EasyGenerateCarouselDetail']
                        }
-                       
-    @columns_screen = []
     super
   end 
   

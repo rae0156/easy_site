@@ -95,6 +95,9 @@ setup:
     specific:
       about: Le module post-it fonctionne avec le module action <<long_string-N-A propos de>>
 
+menus:
+  menu_entry_points: Y <<boolean>>
+
 controllers: 
   entry_point_names:
     PostitsController: Post it

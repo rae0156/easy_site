@@ -7,8 +7,6 @@ class MenuSidesController < EsMenusController
                        :max_level => 2,
                        :model_level => ['MenuSide',['MenuElement','MenuDetail','MenuSep','MenuDetailActCtrl']]
                        }
-                       
-    @columns_screen = []
     super
   end 
   

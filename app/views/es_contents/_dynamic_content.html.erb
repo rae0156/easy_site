@@ -2,33 +2,31 @@
 			  <%= render :partial => 'layouts/part_message_ajax' %>
 		</div>
 
-		<h3 class="toggle_by_ref" data-reference-class='ref_1'>		  		
+		<h3 class="toggle_by_ref init_view" data-reference-class='ref_2'>		  		
 		  <%="Eléments disponibles et nouveaux éléments".trn%>
-		</h3>
-		<div class='ref_1'>
+		</h3> 
+		<div class='ref_2'>
 			<%if @content_detail.es_content_detail_elements.size < 15 %>
 				<p><%="Il y a %{nbr} élément(s) dans cette partie".trn(:nbr => @content_detail.es_content_detail_elements.size)%></p>
-			    <%=
-			    			link_to("<div class='btn btn-primary'><i class='glyphicon glyphicon-floppy-disk'></i> #{"Sauver la disposition".trn}</div>".html_safe, 
-								"#", 
-								:confirm =>"Voulez vous vraiment supprimer ce contenu ?".trn,
-								:title =>"Supprimer ce contenu".trn, :id => "save_design")
-				%>
 
 				<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-eye-open'></i> #{(session[:dynamic_content_view_normal] ? "Mode paramétrage" : "Mode réel").trn}",:image => "",:action => "#",:html_option=>{:id => "change_dynamic_content_view", :remote => true, :class => "to_save_before_action btn btn-primary"},:no_div=> true}%>
-				<br/>
-				<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-font'></i> #{"Nouveau texte".trn}",:image => "",:action => "#",:html_option=>{:id => "text", :remote => true, :class => "to_save btn btn-primary"},:no_div=> true}%>
-				<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-picture'></i> #{"Nouvelle image".trn}",:image => "",:action => "#", :html_option=>{:id => "image", :remote => true, :class => "to_save btn btn-primary"},:no_div=> true}%>
-				<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-link'></i> #{"Nouveau lien".trn}",:image => "",:action => "#", :html_option=>{:id => "link", :remote => true, :class => "to_save btn btn-primary"},:no_div=> true}%>
-				<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-facetime-video'></i> #{"Nouvelle vidéo".trn}",:image => "",:action => "#", :html_option=>{:id => "video", :remote => true, :class => "to_save btn btn-primary"},:no_div=> true}%>
-				<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-pencil'></i> #{"Nouveau contenu libre".trn}",:image => "",:action => "#", :html_option=>{:id => "free", :remote => true, :class => "to_save btn btn-primary"},:no_div=> true}%>
-				<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-folder-open'></i> #{"Nouveau parent".trn}",:image => "",:action => "#", :html_option=>{:id => "parent", :remote => true, :class => "to_save btn btn-primary"},:no_div=> true}%>
+				<%unless session[:dynamic_content_view_normal]%>
+				    <%= link_to("<div class='btn btn-primary'><i class='glyphicon glyphicon-floppy-disk'></i> #{"Sauver la disposition".trn}</div>".html_safe, "#", :id => "save_design")%>
+				    <%= link_to("<div class='btn btn-primary'><i class='glyphicon glyphicon-refresh'></i> #{"Rafraichir sans sauver".trn}</div>".html_safe, "#", :id => "refresh_without_save")%>
+					<br/>
+					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-font'></i> #{"Nouveau texte".trn}",:image => "",:action => "#",:html_option=>{:id => "text", :remote => true, :class => "to_save btn btn-primary"},:no_div=> true}%>
+					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-picture'></i> #{"Nouvelle image".trn}",:image => "",:action => "#", :html_option=>{:id => "image", :remote => true, :class => "to_save btn btn-primary"},:no_div=> true}%>
+					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-link'></i> #{"Nouveau lien".trn}",:image => "",:action => "#", :html_option=>{:id => "link", :remote => true, :class => "to_save btn btn-primary"},:no_div=> true}%>
+					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-facetime-video'></i> #{"Nouvelle vidéo".trn}",:image => "",:action => "#", :html_option=>{:id => "video", :remote => true, :class => "to_save btn btn-primary"},:no_div=> true}%>
+					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-pencil'></i> #{"Nouveau contenu libre".trn}",:image => "",:action => "#", :html_option=>{:id => "free", :remote => true, :class => "to_save btn btn-primary"},:no_div=> true}%>
+					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-folder-open'></i> #{"Nouveau parent".trn}",:image => "",:action => "#", :html_option=>{:id => "parent", :remote => true, :class => "to_save btn btn-primary"},:no_div=> true}%>
+				<%end%>
 			<%else%>
-				<p class='alert alert-info'><%="Vous avez atteint le nombre maximum d'éléments (15) dans un partie".trn%></p>
+				<p class='alert alert-info'><%="Vous avez atteint le nombre maximum d'éléments (15) dans un partie. Vous devez en supprimer certains".trn%></p>
 			<%end%>
 
 			<div id="element_properties">
-				  <%= render :partial => 'element_properties' %>
+				  <%= render :partial => 'es_contents/element_properties' %>
 			</div>
 
 
@@ -60,7 +58,9 @@
 				$.ajax({
 			        url: "/es_contents/" + element.attr('id') + "/<%=@content_detail.id%>",
 			        dataType: 'script'
-			    });	  
+			    }).done(function() {
+						init_toggle_by_ref();
+			    	});	  
 			});
 		   	return false;  			
 		});		
@@ -86,10 +86,20 @@
 		$( ".edit_element" ).click(function() {
 			
 			ref = $(this).data('reference')
+			
+			element = $(this)
 			$.ajax({
-		        url: "/es_contents/edit_element_parts/" + ref,
+		        url: "/es_contents/update_dynamic_content_parts/<%=@content_detail.id%>",
+		        data: { parts: get_template_parts() },
+		        proccessData: false,
+		        type: "POST",
 		        dataType: 'script'
-		    });
+		    }).done(function() {
+				$.ajax({
+			        url: "/es_contents/edit_element_parts/" + ref,
+			        dataType: 'script'
+			    });
+			});
 		   	return false;  			
 		});		
 		
@@ -103,6 +113,35 @@
 		        dataType: 'script'
 		    });
 		   	return false;  			
+		});	
+			
+		$( "#refresh_without_save" ).click(function() {
+			element = $(this)
+			$.ajax({
+		        url: "/es_contents/update_dynamic_content_parts/<%=@content_detail.id%>",
+		        data: {},
+		        proccessData: false,
+		        type: "POST",
+		        dataType: 'script'
+		    });
+		   	return false;  			
 		});		
 	});
 </script>
+
+
+<script>
+	$(document).ready(function() {
+		$('.label-info-hiden').hover(	  	  
+		  function () {
+			$(this).children("a:first").show();
+			$(this).css("z-index", "99");
+		  }, 
+		  function () {
+			$(this).css("z-index", "0");
+			$(this).children("a:first").hide();
+		  }
+		);	
+	});
+</script>
+

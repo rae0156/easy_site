@@ -1,0 +1,50 @@
+<% 
+	case @object.class.name
+		when "ResAction" 
+			title 		= @object.new_record? ? "Nouvelle action pour %{year}" : "Modifier une action pour %{year}"
+			tmp_render	= "form_action"
+		when "ResResource" 
+			title 		= @object.new_record? ? "Nouvelle ressource pour %{year}" : "Modifier une ressource pour %{year}"
+			tmp_render	= "form_resource"
+		when "ResEval" 
+			title 		= @object.new_record? ? "Nouvelle évaluation pour %{year}" : "Modifier une évaluation pour %{year}"
+			tmp_render	= "form_eval"
+		when "ResCategory" 
+			title 		= @object.new_record? ? "Nouvelle description pour %{year}" : "Modifier la description de la catégorie"
+			tmp_render	= "form_description"
+		else
+			title = ""
+	end
+
+	@title 		= title.trn(:year => @year) 
+%>
+
+<div class="center-menu">
+    <h2><%= @title %></h2>
+	<ul>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/save_32.png", :action => "create_action", :id => @object.id, :param_goto => {:object_type => @object.class.name},  :form => "resource_form", :remote => true, :html_option => {:id => 'save_tinymce'}}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour".trn,:image => "appli/back_32.png", :action => "show_resources", :html_option => {:remote => true}}%></li>
+	</ul>
+	<div class="clearer"></div>
+</div>
+
+<%= form_tag({}, { :name => 'resource_form', :id => 'resource_form', :class => 'form-horizontal' }) do%>
+	
+	<!-- Error messages -->
+	<%= errors_for(@object) %>
+	<%if @object.class.name != 'ResCategory'%>
+	    <%= easy_tag('hidden',:instance => "object", :field => "res_category_id") %>
+    	<%= easy_tag('hidden',:instance => "object", :field => "sequence") %>
+	<%end%>
+	
+	<div>
+	  	<%= render :partial => tmp_render %>
+	</div>
+<% end %>
+
+<div class="center-menu">
+	<div class="clearer"></div>
+	<ul>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/save_32.png", :action => "create_action", :id => @object.id, :param_goto => {:object_type => @object.class.name},  :form => "resource_form", :remote => true, :html_option => {:id => 'save_tinymce'}}%></li>
+	</ul>
+</div>

@@ -1,0 +1,33 @@
+
+<%= form_tag({}, { :name => 'admin_form',:class => 'form-horizontal'}) do%>
+
+	  <div class="form-group">
+	    <label class="col-sm-3 control-label"><%="Modèle installé".trn%> :</label>
+		<div class="col-sm-5">
+	      	<%= easy_tag('label',:label => @template, :style => "background-color:inherit;") %>
+	    </div>
+	  </div>
+
+	  <div class="form-group">
+	    <label for="admin_template" class="col-sm-3 control-label"><%="Nouveau modèle".trn%> :</label>
+		<div class="col-sm-5">
+		    <%=  collection_select(:admin, :template, EsTemplate.all(:conditions => {:validated => 'Y',:template_type=>'TEMPLATE'}).sort_by{|t| t.name}, :name, :name, {:selected => @template},{:ajax_action => "wizard_model_preview", :class => "form-control"}) %>
+	    </div>
+		<div class="col-sm-1 btn btn-default">
+			<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn, :action => "wizard_choose_model",  :form => "admin_form"}%>
+	    </div>
+	  </div>
+
+	  <div id="div_wizard_model_preview">
+		  <%= render :partial => 'wizard_model_preview' %>	
+	  </div>
+
+	<p><%="Vous pouvez également créer ou modifier vous-même".trn%> <%=link_to("des modèles".trn,{:controller => "es_templates", :action => "list"})%>.
+	<br>
+	<%="Ensuite, vous pourrez revenir dans cet assistant.".trn%></p>
+<% end %>
+	  
+
+	<script>
+		initajaxplus();			
+	</script>

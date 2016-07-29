@@ -1,3 +1,4 @@
+# encoding: UTF-8
 class DynExport < ActiveRecord::Base
 
   has_es_interface_models
@@ -5,19 +6,37 @@ class DynExport < ActiveRecord::Base
   has_many :dyn_export_details
 
   acts_as_dynamic_model([
-                      {:name              => "code",
+                     { :name              => "code",
+                       :column_name       => "Code".trn,
+                       :dynamic_filter    => false,
+                       :dynamic_search    => false,
+                       :search            => false,
                        :order_load        => 1,
                        :field_key         => true,
                        :upper_case        => true,
                        :mandatory         => true
                       },
-                      {:name              => "name",
+                     { :name              => "name",
+                       :link_show         => false,
+                       :link_update       => false,
+                       :column_name       => "Nom".trn,
+                       :dynamic_filter    => false,
+                       :dynamic_search    => false,
+                       :search            => false,
                        :mandatory         => true,
                        :order_load        => 2
                       },
-                      {:name              => "description",
+                     { :name              => "description",
+                       :column_name       => "Description".trn,
+                       :dynamic_filter    => false,
+                       :dynamic_search    => false,
                        :order_load        => 3
                       },
+                     { :name              => "active",
+                       :column_name       => "Activé".trn,
+                       :dynamic_filter    => false,
+                       :dynamic_search    => false
+                      }
                       ],{
                         :audit_model=>false,
                         :delete_if_inactive => true

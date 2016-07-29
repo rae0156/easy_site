@@ -5,5 +5,13 @@
 	    </div>
 	<%   flash.delete(:message_ajax)
 	   end %>
+	   
+	<% if flash[:error_message_ajax].present? %>
+		<div role="alert" class="alert alert-danger fade in">
+	      <button data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>
+	      <%= flash[:error_message_ajax] %>
+	    </div>
+	<%   flash.delete(:error_message_ajax)
+	   end %>
 
     

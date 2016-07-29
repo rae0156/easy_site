@@ -1,0 +1,39 @@
+#Please stop and start server after changing this file
+
+#Default setup
+---
+default:
+  format: ! '%prefix% [%level%: %month%%day% %time% %milli% %pid%-%client%] %logid%
+    (%timing%) %caller%'
+  prefix: Tacti@log
+  file: ! '%env%_tactical.log'
+  action_model: valivation,save,update,create,destroy,special
+  action_controller: before,after
+  action_list: index
+  user_field: login
+  user_justify: 10
+  level: DEBUG
+  console: false
+  level_model: 3
+  log_to: file
+  scope: ENV:development,MODEL:[ALL],CONTROLLER:[ALL]
+#Specific setup
+--- {}
+
+#sample model
+---
+sample_model:
+  file: ! '%env%_tactical_%class%.log'
+  level: DEBUG
+  action_model: all
+#sample controller
+---
+sample_controller:
+  file: ! '%env%_tactical_%class%.log'
+  action_controller: all
+#sample environment
+---
+sample_env:
+  file: ! '%env%_tactical.log'
+  console: true
+  log_to: table

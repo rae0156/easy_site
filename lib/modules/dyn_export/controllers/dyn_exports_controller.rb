@@ -14,32 +14,6 @@ class DynExportsController < DynamicController
                                            ]  
                         }
     
-    @columns_screen=[
-                     { :name              => "code",
-                       :column_name       => "Code".trn,
-                       :dynamic_filter    => false,
-                       :dynamic_search    => false,
-                       :search            => false
-                      },
-                     { :name              => "name",
-                       :link_show         => false,
-                       :link_update       => false,
-                       :column_name       => "Nom".trn,
-                       :dynamic_filter    => false,
-                       :dynamic_search    => false,
-                       :search            => false
-                      },
-                     { :name              => "description",
-                       :column_name       => "Description".trn,
-                       :dynamic_filter    => false,
-                       :dynamic_search    => false
-                      },
-                     { :name              => "active",
-                       :column_name       => "Activé".trn,
-                       :dynamic_filter    => false,
-                       :dynamic_search    => false
-                      }
-                      ]
     super
   end 
 

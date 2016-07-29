@@ -1,0 +1,16 @@
+<!-- Data table header and content -->
+<table cellpadding="4" width="100%" class='table'>
+  <tr>
+    <th><%="Code".trn%></th>
+    <th><%="Description".trn%></th>
+    <th><%="Activé".trn%></th>
+    <th><%="En cours".trn%></th>
+    <th><%="Protégé".trn%></th>
+    <th></th>
+  </tr>
+  <%= render :partial => 'list_item', :collection => @sites %>
+</table>
+
+<%= will_paginate @sites, :params => params, :previous_label => '<< ' + "Précédent".trn, :next_label => "Suivant".trn + ' >>' %>
+<%= page_entries_info @sites, :model => "Site".trn %>
+

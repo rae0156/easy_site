@@ -1,5 +1,44 @@
 # encoding: UTF-8
 
+=begin
+    [
+      { :title => "titre 1",
+        :title_1 => "sous titre 1",
+        :group_1 => [{:name          => 'nom_1',
+                      :format        => "string",
+                      :value         => "test",
+                      :description   => "libellé"
+                      }
+                    ],
+        :title_2 => "sous titre 2",
+        :group_2 => [{:name          => 'nom_2',
+                      :format        => "string",
+                      :value         => "test",
+                      :description   => "libellé"
+                      }
+                    ],
+        },
+      { :title => "titre 2",
+        :title_1 => "sous titre 1",
+        :group_1 => [{:name          => 'nom_3',
+                      :format        => "string",
+                      :value         => "test",
+                      :description   => "libellé"
+                      }
+                    ],
+        :title_2 => "sous titre 2",
+        :group_2 => [{:name          => 'nom_4',
+                      :format        => "string",
+                      :value         => "test",
+                      :description   => "libellé"
+                      }
+                    ],
+        }
+      
+    ]
+=end
+
+
 module FormHelper
 
   def easy_generate_form(tabs=[])
@@ -43,7 +82,7 @@ module FormHelper
     
     if text_array.size > 0
       text_array.each_with_index do |tmp,i|
-        text += (title_group[i].blank? ? "" : generate_tag(:DIV, title_group[i], {:class => "panel-heading"})) + generate_tag(:DIV, tmp, {:class => "panel-body"})
+        text += (title_group[i].blank? ? "" : generate_tag(:DIV, generate_tag(:H4, title_group[i]), {:class => "panel-heading"})) + generate_tag(:DIV, tmp, {:class => "panel-body bg-primary"})
       end
       text = generate_tag(:DIV, text, {:class => "panel panel-primary"})  
     end
@@ -76,7 +115,7 @@ module FormHelper
         value_list  = element[:value_list].presence || []
         value_list.reject!(&:empty?) unless value_list.blank?
         addon_param = element[:addon_params].presence || ""
-        span_size   = 9
+        span_size   = 8
         case format
         when "get"
           tmp_list_value = nil
@@ -155,7 +194,7 @@ module FormHelper
         end
         mandatory_text = mandatory ? (easy_tag('mandatory',:label => "") + " ") : ""
 
-        text=generate_tag(:div, generate_tag(:label, mandatory_text + description , {:class => "col-sm-3 control-label", :for => "generated_#{name}"}) + generate_tag(:div, text, {:class => "col-sm-#{span_size}"}), {:class => "form-group"})
+        text=generate_tag(:div, generate_tag(:label, mandatory_text + description , {:class => "col-sm-4 control-label", :for => "generated_#{name}"}) + generate_tag(:div, text, {:class => "col-sm-#{span_size}"}), {:class => "form-group"})
       end
     end
     return text.html_safe

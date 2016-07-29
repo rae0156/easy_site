@@ -40,7 +40,7 @@ class EsModule < ActiveRecord::Base
       end
       tmp_setup = []
       content_detail.es_content_detail_params.each_with_index do |setup,i| 
-        tmp_setup << add_setup(setup.setup_name, setup.value  , :description => setup.description, :format => setup.type_setup, :read_only => (setup.updatable=='N' ? 'Y' : 'N'), :value_list => (setup.value_list || "").split(','))
+        tmp_setup << add_setup(setup.setup_name, setup.value  , :description => setup.description, :format => setup.type_setup, :read_only => (setup.updatable=='N' ? 'Y' : 'N'), :value_list => (setup.value_list || "").split(','), :addon_params => setup.value_list)
       end
       tab[:group_1] = tmp_setup
     end
@@ -239,7 +239,7 @@ private
         tmp_setup << add_setup("nocontent_#{i}"      , 'Pas de paramétrage pour ce contenu'.trn             ,:format => 'text', :description=>''       , :read_only => "Y")
       else
         setups.each_with_index do |setup,j| 
-          tmp_setup << add_setup("content_#{setup.id}"   , setup.value  , :description => setup.description, :format => setup.type_setup, :read_only => (setup.updatable=='N' ? 'Y' : 'N'), :value_list => (setup.value_list || "").split(','))
+          tmp_setup << add_setup("content_#{setup.id}"   , setup.value  , :description => setup.description, :format => setup.type_setup, :read_only => (setup.updatable=='N' ? 'Y' : 'N'), :value_list => (setup.value_list || "").split(','), :addon_params => setup.value_list)
         end
       end
       tab["title_#{i+1}".to_sym]   = "Contenu '%{action}'".trn(:action => (setup_description.blank? ? action : setup_description.value))
@@ -328,7 +328,6 @@ private
   
   def self.get_menu_list(module_name)
     menus=[]
-   
     setup1 = EsModule.find(:first,:conditions => ["path_setup = ? AND module_name = ? AND setup_name = ?","menus",module_name,"menu_entry_points"])
     if setup1 && setup1.value=='Y'
       setup_controllers = EsModule.find(:all,:conditions => ["path_setup = ? AND module_name = ?","controllers/entry_point_names",module_name])

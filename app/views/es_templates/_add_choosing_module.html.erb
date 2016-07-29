@@ -1,0 +1,31 @@
+	  <h3><%="Ajout d'un élément de module dans %{name}".trn(:name => @template_col.description)%></h3>
+		<div class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Ajouter l'élément".trn,:image => "appli/save_32.png", :action => "#",:html_option => {:id => "add_module_element"}}%></div>
+		<div class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour au dessin".trn,:image => "appli/back_32.png", :action => "#",:html_option => {:id => "back_design"}}%></div>
+	  <div class="form-group" id="option_module">
+	    <label for="content_content_type" class="col-sm-4 control-label"><%="Nom de l'action du module".trn%> : </label>
+	    <div class="col-sm-8">
+			<%= easy_tag('list',:instance => "content", :field => "module_action_name",:value_list_array => EsModule.get_module_action_list_choice,:number_of_line=>1,:multiple => false)%>
+		</div>
+	  </div>
+
+<script>
+
+	$(document).ready(function() {
+		$( "#add_module_element" ).click(function() {
+			$.ajax({
+		        url: "/es_templates/save_module_elem/<%=@template_col.id%>",
+		        data: $('#admin_form').serialize(),
+		        dataType: 'script'
+		    });	    
+			return false;
+		});		
+		$( "#back_design" ).click(function() {
+			$.ajax({
+		        url: "/es_templates/refresh_design/<%=@template.id%>",
+		        dataType: 'script'
+		    });	    
+			return false;
+		});		
+	});
+	
+</script>

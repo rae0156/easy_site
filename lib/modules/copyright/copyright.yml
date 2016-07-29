@@ -15,6 +15,9 @@ setup:
         Le module Copyright a été créé par ANDRE Régis.
         Il permet l'affichage des droits ainsi que les crédits.
         <<long_string-Y-A propos de>>
+menus:
+  menu_entry_points: Y <<boolean>>
+
 controllers: 
   entry_point_names:
     CopyrightController: Gestion des droits d'auteur

@@ -1,11 +1,12 @@
 <div>
 	<h3><%="Dessin du template".trn%></h3>
-	<%= @template.generate_design_empty %>
+	<%= generate_design_empty(@template.name) %>
+	
 </div>
 
 <!-- Error messages -->	
-<%= errors_for(flash[:errors_destroy], "la suppression d'une ligne de template".trn).html_safe if flash[:errors_destroy] %>
-<%= errors_for(flash[:errors_add], "l'ajout d'une ligne de template".trn).html_safe if flash[:errors_add] %>
+<%= errors_for(flash[:errors_destroy], "lors de la suppression d'une ligne de template".trn).html_safe if flash[:errors_destroy] %>
+<%= errors_for(flash[:errors_add], "lors de l'ajout d'une ligne de template".trn).html_safe if flash[:errors_add] %>
 
 <div>
 	<h3><%="Lignes existantes".trn%></h3>

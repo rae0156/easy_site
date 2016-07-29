@@ -1,0 +1,29 @@
+    <h3><%="Renomer la partie '%{name}'".trn(:name => @part.name)%></h3>
+	<div class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Renomer cette partie".trn,:image => "appli/save_32.png", :action => "#",:html_option => {:id => "save_rename_part"}}%></div>
+	<div class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour au dessin".trn,:image => "appli/back_32.png", :action => "#",:html_option => {:id => "back_design"}}%></div>
+
+	<%= errors_for(@part, "lors de la modification d'une partie".trn) %>
+    <%= render :partial => 'form_part' %>
+
+
+<script>
+
+	$(document).ready(function() {
+		$( "#save_rename_part" ).click(function() {
+			$.ajax({
+		        url: "/es_templates/save_rename_part/<%=@part.id%>",
+		        data: $('#admin_form').serialize(),
+		        dataType: 'script'
+		    });	    
+			return false;
+		});		
+		$( "#back_design" ).click(function() {
+			$.ajax({
+		        url: "/es_templates/refresh_design/<%=@template.id%>",
+		        dataType: 'script'
+		    });	    
+			return false;
+		});		
+	});
+	
+</script>

@@ -8,7 +8,7 @@ class EsTemplateLine < ActiveRecord::Base
 
 
   acts_as_multi_site
-  attr_accessible :num, :es_template_id, :es_col_parent_id
+  attr_accessible :num, :es_template_id, :es_col_parent_id, :es_template_col_ids
  
   validates_presence_of :num, :message => '#' + 'Le numéro est obligatoire'.trn
   validates_uniqueness_of :num, :case_sensitive => false,:scope => [:es_template_id,:es_col_parent_id,:es_site_id], :message => "#" + "Cette ligne de template existe déjà".trn
@@ -24,7 +24,11 @@ class EsTemplateLine < ActiveRecord::Base
  
   # it is an example, but not necessary if you have a field called 'ISO','CODE' or 'NAME'
   def get_audit_label
-    "#{self.es_template.name} #{self.num.to_i}"
+    if self.es_template
+      "#{self.es_template.name} #{self.num.to_i}"
+    else
+      "[template] #{self.num.to_i}"
+    end
   end
   
   def check_delete_line

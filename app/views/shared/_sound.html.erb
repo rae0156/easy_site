@@ -1,0 +1,19 @@
+	<%
+		tmp_sound = (@previous_sound||Rails.application.config.current_musique).split('/')
+		unless tmp_sound.blank?
+			tmp_sound[0] = '' if tmp_sound[0] == "public" 
+	 		tmp_sound[-1] = File.basename(tmp_sound[-1], '.*')
+			tmp_sound = tmp_sound.join("/") 
+		else
+			tmp_sound = ""
+		end
+	%>
+	<%if !tmp_sound.blank? %>
+		<audio preload="none" autoplay="autoplay" loop="loop">
+		  <source src="<%=tmp_sound%>.mp3" type="audio/mp3" />
+		  <source src="<%=tmp_sound%>.wav" type="audio/wav" />
+		  <source src="<%=tmp_sound%>.ogg" type="audio/ogg" />
+		</audio>
+    <%end%>
+
+

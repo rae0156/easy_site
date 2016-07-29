@@ -4,15 +4,17 @@
 	  <div class="form-group">
 	    <label for="part_name" class="col-sm-4 control-label"><%= field_description "", true %> <%="Nom de la partie".trn%> : </label>
 		<div class="col-sm-8">
-	      	<%if ["edit_part","update_part"].include?(params[:action])%>
+	      	<%if ["edit_part","update_part"].include?(params[:action])  || (!@part.is_dynamic && !@part.id.blank?)%>
 		      	<%= easy_tag('label',:label => @part.name) %>
+	      	<%elsif ["rename_part","save_rename_part"].include?(params[:action])%>
+				<%= text_field "part", "name", :maxlength => 200, :class => "form-control" %>
 	      	<%else%>
 		      	<%= select("part", "name", @name_list, {}, :class => "form-control") %>
 	      	<%end%>
 	    </div>
 	  </div>
 	  <div class="form-group">
-	    <label for="part_description" class="col-sm-4 control-label"><%= field_description "", true %> <%="Description".trn%> : </label>
+	    <label for="part_description" class="col-sm-4 control-label"><%="Description".trn%> : </label>
 	    <div class="col-sm-8">
 			<%= text_field "part", "description", :maxlength => 4000, :class => "form-control" %>
 		</div>

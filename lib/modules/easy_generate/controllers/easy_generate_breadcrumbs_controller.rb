@@ -7,8 +7,6 @@ class EasyGenerateBreadcrumbsController < EsMediaFilesController
                        :max_level => 2,
                        :model_level => ['EasyGenerateBreadcrumb','EasyGenerateBreadcrumbDetail']
                        }
-                       
-    @columns_screen = []
     super
   end 
   

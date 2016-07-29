@@ -50,6 +50,9 @@ class EsUser < ActiveRecord::Base
     return (self.errors.empty?)
   end
 
+  def complete_name
+    return self.name + ' ' + self.firstname
+  end
 
   def validate_user
 
@@ -120,6 +123,13 @@ class EsUser < ActiveRecord::Base
     end
   end
 
+  def self.role?(role)
+    if self.current_user.blank?
+      return false
+    else
+      return self.current_user.role?(role)
+    end
+  end
 
   def role?(role)
     if role.is_a?(Array) && self.es_roles

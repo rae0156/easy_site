@@ -1,0 +1,55 @@
+
+<div class="alert alert-info">
+	<%if !@year.blank?%> 
+	<span style="float:right;">
+		<%if (@user.blank? || @user==0) && (@category.blank? || @category==0) && EsUser.role?('admin') %> 
+			<%unless ResStatus.get_default_status.blank?%> 
+				<%= link_to("<i class='glyphicon glyphicon-share'></i>".html_safe, {:action => 'create_other', :year => year_eval},{:remote=>true, :title => "Créer une autre année à partir de '%{year}'".trn(:year => @year)})%>
+			<%end%> 
+			<%if EsSetup.get_setup('ressource_suppression_action',nil)=='supprimer'%>
+				<%= link_to("<i class='glyphicon glyphicon-remove'></i>".html_safe, {:action => 'remove', :year => year_eval},{:remote=>true, :title => "Supprimer l'année '%{year}'".trn(:year => @year), :confirm =>"Voulez vous vraiment supprimer toute l'année '%{year}' ?".trn(:year => @year)})%>
+			<%else%> 
+				<%= link_to("<i class='glyphicon glyphicon-remove'></i>".html_safe, {:action => 'remove', :year => year_eval},{:remote=>true, :title => "Désactiver l'année '%{year}'".trn(:year => @year), :confirm =>"Voulez vous vraiment désactiver l'année '%{year}' ?".trn(:year => @year)})%>
+			<%end%> 
+		<%end%> 
+		<%if (@category.blank? || @category==0)%> 
+			<%if (EsUser.role?('user') && !@user.blank? && @user==EsUser.current_user.id) || EsUser.role?('admin')%> 
+				<%= link_to("<i class='glyphicon glyphicon-check'></i>".html_safe, {:action => 'show_need', :year => year_eval},{:remote=>true, :title => "Gérer le besoin de l'année '%{year}'".trn(:year => @year)})%>
+			<%end%> 
+			<%if EsUser.role?('admin') || (EsUser.role?('user') && !@user.blank? && @user==EsUser.current_user.id)%> 
+				<%= link_to("<i class='glyphicon glyphicon-signal'></i>".html_safe, {:action => 'show_stock', :year => year_eval},{:remote=>true, :title => "Gérer le stock de l'année '%{year}'".trn(:year => @year)})%>
+			<%end%> 
+		<%end%> 
+		
+		<%= link_to("<i class='glyphicon glyphicon-print'></i>".html_safe, {:action => 'print', :year => year_eval},{:title => "Imprimer l'année '%{year}'".trn(:year => @year)})%>
+	</span>
+	<%end%> 
+	<p class="toggle_by_ref" data-reference-class='ref_ressource_filter'>		  		
+	  <%="Filtres et options".trn%>
+	</p>
+</div>
+<div class='ref_ressource_filter alert'>
+	<div class="form-inline">
+	  <div class="form-group">
+	  	<%= "Année".trn%> :  
+		<%= easy_tag('list',:instance => "filter", :field => "year",:value_list_array => ResCategory.get_years, :selected_value => @year,:number_of_line=>1,:multiple => false, :ajax_action => "init_category")%>
+	  </div>
+	  <div id="resource_filter_cat_div" class="form-group">
+	  	<%= render :partial => 'resource_filter_cat' %>
+	  </div>
+	  <div class="form-group">
+	  	<%= "Utilisateur".trn%> :  
+		<%= easy_tag('list',:instance => "filter", :field => "user",:value_list_array => EsUser.order("name,firstname").all.map{|u| [u.complete_name,u.id]}, :selected_value => @user,:number_of_line=>1,:multiple => false)%>
+	  </div>
+
+		<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-refresh'></i>", 
+																	:action => "show_resources_filter",
+																	:no_div => true,
+																	:form => 'resource_form',
+																	:html_option => {:class => "btn-sm", :remote => true, :title =>"Filtrer".trn}}%>
+	</div>
+</div>
+
+	<script>
+		initajaxplus();			
+	</script>

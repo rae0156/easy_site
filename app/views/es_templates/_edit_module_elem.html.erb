@@ -1,0 +1,29 @@
+	  <h3><%="Modification de la partie '%{name}'".trn(:name => @part.name)%></h3>
+	  <div class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver l'élément".trn,:image => "appli/save_32.png", :action => "#",:html_option => {:id => "save_module_element"}}%></div>
+	  <div class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour au dessin".trn,:image => "appli/back_32.png", :action => "#",:html_option => {:id => "back_design"}}%></div>
+
+	<%= errors_for(@contentdetail) %>
+    <%= render 'es_contents/form_setup' %>
+
+
+<script>
+
+	$(document).ready(function() {
+		$( "#save_module_element" ).click(function() {
+			$.ajax({
+		        url: "<%=url_for(:controller => 'es_templates', :action => 'update_module_elem', :id => @contentdetail.id, :template_id => @template.id)%>",
+		        data: $('#admin_form').serialize(),
+		        dataType: 'script'
+		    });	    
+			return false;
+		});		
+		$( "#back_design" ).click(function() {
+			$.ajax({
+		        url: "/es_templates/refresh_design/<%=@template.id%>",
+		        dataType: 'script'
+		    });	    
+			return false;
+		});		
+	});
+	
+</script>

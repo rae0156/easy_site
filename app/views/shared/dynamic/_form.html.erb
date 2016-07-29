@@ -7,36 +7,32 @@
     <%=hidden_field(:instance, :model_type,:value => @instance.class.name)%>
   <%end%>
 
+
 	<%@columns_screen.each do |column|
 		display = column["display_#{params[:action]}".to_sym]
 		value_field = @instance.respond_to?(column[:name]) ? @instance.send(column[:name]) : ""
 		if (display.nil? ? true : display) && column[:name].split('.').count==1%>
 
-		  <div class="form-group">
-		
-		    <label for=<%="instance_#{column[:name]}"%> class="col-sm-3 control-label">
-			  <%if column[:mandatory] && !tmp_readonly%>
-	  			  <%= field_description "", true %>
-	    	  <%end%>
-			  <%unless column[:column_name].blank?%>
-	    		<%=column[:column_name]%> :
-	    	  <%end%>
-		    </label>
-  		    <div class="col-sm-8">
 			<%if column[:name] == 'sequence'%>
-				<%= text_field(:instance, column[:name],{:disabled => true,:readonly => tmp_readonly, :class => "form-control"})%>
+				<%= easy_tag('text', :read_only => true, :instance => "instance", :field => column[:name], :mandatory => column[:mandatory] && !tmp_readonly, :with_label => column[:column_name], :bootstrap_form => true) %>
 			<%elsif column[:name] == 'parent_id'%>
-				<%=hidden_field(:instance, column[:name],:value => (@parent.blank? ? 0 : @parent.id))%>
-				<%= text_field(:dummy, :parent,{:disabled => true,:readonly => tmp_readonly, :class => "form-control", :value => (@parent.blank? ? "Origine" : @parent.name), :style=> "width:inherit;"})%>
+				<%= easy_tag('hidden', :instance => "instance", :field => column[:name], :value => (@parent.blank? ? 0 : @parent.id)) %>
+				<%= easy_tag('text', :value => (@parent.blank? ? "Origine" : @parent[@setup_controller[:parent_column_name]]), :style => "width:inherit;", :read_only => true, :instance => "dummy", :field => 'parent', :mandatory => column[:mandatory] && !tmp_readonly, :with_label => column[:column_name], :bootstrap_form => true) %>
     		<%else%>
 			  <% case column[:type]%>
 		      <% when "info" %>
-	  		  	<p><%=column[:info]||''%></p>
+				<%= easy_tag('text_only', :value => column[:info]||'', :with_label => "[EMPTY]", :bootstrap_form => true) %>
 		      <% when "separate" %>
 	  		  	<hr/>
 		      <% when "integer" %>
 			        <% if column[:foreign] 
-			             column_class = Object.const_defined?(column[:model_linked]) ? column[:model_linked].constantize : nil
+		             	 column_class = Object.const_defined?(column[:model_linked]) ? column[:model_linked].constantize : nil
+			        	 proc_name = "get_list_for_" + column[:name]
+			        	 if @instance.class.respond_to?(proc_name)
+			               tmp_collection = @instance.class.send(proc_name)
+			        	 else	 
+			               tmp_collection = column_class.all
+			             end
 			             column_name = nil
 			             unless column_class.nil?
 				             column_name = column[:model_linked_field] if column_name.nil? && column_class.new.respond_to?(column[:model_linked_field])		             
@@ -44,12 +40,12 @@
 			             end		             
 			             unless column_name.nil?
 			             %>
-			            <%=  collection_select(:instance, column[:name], column_class.all, :id, column_name.to_sym, {:prompt => ""},:disabled => (tmp_readonly ? "disabled" : false), :class => "form-control") %>
+						<%= easy_tag('list_collection', :collection => tmp_collection, :value_method => :id, :text_method => column_name.to_sym, :include_blank => !column[:mandatory], :read_only => (tmp_readonly ? "disabled" : false), :instance => "instance", :field => column[:name], :mandatory => column[:mandatory] && !tmp_readonly, :with_label => column[:column_name], :bootstrap_form => true, :help_text => column[:column_text]) %>
 			          <% else %>
-						<%= text_field :instance, column[:name],:class=>"inputmask form-control","data-inputmask"=>"'alias': 'integer'",:readonly => tmp_readonly, :style=> "width:inherit;"%>
+						<%= easy_tag('integer', :read_only => tmp_readonly, :instance => "instance", :field => column[:name], :mandatory => column[:mandatory] && !tmp_readonly, :with_label => column[:column_name], :bootstrap_form => true, :help_text => column[:column_text]) %>
 			          <% end %>
 			        <% else %>
-						<%= text_field :instance, column[:name],:class=>"inputmask form-control","data-inputmask"=>"'alias': 'integer'",:readonly => tmp_readonly, :style=> "width:25%;"%>
+						<%= easy_tag('integer', :read_only => tmp_readonly, :instance => "instance", :field => column[:name], :mandatory => column[:mandatory] && !tmp_readonly, :with_label => column[:column_name], :bootstrap_form => true, :help_text => column[:column_text]) %>
 			        <% end %>
 		      <% when "list" 
 		      		if !column[:value_list].blank?
@@ -60,7 +56,7 @@
 		      			value_list = []
 		      		end
 		      	%>
-	            <%=  select(:instance, column[:name], value_list, {:include_blank => true},:disabled => (tmp_readonly ? "disabled" : false), :class => "form-control") %>
+				<%= easy_tag('list', :value_list_array => value_list, :include_blank => true, :read_only => (tmp_readonly ? "disabled" : false), :instance => "instance", :field => column[:name], :mandatory => column[:mandatory] && !tmp_readonly, :with_label => column[:column_name], :bootstrap_form => true, :help_text => column[:column_text]) %>
 		      <% when "list_group" 
 		      		if !column[:value_list].blank?
 		      			value_list = column[:value_list]
@@ -70,10 +66,16 @@
 		      			value_list = []
 		      		end
 		      	%>
-	            <%=  select(:instance, column[:name], grouped_options_for_select(value_list,value_field), {:include_blank => true},:disabled => (tmp_readonly ? "disabled" : false), :class => "form-control") %>
+				<%= easy_tag('list', :value_list_array => grouped_options_for_select(value_list,value_field), :include_blank => true, :read_only => (tmp_readonly ? "disabled" : false), :instance => "instance", :field => column[:name], :mandatory => column[:mandatory] && !tmp_readonly, :with_label => column[:column_name], :bootstrap_form => true, :help_text => column[:column_text]) %>
 		      <% when "association" %>
 		       <%
 		             column_class = ( column[:model_linked].present? && Object.const_defined?(column[:model_linked])) ? column[:model_linked].constantize : nil
+		        	 proc_name = "get_list_for_" + column[:name]
+		        	 if @instance.class.respond_to?(proc_name)
+		               tmp_collection = @instance.class.send(proc_name)
+		        	 else	 
+		               tmp_collection = column_class.all
+		             end
 		             column_name = nil
 		             unless column_class.nil?
 			             column_name = column[:model_linked_field] if column[:model_linked_field].present? && column_name.nil? && column_class.new.respond_to?(column[:model_linked_field])		             
@@ -81,59 +83,46 @@
 		             end		             
 		      	 if !column_class.nil? && !column_name.nil?
 		      %>
-	              <%=  collection_select(:instance, column[:name], column_class.all, :id, column_name.to_sym, {:prompt => ""},:multiple => "multiple",:disabled => (tmp_readonly ? "disabled" : false), :class => "form-control") %>
+				  <%= easy_tag('list_collection', :number_of_line => 4, :collection => tmp_collection, :value_method => :id, :text_method => column_name.to_sym, :include_blank => false, :multiple => "multiple", :read_only => (tmp_readonly ? "disabled" : false), :instance => "instance", :field => column[:name], :mandatory => column[:mandatory] && !tmp_readonly, :with_label => column[:column_name], :bootstrap_form => true, :help_text => column[:column_text]) %>
 		      <% end
 		         when "list_multi" %>
-	            <%=  select(:instance, column[:name], column[:value_list].split(","), {:selected => value_field.split(",")},:multiple=>true, :disabled => (tmp_readonly ? "disabled" : false), :class => "form-control") %>
+				<%= easy_tag('list', :number_of_line => 4, :value_list_array => column[:value_list].split(","), :selected_value => (value_field.presence||'').split(","), :include_blank => false,:multiple=>true, :read_only => (tmp_readonly ? "disabled" : false), :instance => "instance", :field => column[:name], :mandatory => column[:mandatory] && !tmp_readonly, :with_label => column[:column_name], :bootstrap_form => true, :help_text => column[:column_text]) %>
 		      <% when "float", "decimal" %>
-				<%= text_field :instance, column[:name],:class=>"inputmask form-control","data-inputmask"=>"'alias': 'decimal', 'groupSeparator': ',', 'autoGroup': true",:readonly => tmp_readonly, :style=> "width:inherit;"%>
+				<%= easy_tag('decimal', :read_only => tmp_readonly, :instance => "instance", :field => column[:name], :mandatory => column[:mandatory] && !tmp_readonly, :with_label => column[:column_name], :bootstrap_form => true, :help_text => column[:column_text]) %>
 			  <% when "string" 
+			  
 			  		if column[:value_list].blank?%>
-						<%= text_field :instance, column[:name],:class=>"form-control",:readonly => tmp_readonly,:size=>column[:length_field], :maxlength=>column[:length_value], :style=> "width:inherit;"%>
+						<%= easy_tag('text', :size=>column[:length_field], :maxlength=>column[:length_value], :style => "width:inherit;", :read_only => tmp_readonly, :instance => "instance", :field => column[:name], :mandatory => column[:mandatory] && !tmp_readonly, :with_label => column[:column_name], :bootstrap_form => true, :help_text => column[:column_text]) %>
 					<%else%>	  
-					    <%=select(:instance, column[:name], column[:value_list].split(','), { include_blank: true},{:disabled => (tmp_readonly ? "disabled" : false),:style=> "width:inherit;", :class => "form-control" })%>
+						<%= easy_tag('list', :number_of_line => 1, :value_list_array => column[:value_list].split(","), :include_blank => true, :style => "width:inherit;", :read_only => (tmp_readonly ? "disabled" : false), :instance => "instance", :field => column[:name], :mandatory => column[:mandatory] && !tmp_readonly, :with_label => column[:column_name], :bootstrap_form => true, :help_text => column[:column_text]) %>
 					<%end%>	  
 			  <% when "text" %>
-		        <%= text_area :instance, column[:name],:readonly => tmp_readonly,:class=>"span_12 form-control",:rows=>5  %>
+				<%= easy_tag('long_text',:rows=>5, :read_only => tmp_readonly, :instance => "instance", :field => column[:name], :mandatory => column[:mandatory] && !tmp_readonly, :with_label => column[:column_name], :bootstrap_form => true, :help_text => column[:column_text]) %>
+			  <% when "color" %>
+				<%= easy_tag('color',:read_only => tmp_readonly, :instance => "instance", :field => column[:name], :mandatory => column[:mandatory] && !tmp_readonly, :with_label => column[:column_name], :bootstrap_form => true, :help_text => column[:column_text]) %>
 			  <% when "list_free" %>
-		        <%= text_area :instance, column[:name],:readonly => tmp_readonly,:class=>"span_12 form-control",:rows=>5,:value=>value_field.gsub(',',"\r") %>
-		      <% when "datetime","date","time" 
-		        value = value_field
-		        value = value.strftime("%d/%m/%Y %H:%M:%S") unless value.blank?
-		        if tmp_readonly%>				
-					<%= text_field :instance, column[:name],:class=>"col-md-2 form-control",:readonly => tmp_readonly %>
-				<%else%>
-				    <div class="input-group date" data-behaviour='datetimepicker' data-date="<%=value%>">
-					    <input id="instance_<%=column[:name]%>" name="instance[<%=column[:name]%>]" class="col-md-2" type="text" value="<%=value%>" readonly>
-					    <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-					</div>
-				<%end%>
+				<%= easy_tag('long_text',:rows=>5, :value=>(value_field||'').gsub(',',"\r"), :read_only => tmp_readonly, :instance => "instance", :field => column[:name], :mandatory => column[:mandatory] && !tmp_readonly, :with_label => column[:column_name], :bootstrap_form => true, :help_text => column[:column_text]) %>
+		      <% when "datetime" %>
+				<%= easy_tag('date_time', :read_only => tmp_readonly, :instance => "instance", :field => column[:name], :mandatory => column[:mandatory] && !tmp_readonly, :with_label => column[:column_name], :bootstrap_form => true) %>
+		      <% when "date" %>
+				<%= easy_tag('date', :read_only => tmp_readonly, :instance => "instance", :field => column[:name], :mandatory => column[:mandatory] && !tmp_readonly, :with_label => column[:column_name], :bootstrap_form => true) %>
+		      <% when "time" %>
+				<%= easy_tag('time', :read_only => tmp_readonly, :instance => "instance", :field => column[:name], :mandatory => column[:mandatory] && !tmp_readonly, :with_label => column[:column_name], :bootstrap_form => true) %>
 		      <% when "boolean" %>
-		        <%= check_box :instance, column[:name],{:readonly => tmp_readonly, :class => ""}, column[:checked_value]||"1", column[:unchecked_value]||"0" %>
+				<%= easy_tag('check_box', :checked_value => column[:checked_value]||"1", :unchecked_value => column[:unchecked_value]||"0", :read_only => tmp_readonly, :instance => "instance", :field => column[:name], :mandatory => column[:mandatory] && !tmp_readonly, :with_label => column[:column_name], :bootstrap_form => true, :help_text => column[:column_text]) %>
 			  <% when "file"%>
 			  	<%if column[:option_file].blank?%>
-					<%= text_field :instance, column[:name],:class=>"col-md-2 form-control",:readonly => tmp_readonly %>
+					<%= easy_tag('text', :size=>column[:length_field], :read_only => tmp_readonly, :instance => "instance", :field => column[:name], :mandatory => column[:mandatory] && !tmp_readonly, :with_label => column[:column_name], :bootstrap_form => true, :help_text => column[:column_text]) %>
 				<%else%>
-	            	<%= easy_tag('file',:instance => "instance", :field => column[:name],:value=> value_field, :read_only=> tmp_readonly, :option_file => column[:option_file], :class => "window_fixed") %>
+	            	<%= easy_tag('file', :size=>column[:length_field], :instance => "instance", :field => column[:name],:value=> value_field, :read_only=> tmp_readonly, :option_file => column[:option_file],:with_label => column[:column_name], :class => "window_fixed", :bootstrap_form => true, :help_text => column[:column_text]) %>
 				<%end%>
 			  <% when "link"%>
             	<%= easy_tag('link',:instance => "instance", :field => column[:name],:value=> value_field, :read_only=> tmp_readonly) %>
 		      <% else %>
-				<span class="uneditable-input"><%=value_field%></span>		      	
+				<%= easy_tag('text_only', :value => value_field, :with_label => column[:column_name], :bootstrap_form => true) %>
 		      <% end %>		
 	    	  
     		<%end%>
-			<%unless ['sequence','parent_id'].include?(column[:name])%>
-			  <%unless column[:column_text].blank?%>
-			  	<span class='help-block'>
-	  			  <%= column[:column_text]	%>
-			  	</span>
-	    	  <%end%>
-    		<%end%>
-		    </div>
-		    
-
-  		  </div>
 
 	  <%end
      end%>
@@ -141,4 +130,7 @@
 <script>
 	init_datepicker();	
 	init_inputmask();		
+	$('.linkpicker').linkPicker();
+	$('.filepicker').fileSelector();
+	$('.colorpicker').colorPicker();	
 </script>  

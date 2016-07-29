@@ -1,0 +1,107 @@
+<%@template = EsTemplate.new unless @template%>	
+<%= errors_for(@template, "[NO_MESSAGE]").html_safe %>
+	
+
+<%= form_tag({}, { :name => 'admin_form', :id => 'admin_form',:class => 'form-horizontal'}) do%>
+
+	<ul class="nav nav-tabs " id="myTab">
+	    <li class="<%=@mode_page=="list" ? 'active' : ''%>"><a href="#page_list" data-toggle="tab"><%="Pages".trn%></a></li>
+	    <li class="<%=@mode_page=="new" ? 'active' : ''%>"><a href="#add_page" data-toggle="tab"><%= (@template.id.blank? ? "Nouvelle page".trn : "Modification de la page '%{name}'".trn(:name => @template.name))%></a></li>
+	 	<%unless @template.id.blank?%>	
+	      <li class="<%=@mode_page=="design" ? 'active' : ''%>"><a href="#content_page" data-toggle="tab"><%=@template.name%></a></li>
+	    <%end%>	
+	</ul>
+	<div class="tab-content">
+	    <div class="tab-pane fade <%=@mode_page=="list" ? 'in active' : ''%>" id="page_list">
+	    	<div>	    		 
+				<%= link_to("Ajouter une page <i class='glyphicon glyphicon-plus'></i>".html_safe, 
+							url_for(:action => "wizard_new_page"), 
+							:title =>"Ajouter une page".trn)
+				%>					
+	    	</div>
+			<table cellpadding="4" width="100%" class='table'>
+			  <tr>
+			    <th><%="Nom de la page".trn%></th>
+			    <th><%="Description".trn%></th>
+			    <th><%="Options".trn%></th>
+			  </tr>
+			  <%EsTemplate.where(:template_type => 'PAGE').each do |t|%>
+				<tr class="<%= cycle("row0", "row1") %>">
+				  <td><%=link_to t.name,  :action => 'wizard_edit_page', :id => t.id%></td>
+				  <td><%=t.description.limit(50) %></td>
+				  <td>
+					<%= link_to("<i class='glyphicon glyphicon-list-alt'></i>".html_safe, 
+								url_for(:action => "wizard_content_page", :id => t['id']), 
+								:title =>"Contenu de cette page".trn)
+					%>		
+					<%= link_to("<i class='glyphicon glyphicon-folder-open'></i>".html_safe, 
+								{:controller => 'dyn_pages', :action => 'page' , :name => t.name}, 
+								:title =>"Ouvrir cette page dans un autre onglet".trn, :target=>"_blank")
+					%>		
+				  	<%if t.es_parts.empty?%>
+						<%= link_to("<i class='glyphicon glyphicon-remove-sign'></i>".html_safe, 
+									url_for(:action => "wizard_destroy_page", :id => t['id']), 
+									:confirm =>"Voulez vous vraiment supprimer cette page ?".trn,
+									:title =>"Supprimer".trn)
+						%>					
+				  	<%end%>
+				  </td>
+				</tr>
+			  <%end%>
+			</table>
+	    </div>
+	    <div class="tab-pane fade <%=@mode_page=="new" ? 'in active' : ''%>" id="add_page">
+	    	  <h4><%= field_description "Données obligatoires", true %></h4>	
+			  <div class="form-group">
+			    <label class="col-sm-3 control-label"><%= field_description "", true %><%="Nom de la page".trn%> :</label>
+				<div class="col-sm-5">
+					<%= easy_tag('text',:instance => "template", :field => "name") %>
+			    </div>
+			  </div>
+			  <div class="form-group">
+			    <label class="col-sm-3 control-label"><%= field_description "", true %><%="Description de la page".trn%> :</label>
+				<div class="col-sm-5">
+					<%= easy_tag('text',:instance => "template", :field => "description") %>
+			    </div>
+			  </div>
+			  <%if @template.id.blank?%>
+				  <div class="form-group">
+				    <label for="admin_template" class="col-sm-3 control-label"><%= field_description "", true %><%="Modèle de page".trn%> :</label>
+					<div class="col-sm-5">
+					    <%=  collection_select(:admin, :template, EsTemplate.all(:conditions => {:validated => 'Y',:template_type=>'PAGE_MODEL'}).sort_by{|t| t.name}, :name, :name, {:selected => @model_page_name, :include_blank => true},
+					    						{:ajax_action => "wizard_model_preview", :class => "form-control"}) %>
+				    </div>
+				  </div>
+			  <%end%>
+			  <div id="div_wizard_model_preview">
+				  <%= render :partial => 'wizard_model_preview' %>	
+			  </div>
+			  <div class="form-group">
+				<div class="col-sm-3"></div>
+				<div class="col-sm-1 btn btn-default">
+					<%= render :partial => 'shared/goto_menu_item', :locals => {:text => (@template.id.blank? ? "Ajouter".trn : "Modifier".trn), :action => "wizard_add_page",  :form => "admin_form", :id => @template.id}%>
+			    </div>
+				<div class="col-sm-1 btn btn-default">
+					<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Annuler".trn, :action => "wizard_cancel_page"}%>
+			    </div>
+			  </div>
+	    </div>
+	 <%unless @template.id.blank?%>	
+	    <div class="tab-pane fade <%=@mode_page=="design" ? 'in active' : ''%>" id="content_page">
+				<div id='div_wizard'>
+				  	<%= render :partial => 'es_templates/form_design_wizard' %>
+				</div>
+	    </div>
+	 <%end%>	
+	</div>
+
+
+	<br>
+	<p><%="Vous pouvez également créer ou modifier vous-même".trn%> <%=link_to("le contenu des pages".trn,{:controller => "es_contents", :action => "list"})%>.
+	<br>
+	<%="Ensuite, vous pourrez revenir dans cet assistant.".trn%></p>
+<% end %>
+	  
+	<script>
+		initajaxplus();			
+	</script>

@@ -1,7 +1,7 @@
 
 
 
-<%= form_for(:dynamic_search, {:remote => true, :html=> {:class => "form-inline"}}) do |f| %>
+<%= form_for(:dynamic_search, {:url => url_for(:action => "list", :index_page => 'list_item'), :remote => true, :html=> {:class => "form-inline"}}) do |f| %>
 
 	<%@columns_screen.each do |column|
 		if column[:dynamic_search]%>
@@ -36,7 +36,8 @@
 				<%end%>	  
 
 			  <% when "text" %>
-		        <%= f.text_area column[:name],:class=>"input-sm"  %>
+		        <!--%= f.text_area column[:name],:class=>"input-sm"  %-->
+				<%= f.text_field column[:name],:class=>"form-control",:size=>column[:length_field], :maxlength=>column[:length_value], :style=> "width:inherit;"%>
 		      <% when "datetime","date","time"
 		      		value = params[:dynamic_search].blank? ? "" : params[:dynamic_search][column[:name].to_sym] 
 		      %>

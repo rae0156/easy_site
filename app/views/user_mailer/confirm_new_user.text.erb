@@ -1,11 +1,11 @@
-<%="Bonjour".trn%> <%=@name%>,
-<%="Vous êtes maintenant inscrit sur".trn%> <%=@web_site_name%>.
+<%="Bonjour".trn.html_safe%> <%=@name%>,
+<%="Vous êtes maintenant inscrit sur".trn.html_safe%> <%=@web_site_name%>.
 
-<%="Voici votre identifiant".trn%> :
-<%="Utilisateur/mail".trn%> : <%= @user %>
-<%="Mot de passe".trn%> : <%= @password %>
+<%="Voici votre identifiant".trn.html_safe%> :
+<%="Utilisateur/mail".trn.html_safe%> : <%= @user %>
+<%="Mot de passe".trn.html_safe%> : <%= @password %>
 
-<%="Veuillez conserver ce mail".trn%>.
+<%="Veuillez conserver ce mail".trn.html_safe%>.
 
-<%="Bien à vous".trn%>,
-  <%="L'équipe".trn%> <%=@web_site_name%>.
+<%="Bien à vous".trn.html_safe%>,
+  <%="L'équipe".trn.html_safe%> <%=@web_site_name%>.

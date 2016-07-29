@@ -1,0 +1,58 @@
+<%
+	tmp_year_eval = year_eval.to_s.gsub(' ', '_')
+%>
+
+<div class="alert alert-info">
+	<%if year_eval == @year%>
+		<%if EsUser.role?('admin') || (!current_user.blank? && (category.responsible_a_id = current_user.id || category.responsible_b_id = current_user.id))%>
+			<span style="float:right;"><%= link_to("<i class='glyphicon glyphicon-plus'></i>".html_safe, {:action => 'eval_insert_end', :id => category.id},{:remote=>true, :title => "Ajouter une évaluation".trn})%></span>
+		<%end%>
+	<%end%>
+	<p class="toggle_by_ref" data-reference-class='ref_ressource_ressource_<%=category.id%>_<%=tmp_year_eval%>'>		  		
+	  <%="Evaluation %{year}".trn(:year => year_eval)%>
+	</p>
+</div>
+<div class='ref_ressource_ressource_<%=category.id%>_<%=tmp_year_eval%>'>
+	<table cellpadding="4" width="100%" class='table'>
+	  <%tmp_evals = category.get_evals(year_eval) 
+	    tmp_evals.each do |eval|%>
+		  <tr class="row_eval_<%=category.id%>_<%=tmp_year_eval%>" data-id="<%=eval.id%>">
+		    <td><%=eval.description.html_safe%></td>
+		    <td width=50>
+		    	<span title="<%=eval.es_user ? eval.es_user.complete_name : ""%> - <%=eval.datetime.strftime("%d/%m/%Y %H:%M:%S")%>"><i class='glyphicon glyphicon-info-sign'></i></span>
+				<!--%if year_eval == @year%-->
+			    	<span id="option_eval_<%=eval.id%>" style="display:none;">
+						<%if EsUser.role?('admin') || (!current_user.blank? && (category.responsible_a_id = current_user.id || category.responsible_b_id = current_user.id) && year_eval == @year)%>
+							 <%= link_to("<i class='glyphicon glyphicon-pencil'></i>".html_safe, {:action => 'eval_edit', :id => eval.id},{:remote=>true, :title => "Modifier".trn})%>
+							 <%= link_to("<i class='glyphicon glyphicon-remove'></i>".html_safe, {:action => 'eval_delete', :id => eval.id},{:remote=>true, :confirm =>"Voulez vous vraiment supprimer cette évaluation ?".trn, :title => "Supprimer l'évaluation".trn})%>
+						    <%if eval.sequence > 1%>
+								 <%= link_to("<i class='glyphicon glyphicon-arrow-up'></i>".html_safe, {:action => 'eval_up', :id => eval.id, :user => @user},{:remote=>true, :title => "Déplacer vers le haut".trn})%>
+							<%end
+							if eval.sequence < tmp_evals.count%> 
+								 <%= link_to("<i class='glyphicon glyphicon-arrow-down'></i>".html_safe, {:action => 'eval_down', :id => eval.id, :user => @user},{:remote=>true, :title => "Déplacer vers le bas".trn})%>
+							<%end%>
+						<%end%>
+			    	</span>
+			    <!--%end%-->
+		    </td>
+		  </tr>
+	  <%end%>
+	</table>
+</div>
+
+<!--%if year_eval == @year%-->
+	<script>
+		$(document).ready(function() {
+			$('.row_eval_<%=category.id%>_<%=tmp_year_eval%>').hover(	  	  
+			  function () {
+				temp_id = "#option_eval_" + $(this).data("id");
+			    $(temp_id).show();
+			  }, 
+			  function () {
+				temp_id = "#option_eval_" + $(this).data("id");
+			    $(temp_id).hide();
+			  }
+			);	
+		});
+	</script>
+<!--%end%-->

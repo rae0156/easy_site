@@ -1,0 +1,88 @@
+<% @title = "Assistant : %{description}".trn(:description=> session[:wizard][:description])%>
+
+<div class="cadre bg-primary">
+	<h2><%= image_tag("appli/setup_48.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
+
+
+<%= form_tag({}, { :name => 'wizard_selected_form',:class => 'form-horizontal'}) do%>
+
+	<%if session[:wizard][:button].include?("goto")%>
+	    <div class="col-sm-6 btn">
+			<%= easy_tag('list',:instance => "wizard", :field => "selected",:selected_value=> session[:wizard][:wizard_detail].sequence, :value_list_array => session[:wizard][:wizard_details],:number_of_line=>1,:multiple => false)%>
+		</div>
+	<%end%>
+
+<% end %>
+
+    <ul>
+		<%if session[:wizard][:button].include?("goto")%>
+			<li class="btn btn-default">
+				<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Executer".trn, :action => "execute",  :form => "wizard_selected_form", :image => "appli/next_32.png", :param_goto => {:code_action => "goto"}}%>
+			</li>
+		<%end%>
+		<%if session[:wizard][:button].include?("previous")%>
+			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => session[:wizard][:wizard_detail].previous.description,:image => "appli/back_32.png", :action => "execute", 
+																									:param_goto => {:code_action => "previous"}}%>
+			</li>
+		<%end%>
+		<%if session[:wizard][:button].include?("next")%>
+			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => session[:wizard][:wizard_detail].next.description,:image => "appli/next_32.png", :action => "execute", 
+																									:param_goto => {:code_action => "next"}}%>
+			</li>
+		<%end%>
+		<%if session[:wizard][:button].include?("refresh")%>
+			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Rafraîchir".trn,:image => "appli/process_32.png", :action => "execute", :param_goto => {:code_action => "refresh"}}%></li>
+		<%end%>
+		<%if session[:wizard][:button].include?("stop")%>
+			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Arrêter".trn,:image => "appli/cancel_32.png", :action => "execute", :param_goto => {:code_action => "stop"}}%></li>
+		<%end%>
+    </ul>
+	<hr />
+	<%if session[:wizard][:render_name].presence.blank?%>
+	  <p><%="Cet partie de l'assitant est vide".trn%></p>
+	<%else%>		
+		<h3><%=session[:wizard][:step]%>/<%=session[:wizard][:total_step]%> : <%= session[:wizard][:wizard_detail].description %></h3>
+		<div id='main_wizard' class="bg-primary">
+		  <%= link_to("<i class='glyphicon glyphicon-fullscreen'></i>".html_safe,"#",:id => 'btn_wizard_fullscreen')%>		
+		  <div id='wizard_render'>
+		  	<%= render :partial => session[:wizard][:render_name] %>	
+		  </div>
+		</div>
+	<%end%>
+</div>
+
+
+<script>	
+	jQuery(document).ready(function($){
+		$("#btn_wizard_fullscreen").on('click',function() {
+			$('#slide_t').toggle();
+			if ($( "#main_wizard" ).hasClass( "big_wizard" ))
+				$('#main_wizard').removeClass('big_wizard');
+			else
+				$('#main_wizard').addClass('big_wizard');
+			return false;
+		});
+		
+	});
+</script>
+
+
+
+<style>
+	#main_wizard.big_wizard {
+		display:inline-block;
+		position:fixed;
+		top:0;
+		left:0;
+		height:100%;
+		width:100%;
+		overflow:auto;
+		z-index:1000;
+		}
+	#main_wizard.big_wizard .row {
+		margin-left: 0px;
+		margin-right: 0px;
+		}
+
+
+</style>

@@ -19,7 +19,11 @@ class ApplicationController < ActionController::Base
   
 
   rescue_from CanCan::AccessDenied do |exception|
-    flash[:error] = "Vous n'êtes pas autorisé à accéder à cette page".trn
+    if Rails.env.downcase == 'development' 
+      flash[:error] = "Vous n'êtes pas autorisé à accéder à cette page".trn + " : #{request.url} - " + "voir tables 'es_abilities' et 'es_abilitie_es_roles'".trn
+    else
+      flash[:error] = "Vous n'êtes pas autorisé à accéder à cette page".trn
+    end
     redirect_to root_url 
   end
 
@@ -47,7 +51,11 @@ class ApplicationController < ActionController::Base
       session[:flag_admin]                      = false
       session[:flag_connection]                 = false
       return if url_for(:controller => controller_name,:action => action_name)==root_url
-      flash[:error] = "Cette page n'est pas accessible".trn
+      if Rails.env.downcase == 'development' 
+        flash[:error] = "Cette page n'est pas paramétrée".trn + " : '#{request.url}' - " + "voir table 'es_pages'".trn
+      else
+        flash[:error] = "Cette page n'est pas paramétrée".trn
+      end
       redirect_to root_url
     end
   end
@@ -79,6 +87,12 @@ class ApplicationController < ActionController::Base
     displayed_filename ||= File.basename(file_name)
     send_file file_name, :disposition => 'attachment', :filename => displayed_filename
   end  
+
+  def download_xls(file_name, displayed_filename=nil)
+    displayed_filename ||= File.basename(file_name)
+    send_file file_name, :disposition => "attachment", :filename => displayed_filename, :mime => 'application/xls', :streaming => false
+  end  
+
 
   # ----------------------------
   # Download the generated PDF -

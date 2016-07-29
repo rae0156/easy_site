@@ -5,6 +5,7 @@ class EsContent < ActiveRecord::Base
   EDITABLE_CONTENT_TYPES  = ["free","dynamic"]
   CONTENT_TYPES_MODULE    = "module"
   CONTENT_TYPES_DYNAMIC   = "dynamic"
+  CONTENT_TYPES_FREE      = "free"
   CONTENT_TYPES           = ["module","free","dynamic"]
 
   has_many :es_content_details, :order => "sequence"
@@ -80,18 +81,22 @@ class EsContent < ActiveRecord::Base
   end
 
   def self.prepare_properties(element,categories=[],properties={})
+     
+    categories=[] if categories.nil?
     if element.has_dyn_attributes?
       element.dyn_attributes.each do |da|        
         if categories==[] || categories.include?(da.dyn_attribute_type.category)
           css_attr,css_add,css_delimiter,css_value = prepare_one_properties(da.dyn_attribute_type.name,da.value)
-          if css_add
-            tmp_values  = properties[css_attr.to_sym].presence||""
-            tmp_values += css_delimiter unless tmp_values.blank?
-            tmp_values += css_value
-          else
-            tmp_values  = css_value
+          unless css_attr.nil?
+            if css_add
+              tmp_values  = properties[css_attr.to_sym].presence||""
+              tmp_values += css_delimiter unless tmp_values.blank?
+              tmp_values += css_value
+            else
+              tmp_values  = css_value
+            end
+            properties[css_attr.to_sym] = tmp_values
           end
-          properties[css_attr.to_sym] = tmp_values
         end
       end
     end
@@ -108,9 +113,11 @@ private
     tmp_add           = true
     
     case name
+    when "text","target"
+        tmp_css_attr      = nil
       when "url_image"
-        value = value[6..-1] if value.starts_with?('public/')
-        tmp_css_value = "background-position:center center;background-repeat:no-repeat;background-image:url(#{value})"
+        value             = value[6..-1] if value.starts_with?('public/')
+        tmp_css_value     = "background-size:cover; background-position:center center;background-repeat:no-repeat;background-image:url(#{value})"
       when "header"
         tmp_css_attr      = "class"
         tmp_css_delimiter = " "
@@ -129,15 +136,24 @@ private
         tmp_css_value     = value.gsub(","," ")
       when "div_style"
         tmp_css_value     = value
+      when "parent_style"
+        tmp_css_attr      = "parent_style"
+        tmp_css_value     = value
+      when "parent_display"
+        tmp_css_value     = "display:#{value}"
+      when "parent_position"
+        tmp_css_value     = "position:#{value}"
+      when "top" , "left", "width", "height"
+        tmp_css_value     = "#{name}:#{manage_pixel_attribute(value)}"
       else
         if name.starts_with?( 'padding-', 'margin-')
-            tmp_css_value     = "#{name}:#{value}px"
+            tmp_css_value     = "#{name}:#{manage_pixel_attribute(value)}"
         end
     end
 
-
     return tmp_css_attr,tmp_add,tmp_css_delimiter,tmp_css_value
   end
+
 
   def self.get_properties_detail(element_type, element_id,init_properties)
     tmp_tabs = {}
@@ -184,4 +200,9 @@ private
     return {:name => name ,:description=>options[:description].trn  ,:format => options[:format], :length => options[:length], :value => value,:read_only => options[:read_only], :mandatory => options[:mandatory], :value_list => options[:value_list] , :addon_params => options[:addon_params] }
   end  
 
+private
+  def self.manage_pixel_attribute(value)
+    return (value.to_i.to_s == value) ? "#{value}px" : value 
+  end
+  
 end

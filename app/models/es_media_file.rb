@@ -51,4 +51,12 @@ class EsMediaFile < ActiveRecord::Base
     EsMediaFile.where(:media_type => 'video').all.map{|element| element.name}.uniq
   end
 
+  def self.get_code_css
+    EsMediaFile.where(:media_type => 'css_file').all.map{|element| element.name}.uniq
+  end
+
+  def self.get_code_js
+    EsMediaFile.where(:media_type => 'js_file').all.map{|element| element.name}.uniq
+  end
+
 end

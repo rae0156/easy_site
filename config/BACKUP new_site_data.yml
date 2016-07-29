@@ -1,0 +1,261 @@
+es_themes:
+  keys: code
+  rows:
+    - code: sandstone
+      file: sandstone.css
+    - code: simplex
+      file: simplex.css
+    - code: spacelab
+      file: spacelab.css
+    - code: cosmo
+      file: cosmo.css
+    - code: cyborg
+      file: cyborg.css
+    - code: darkly
+      file: darkly.css
+    - code: flatly
+      file: flatly.css
+    - code: journal
+      file: journal.css
+    - code: paper
+      file: paper.css
+    - code: slate
+      file: slate.css
+    - code: superhero
+      file: superhero.css
+    - code: united
+      file: united.css
+    - code: cerulean
+      file: cerulean.css
+    - code: easysite_admin
+      file: easysite_admin.css
+    - code: easysite_user
+      file: easysite_user.css
+    - code: Max_green
+      file: Max_green.css
+    - code: Max_purple
+      file: Max_purple.css
+    - code: love
+      file: love.css
+
+es_categories:
+  keys: name
+  rows:
+    - name: Template Utilisateur
+      category_type: template
+      read_only: Y
+      parent:
+        name: Template
+        category_type: template
+        read_only: Y
+    - name: Template Administration
+      category_type: template
+      read_only: Y
+      parent:
+        name: Template
+    - name: Menus
+      category_type: menu
+      read_only: Y
+      children:
+        rows:
+          - name: Menu Utilisateur
+            category_type: menu
+            read_only: Y
+          - name: Menu Administration
+            category_type: menu
+            read_only: Y
+
+es_roles:
+  keys: name
+  rows:
+    - name: user
+      description: Utilisateur
+      es_category_id: 
+      read_only: N
+      role_site: N
+    - name: admin
+      description: administration
+      es_category_id: 
+      read_only: Y
+      role_site: N
+    - name: superadmin
+      description: Super administrateur
+      es_category_id: 
+      read_only: Y
+      role_site: Y
+
+es_abilities:
+  keys: model,action
+  rows:
+    - model: all
+      action: manage
+      description: Tous les droits
+      read_only: N
+      include_not_connected: Y
+
+es_pages:
+  keys: model,action
+  rows:
+    - action: ! '[ALL]'
+      controller: ! '[ALL]'
+      es_template_id: 37
+      es_theme_id: 30
+      flag_admin: Y
+      flag_connection: Y
+      signed: N
+      read_only: N
+      
+es_setups:
+  keys: name,path
+  rows:
+    - name: message_admin
+      value: <H2>Ce site est en construction.</H2>Pour remplacer ce message, allez dans le menu 'Paramétrages/Préférences' puis changer le paramètre 'message_admin'.<BR><BR>
+      type_data: long text
+      read_only: Y
+      path: administration/paramétrage
+      possible_values: 
+      parent_id: 
+      es_category_id: 
+    - name: mail_serveur_mot_de_passe
+      value: motdepasse
+      type_data: text
+      read_only: Y
+      path: administration/technique/mail
+      possible_values: 
+      parent_id: 
+      es_category_id: 
+    - name: mail_serveur_adresse
+      value: mail.monsite.com
+      type_data: text
+      read_only: Y
+      path: administration/technique/mail
+      possible_values: 
+      parent_id: 
+      es_category_id: 
+    - name: mail_serveur_utilisateur
+      value: prenom.nom@monsite.com
+      type_data: text
+      read_only: Y
+      path: administration/technique/mail
+      possible_values: 
+      parent_id: 
+      es_category_id: 
+    - name: mail_serveur_port
+      value: '587'
+      type_data: text
+      read_only: Y
+      path: administration/technique/mail
+      possible_values: 
+      parent_id: 
+      es_category_id: 
+    - name: site_web
+      value: monsite.com
+      type_data: text
+      read_only: Y
+      path: administration/technique/site
+      possible_values: 
+      parent_id: 
+      es_category_id: 
+    - name: site_name
+      value: titre du site
+      type_data: text
+      read_only: Y
+      path: administration/paramétrage
+      possible_values: 
+      parent_id: 
+      es_category_id: 
+    - name: languages
+      value: fr,en
+      type_data: long text
+      read_only: Y
+      path: administration/paramétrage
+      possible_values: 
+      parent_id: 
+      es_category_id: 
+    - name: translation_mode
+      value: ''
+      type_data: choice
+      read_only: N
+      path: administration/technique/site
+      possible_values: ! '|debug|with|with_new'
+      parent_id: 
+      es_category_id: 
+    - name: test_url
+      value: N
+      type_data: choice
+      read_only: N
+      path: administration/paramétrage
+      possible_values: Y|N
+      parent_id: 
+      es_category_id: 
+        
+es_templates:
+  keys: name
+  rows:
+    - name: Admin
+      description: Template administrateur
+      es_category:
+        name: 'Template Administration'
+      validated: Y
+      is_a_template: Y
+    - name: Menu gauche
+      description: Un slider en haut puis un menu à gauche
+      es_category:
+        name: 'Template Utilisateur'
+      validated: Y
+      is_a_template: Y
+
+es_template_lines:
+  keys: num,es_template_id
+  rows:
+    - num: 1.0
+      es_template:
+        name: Menu gauche
+      es_col_parent_id: 0
+    - num: 2.0
+      es_template:
+        name: Menu gauche
+      es_col_parent_id: 0
+    - num: 3.0
+      es_template:
+        name: Menu gauche
+      es_col_parent_id: 0
+
+es_template_cols:
+  keys: num,es_template_line_id
+  rows:
+    - num: 1
+      es_template_line:
+        num: 1
+        es_template:
+          name: Menu gauche
+      width: 12
+      description: en-tête
+    - num: 1
+      es_template_line:
+        num: 2
+        es_template:
+          name: Menu gauche
+      width: 2
+      description: menu
+    - num: 2
+      es_template_line:
+        num: 2
+        es_template:
+          name: Menu gauche
+      width: 10
+      description: dynamique
+    - num: 1
+      es_template_line:
+        num: 3
+        es_template:
+          name: Menu gauche
+      width: 12
+      description: 'pied de page'
+
+es_contents:
+  keys: name
+  rows:
+    - name: menu_admin
+    - name: carouselle
+

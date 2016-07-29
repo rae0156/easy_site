@@ -1,0 +1,54 @@
+
+DynamicModelFieldSetup:
+  attribut:
+    présentation:
+      name: <<string/100-N-Nom du champs--N>>
+      type: <<string/100-N-type de donnée--N>>
+      column_name: <<string/100-Y-Libellé de la colonne--N>>
+      label_name: <<string/100-Y-Libellé export/import--N>>
+      column_text: <<string/100-Y-Texte explicatif--N>>
+      order: <<integer-Y-Ordre de la colonne--N>>
+      order_load: <<integer-Y-Ordre dans export/import--N>>
+      hidden: N<<boolean-Y-Cacher cette donnée--Y>>
+      length_field: <<integer-Y-Taille de l'affichage--N>>
+      length_field_filter: <<integer-Y-Longeur d'affichage du filtre--N>>
+      length_value: <<integer-Y-Taille maximale de la valeur--N>>
+    technique:
+      field_key: N<<boolean-Y-Clé unique>>
+      field_key_scope: <<string/100-Y-Autres champs de la clé>>
+      foreign: N<<boolean-N-Clé étrangère>>
+      model_linked: <<string/40-N-Modèle lié (nom de la classe)>>
+      model_linked_field: <<string/30-Y-Zone du modèle lié>>
+      linked_name: <<string/40-N-Modèle lié (nom du fichier)>>
+    validation:
+      mandatory: N<<boolean-Y-Donnée obligatoire>>
+      value_list: <<string/100-Y-Liste de valeurs obligatoires>>
+      value_list_method: <<string/100-N-Méthode pour les valeurs possibles>>
+      min_value: <<string/100-Y-Valeur minimale>>
+      max_value: <<string/100-Y-Valeur maximale>>
+      length_min: -1<<integer-Y-Taille minimale--N>>
+      length_max: -1<<integer-Y-Taille maximale--N>>
+    traitement_de_donnée:
+      upper_case: N<<boolean-Y-Mise en majuscule>>
+    recherche_et_tri:
+      sort: N<<boolean-Y-Donnée triable>>
+      dynamic_filter: N<<boolean-Y-Donnée filtrable>>
+      dynamic_search: N<<boolean-Y-Cette donnée peut être recherchée>>
+      search: N<<boolean-Y-Inclues dans les recherches globales>>
+    valeur:
+      default_value: <<string/100-Y-Valeur par défaut>>
+      checked_value: <<string/30-Y-Valeur en cas de coche validée>>
+      unchecked_value: <<string/30-Y-Valeur en cas de coche invalidée>>
+    visibilité:
+      display_list: Y<<boolean-Y-Ecran 'liste'>>
+      display_show: Y<<boolean-Y-Ecran 'visualisation'>>
+      display_new: Y<<boolean-Y-Ecran 'nouveau'>>
+      display_edit: Y<<boolean-Y-Ecran 'modification'>>
+      export: Y<<boolean-Y-Cette donnée est exportable>>
+      print: Y<<boolean-Y-Cette donnée est imprimable>>
+      link_update: N<<boolean-Y-Lien vers l'écran 'modification'>>
+      linked_to_model: N<<boolean-Y-Créer une URL vers le modèle lié>>
+    type_spécial_de_données:
+      info: <<string/100-Y-Valeur pour le type de données 'info'>>
+      option_file: <<string/100-Y-Options pour le type 'file'>>
+  

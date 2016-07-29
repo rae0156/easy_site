@@ -1,5 +1,7 @@
-NE PAS OUBLIER
-==============
+﻿==================
+= NE PAS OUBLIER =
+==================
+
 ne pas oublier qu'il existe acts_as_detect_action dans les actions
 
 les thèmes : 
@@ -8,28 +10,208 @@ les thèmes :
 	modifier les fonts (se baser sur les déjà fait) 
 
 templates et parties :
-	generate_template_render dans es_utils.rb pour la génération d'un template
-	get_template_part dans es_utils.rb pour la génération d'un es_part ou d'un fichier render ou d'un id de es_content_details
-	generate_module_part dans application_helper.rb pour la génération d'une part d'un module
+	generate_template_render dans es_utils.rb 			pour la génération d'un template
+	get_template_part dans es_utils.rb 					pour la génération d'un es_part ou d'un fichier render ou d'un id de es_content_details
+	get_content_detail dans es_utils.rb					pour la génération d'un contenu sans passer par une partie
+	generate_module_part dans application_helper.rb 	pour la génération d'une part d'un module
 
-A FAIRE
+Les attributs dynamiques :
+	Pour créer des attributs dynamiques, il faut remplir le fichier config/dynamic_attributes.yml
+
+Backup :
+	La procédure de backup se trouve dans D:\backup easy_site
+	Eléménts à sauver :  db mngtools_easysite + source (dans D:\ruby\tfe\easy_site) + Ruby et Rails (si besoin quand nouveau gem par exemple) 
+
+administration de sites :
+	admins/create_super_admin => creation du premier super admin
+	admins/admin_site => gestion des sites
+	admins/reset_template => initialise le template admin
+	admins/init_workspace => relance l'initialisation des variables Rails
+	admins/change_site/id => change de site
+	admins/reload_module?name=module_name => recharger le yml d'un module
+		
+
+Aptana plante et le serveur ne démarre plus :
+	fermer Aptana
+	renomer '.launches' en '.launches old' dans D:\ruby\tfe\.metadata\.plugins\org.eclipse.debug.core\ 
+	ourvir Aptana
+	le server redémarre
+
+===========
+= Lenteur =
+===========
+	A) La gem 'rails-dev-tweaks' a été installée
+	B) Créer des index sur les tables avec es_site_id 
+		l'index de la table 'EsMenu' est déjà créé
+	C) Amélioration réalisée sur le scope site_id 
+	D) un exemple de log avec caller existe dans 'log/exemple de log development avec timing.log'
+	E) Les lenteurs sont provoquées en grande partie par la mise en place du tactilog. 
+		Il a été désactivé en indiquant 'scope: nothing'
+		Pour remettre tactilog, il faut utiliser le fichier 'config/sample_of_active_tactilog.yml'
+
+================
+= Ancien index =
+================
+<div class="alert alert-info">
+	<h2><%="Template '%{template}' - Thème '%{theme}'".trn(:template => Rails.application.config.current_template, :theme => Rails.application.config.current_theme)%></h2>
+</div>
+
+
+=======
+= BUG =
+=======
+Menu / creation : ne fonctionne plus
+	ca marche si on atteint les menus via des entrées de http://127.0.0.1:3005/es_modules/setup?name=menu
+
+==========
+= toggle =
+==========
+mettre ceci : class="toggle_by_ref" data-reference-class='ref_1'
+  dans un div à gérer par un toggle +/-
+mettre ceci : <div class='ref_1 init_hide'>
+  sur ce qu'il faut toggleler
+init_toggle_by_ref => jquery
+
+=======
+= GIT =
+=======
+reset =>
+	delete .git/index
+	git reset
+
+
+=======
+= GEM =
 =======
 
-faire backup mysql + source + rails  
+procédure gem
+	creation dans le rep de easy_site :
+		commande : bundle gem xxxx
+		ensuite déplacer dans le répertoire tfe
+	
+	ouvrir dans aptana
+		cocher "I'll generate my own code"
+		
+	modifier le fichier xxxx.gemspec  
+	  gem.authors       = ["Régis André"]
+	  gem.email         = ["regis.andre.home@gmail.com"]
+	  gem.description   = %q{ma description}
+	  gem.summary       = %q{mon résumé}
 
-===========================	
+	créer le gem ou déplacer le code d'un plugin dans ce gem
+	  
+	construction le gem
+		gem build xxxx.gemspec
+		dans le rep du gem
+	installer le gem en local
+		gem install xxxx
+		dans le rep du gem
+	mettre le gem dans l'appli dans le gemfile
+		gem 'xxxx', '0.0.1'
+		bundle install
 
-Rendre l'existant userfriendly pour la creation d'un nouveau site
-Prévoir des pages différentes des autres dans la partie template au sein du même site + enchainement des pages
-Prévoir le site partie admin et partie user
-	création de menu (user ou admin)
+=============
+= REMARQUES =
+=============
 
-===========================	
+	- Suppression d'un site complet sur son numéro
+		127.0.0.1:3005/admins/destroy_site?id=10
+		
+	- Export d'une table d'un site en vue de la création d'un nouveau site
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsTheme&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsCategory&exclude_fields=id,es_site_id,parent_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsRole&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsAbilities&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsPages&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsSetups&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsTemplates&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsTemplateLines&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsTemplateCols&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsContents&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsContentDetails&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsContentDetailParams&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsMediaFiles&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsParts&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsMenus&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsMenuRoles&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsWizards&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsWizardDetails&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=DirAccesses&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=DirBase&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=DirManagers&exclude_fields=id,es_site_id
 
-Commencer à planifier d'autres modules (module blog, diffusion d'articles/video/image)
-	gems interressant à installer :
-		blog management - https://github.com/publify/publify
-	 	ActiveAdmin - http://activeadmin.info/
+	- Exemple de shortcut avec une connexion automatique 
+		127.0.0.1:3000/admins/shortcut?go_controller=es_wizards&go_action=execute&name=site&code_action=step&step=6
+
+	- Page de gestion de sites
+		127.0.0.1:3005/admins/admin_site
+	
+=============
+= BOOTSTRAP =
+=============
+
+theme bootstrap : 	http://startbootstrap.com/template-categories/all/
+					http://www.w3schools.com/bootstrap/bootstrap_templates.asp
+	
+===========	
+= A FAIRE =
+===========
+
+OYA - ressource - reste la présentation
+	127.0.0.1:3000/admins/shortcut?go_controller=res_resources&go_action=show_resources
+	charger les datas => reste la cuisine uniquement
+
+Convivialités (dans l'ordre) :
+	0) reprendre la création d'un nouveau site et noter ce qui ne va pas	
+		(lundi 1er et mardi 2 aout)
+		
+	1) permettre l'ajout de modules dans la gestion de contenu + paramétrage plus pratique sans aller dans un autre écran
+		(mercredi 3 aout au lundi 8 aout)
+	
+	2) nouvels objets via un module
+		comment le faire
+			(mardi 9 aout)
+		liste d'images
+			(mercredi 10 aout au mardi 16 aout)
+		Articles (texte image) 	
+			(mercredi 17 aout au mardi 23)
+
+	3) permettre un preview dans la gestion de contenu avec drag-drop comme dans le wizard
+	
+	4) texte en span et nom en div
+		
+	5) écran des propriétés plus convivial
+	
+	pourquoi on ne peut pas attacher des parties dans un template fichier
+	
 
 
+
+==========	
+= AUTRES =
+==========
+
+
+Passer en rails 4
+	- remplacer write_attribute par raw_write_attribute dans le gem 'dynamic_attributes'
+
+Commencer à planifier d'autres modules
+	- module blog : pas utiliser le gem blogit pbm de routes, difficile à implementer
+		par contre, on peut copier-coller certain élément du gem blog-it
+	- forum : blog plus bas
+	- module diffusion d'articles / videos / images
+		* pas de gem existant, donc à développer
+		* A partir de la librairie des objets
+
+gems interressant à installer :
+	Gem par categorie :https://www.ruby-toolbox.com/#Active_Record_Plugins
+    forum : https://www.ruby-toolbox.com/categories/forum_systems
+    
+
+=================
+= NE PLUS FAIRE =
+=================
+	Bug mysql : semble être plus souvent quand toad est ouvert avec tactilog
+		Cela s'est corrigé tout seul en retirant tactilog
+	gem device : trop compliqué à mettre en place, de plus ma version fonctionne bien
 	

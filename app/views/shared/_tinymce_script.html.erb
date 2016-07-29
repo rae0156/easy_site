@@ -4,7 +4,12 @@
 		
 		tinymce.init({
 		    selector: ".tinymce",
-		    theme: "modern",
+ 		    setup : function(editor) {
+		                    editor.on('change', function() {
+		                     editor.save();
+		                  });
+		          },
+            theme: "modern",
 		    plugins: [
 		        "advlist autolink lists link image charmap print preview hr anchor pagebreak",
 		        "searchreplace wordcount visualblocks visualchars code ",  /*fullscreen*/
