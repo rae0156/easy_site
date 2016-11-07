@@ -36,7 +36,10 @@
 Site Vinvent (TODO list) et idées
 	Modules / Options :
 		- lien sociaux : google+ et facebook
+				https://github.com/huacnlee/social-share-button
 		- validation captcha pour envoie de mail
+				https://github.com/pludoni/simple-captcha
+				https://github.com/ambethia/recaptcha
 		- calculer itinéraite gmap
 		- récupérer la position géographique en html5 pour personnaliser 
 			http://www.leeroy.me/geolocalisation-de-vos-visiteurs-en-javascript-grace-a-html-5/
