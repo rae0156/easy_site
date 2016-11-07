@@ -1,18 +1,30 @@
+<%
+	include_tools = "Y" if include_tools.nil?  
+%>
+
 		<div id="message_ajax">
 			  <%= render :partial => 'layouts/part_message_ajax' %>
 		</div>
+
+		<%if include_tools=='Y'%> <!--on en ajoute pas un second si on provient du wizard, car il existe déjà dans le wizard-->
+			<div id="div_library_tool">
+				  <%= render :partial => 'es_templates/library_tool' %>
+			</div>
+		<%end%>
 
 		<h3 class="toggle_by_ref init_view" data-reference-class='ref_2'>		  		
 		  <%="Eléments disponibles et nouveaux éléments".trn%>
 		</h3> 
 		<div class='ref_2'>
-			<%if @content_detail.es_content_detail_elements.size < 15 %>
+			<%if @content_detail.es_content_detail_elements.size < 50 %>
 				<p><%="Il y a %{nbr} élément(s) dans cette partie".trn(:nbr => @content_detail.es_content_detail_elements.size)%></p>
 
 				<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-eye-open'></i> #{(session[:dynamic_content_view_normal] ? "Mode paramétrage" : "Mode réel").trn}",:image => "",:action => "#",:html_option=>{:id => "change_dynamic_content_view", :remote => true, :class => "to_save_before_action btn btn-primary"},:no_div=> true}%>
 				<%unless session[:dynamic_content_view_normal]%>
 				    <%= link_to("<div class='btn btn-primary'><i class='glyphicon glyphicon-floppy-disk'></i> #{"Sauver la disposition".trn}</div>".html_safe, "#", :id => "save_design")%>
 				    <%= link_to("<div class='btn btn-primary'><i class='glyphicon glyphicon-refresh'></i> #{"Rafraichir sans sauver".trn}</div>".html_safe, "#", :id => "refresh_without_save")%>
+					&nbsp;
+					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='fa fa-cog'></i> #{"Outils".trn}",:image => "",:action => "#",:html_option=>{:id => "get_library_tool", :remote => true, :class => "btn btn-primary"},:no_div=> true}%>
 					<br/>
 					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-font'></i> #{"Nouveau texte".trn}",:image => "",:action => "#",:html_option=>{:id => "text", :remote => true, :class => "to_save btn btn-primary"},:no_div=> true}%>
 					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-picture'></i> #{"Nouvelle image".trn}",:image => "",:action => "#", :html_option=>{:id => "image", :remote => true, :class => "to_save btn btn-primary"},:no_div=> true}%>
@@ -20,28 +32,37 @@
 					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-facetime-video'></i> #{"Nouvelle vidéo".trn}",:image => "",:action => "#", :html_option=>{:id => "video", :remote => true, :class => "to_save btn btn-primary"},:no_div=> true}%>
 					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-pencil'></i> #{"Nouveau contenu libre".trn}",:image => "",:action => "#", :html_option=>{:id => "free", :remote => true, :class => "to_save btn btn-primary"},:no_div=> true}%>
 					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-folder-open'></i> #{"Nouveau parent".trn}",:image => "",:action => "#", :html_option=>{:id => "parent", :remote => true, :class => "to_save btn btn-primary"},:no_div=> true}%>
+					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-list-alt'></i> #{"Nouvel article".trn}",:image => "",:action => "#", :html_option=>{:id => "article", :remote => true, :class => "to_save btn btn-primary"},:no_div=> true}%>
+					<br/>
+					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-th-list'></i> #{"Nouveau module".trn}",:image => "",:action => "#", :html_option=>{:id => "module", :remote => true, :class => "to_save btn btn-primary"},:no_div=> true}%>
+					<%= easy_tag('list',:instance => "content", :field => "module_action_name",:value_list_array => EsModule.get_module_action_list_choice,:number_of_line=>1,:multiple => false, :bootstrap => false)%>
+					<br/>
+					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-option-horizontal'></i> #{"Nouveau parent structuré".trn}",:image => "",:action => "#", :html_option=>{:id => "structured", :remote => true, :class => "to_save btn btn-primary"},:no_div=> true}%>
+					<%= easy_tag('list',:instance => "content", :field => "strutured_parent",:value_list_array => EsContent.get_structured_parent_list,:number_of_line=>1,:multiple => false, :bootstrap => false)%>
+					&nbsp;
+					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-th'></i> #{"Nouveau tableau".trn}",:image => "",:action => "#", :html_option=>{:id => "table", :remote => true, :class => "to_save btn btn-primary"},:no_div=> true}%>
+					<%= easy_tag('list',:instance => "content", :field => "table_col",:value_list_array => (1..10).to_a,:number_of_line=>1,:multiple => false, :bootstrap => false,:with_label=>"Colonnes".trn)%>
+					<%= easy_tag('list',:instance => "content", :field => "table_lin",:value_list_array => (1..5).to_a,:number_of_line=>1,:multiple => false, :bootstrap => false,:with_label=>"Lignes".trn)%>
 				<%end%>
 			<%else%>
-				<p class='alert alert-info'><%="Vous avez atteint le nombre maximum d'éléments (15) dans un partie. Vous devez en supprimer certains".trn%></p>
+				<p class='alert alert-info'><%="Vous avez atteint le nombre maximum d'éléments (50) dans un partie. Vous devez en supprimer certains".trn%></p>
 			<%end%>
 
 			<div id="element_properties">
 				  <%= render :partial => 'es_contents/element_properties' %>
 			</div>
 
-
-			<%= @content_detail.generate_contain_available(session[:dynamic_content_view_normal]) %>
+			<%= render(:inline => @content_detail.generate_contain_available(session[:dynamic_content_view_normal])) %>
 
 		</div>
 
 
 		<h3><%="Eléments placées".trn%></h3>
-		<%= @content_detail.generate_contain_organised(session[:dynamic_content_view_normal]) %>
+		<%= render(:inline => @content_detail.generate_contain_organised(session[:dynamic_content_view_normal])) %>
 
 <script>
 	init_dragdrop_template();
 </script>
-
 
 <script>
 	$(document).ready(function() {
@@ -66,7 +87,11 @@
 		});		
 		
 		$( ".to_save" ).click(function() {
-			element = $(this)
+			element = $(this);
+			module = $('#content_module_action_name option:selected').val();
+			structured = $('#content_strutured_parent option:selected').val();
+			table_col  = $('#content_table_col option:selected').val();
+			table_lin  = $('#content_table_lin option:selected').val();
 			$.ajax({
 		        url: "/es_contents/update_dynamic_content_parts/<%=@content_detail.id%>",
 		        data: { parts: get_template_parts() },
@@ -76,13 +101,39 @@
 		    }).done(function() {
 				$.ajax({
 			        url: "/es_contents/add_element/<%=@content_detail.id%>",
-			        data: { element_type: element.attr('id') },
+			        data: { element_type: element.attr('id'), content_module_action_name: module, content_strutured_parent: structured, content_table_col: table_col, content_table_lin: table_lin},
 			        dataType: 'script'
-			    });	  
+			    }).done(function() {
+						init_toggle_by_ref();
+			    	});	  
 			});
 		   	return false;  			
 		});		
 		
+		$( ".delete_element" ).click(function() {
+			if(confirm("<%="Voulez vous vraiment supprimer cette partie ?".trn%>"))
+			{
+				ref = $(this).data('reference')
+				element = $(this)
+				$.ajax({
+			        url: "/es_contents/update_dynamic_content_parts/<%=@content_detail.id%>",
+			        data: { parts: get_template_parts() },
+			        proccessData: false,
+			        type: "POST",
+			        dataType: 'script'
+			    }).done(function() {
+					$.ajax({
+				        url: "/es_contents/delete_element_parts/" + ref,
+				        dataType: 'script'
+				    }).done(function() {
+						init_toggle_by_ref();
+			    	});
+				});
+
+			}
+		   	return false;  			
+		});		
+
 		$( ".edit_element" ).click(function() {
 			
 			ref = $(this).data('reference')
@@ -98,10 +149,32 @@
 				$.ajax({
 			        url: "/es_contents/edit_element_parts/" + ref,
 			        dataType: 'script'
-			    });
+			    }).done(function() {
+						init_toggle_by_ref();
+			    	});
 			});
 		   	return false;  			
 		});		
+
+
+		$( "#get_library_tool" ).click(function() {
+			$.ajax({
+		        url: "/es_contents/update_dynamic_content_parts/<%=@content_detail.id%>",
+		        data: { parts: get_template_parts() },
+		        proccessData: false,
+		        type: "POST",
+		        dataType: 'script'
+		    }).done(function() {
+				$.ajax({
+			        url: "/es_templates/get_library_tool/tools",
+			        dataType: 'script'
+			    }).done(function() {
+						init_toggle_by_ref();
+			    	});	    
+			});
+		   	return false;  			
+		});		
+
 		
 		$( "#save_design" ).click(function() {
 			element = $(this)
@@ -111,7 +184,9 @@
 		        proccessData: false,
 		        type: "POST",
 		        dataType: 'script'
-		    });
+		    }).done(function() {
+						init_toggle_by_ref();
+			    	});
 		   	return false;  			
 		});	
 			
@@ -123,7 +198,9 @@
 		        proccessData: false,
 		        type: "POST",
 		        dataType: 'script'
-		    });
+		    }).done(function() {
+						init_toggle_by_ref();
+			    	});	  
 		   	return false;  			
 		});		
 	});
@@ -134,12 +211,12 @@
 	$(document).ready(function() {
 		$('.label-info-hiden').hover(	  	  
 		  function () {
-			$(this).children("a:first").show();
-			$(this).css("z-index", "99");
+			$(this).children("span.dyn_options:first").show();
+			$(this).css("z-index", "501");
 		  }, 
 		  function () {
 			$(this).css("z-index", "0");
-			$(this).children("a:first").hide();
+			$(this).children("span.dyn_options:first").hide();
 		  }
 		);	
 	});

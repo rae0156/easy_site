@@ -1,20 +1,20 @@
-<%= get_template_part("part_login")%>
+<%= get_template_file_part("part_login")%>
   
 <div class="container-fluid text-center">    
   <div class="row content">
     <div class="col-sm-2 sidenav">
-    	<%= get_template_part("menu")%>
+    	<%= get_template_file_part("menu")%>
     </div>
     <div class="col-sm-8 text-left"> 
-		<%= get_template_part("part_dynamic")%>
+		<%= get_template_file_part("part_dynamic")%>
     </div>
     <div class="col-sm-2 sidenav">
-    	<%= get_template_part("side")%>
+    	<%= get_template_file_part("side")%>
     </div>
   </div>
 </div>
 
 <footer class="container-fluid text-center">
-	<%= get_template_part("footer")%>
-	<%= get_template_part("copyright")%>
+	<%= get_template_file_part("footer")%>
+	<%= get_template_file_part("copyright")%>
 </footer>

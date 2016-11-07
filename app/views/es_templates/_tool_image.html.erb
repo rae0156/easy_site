@@ -1,0 +1,89 @@
+
+	<div id="message_ajax">
+		  <%= render :partial => 'layouts/part_message_ajax' %>
+	</div>
+
+	<div>
+		<div class="row">
+			<%= easy_tag('image', :instance => "image_tool", :field => "image", :directory => '', :mandatory => false, :with_label => "Image".trn, :bootstrap_form => true, :value => @file_name) %>
+		</div>			
+		<%unless @image_name.blank?%>
+			<div class="row">
+				<div class="col-sm-offset-3 col-sm-5" style="width: 100%;"><img src="<%=@image_name%>" style="max-width: 500px; height: auto"/></div>			
+			</div>			
+			<div class="row">
+				<%if @init_info%>
+					<%= easy_tag('text_only', :with_label => "Informations".trn, :bootstrap_form => true, :value => @init_info.html_safe) %>
+				<%end%>
+			</div>			
+			<%= form_tag({ :action => 'tool_image' }, { :name => 'tool_image_form'}) do%>
+				<div class="row">
+					<div class="col-sm-offset-3 col-sm-9 bg-info">
+						<%= easy_tag('list',:instance => "image_tool", :field => "rotate",:value_list_array => [["90°",'90'],["180°",'180'],["270°",'270']],:number_of_line=>1,:multiple => false, :bootstrap => false,:with_label=>"Rotation".trn, :selected_value=> @image_tool_options[:rotate])%>
+						&nbsp;
+						<%= easy_tag('check_box',:instance => "image_tool", :field => "negate", :bootstrap => false, :bootstrap_length => false, :with_label=>"Négatif".trn, :value=> @image_tool_options[:negate]) %>		
+						&nbsp;
+						<%= easy_tag('check_box',:instance => "image_tool", :field => "flip", :bootstrap => false, :bootstrap_length => false, :with_label=>"Inversion".trn, :value=> @image_tool_options[:flip]) %>		
+						<br />
+						<%= easy_tag('integer', :instance => "image_tool", :field => "width", :with_label => "Largeur (en pixel)".trn, :bootstrap => false, :bootstrap_length => false,:size=> 5, :value=> @image_tool_options[:width]) %>
+						&nbsp;
+						<%= easy_tag('integer', :instance => "image_tool", :field => "height", :with_label => "Hauteur (en pixel)".trn, :bootstrap => false, :bootstrap_length => false,:size=> 5, :value=> @image_tool_options[:height]) %>
+						<br />
+						<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='fa fa-exchange'></i> #{"Transformer l'image".trn}",:image => "", :action => "tool_image",:param_goto=> {:file_name => @file_name},:html_option=>{:remote => true, :class => "btn btn-primary"},:no_div=> true,:form => "tool_image_form"}%>
+					</div>			
+				</div>	
+				<%if @output_file%>
+					<br />
+					<div class="row">
+						<div class="col-sm-offset-3 col-sm-9 bg-info">
+							<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='fa fa-hand-o-right'></i> #{"Ouvrir l'emplacement de l'image".trn}",:image => "", :controller => "dir_managers", :action => "explorer",:param_goto=> {:name_dir => 'system_library', :sub_dir => File.dirname(@output_file)},:html_option=>{:remote => true, :class => "btn btn-primary tools_image_to_hide"},:no_div=> true}%>
+							<br />
+							<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='fa fa-floppy-o'></i> #{"Sauver sous".trn}",:image => "", :action => "tool_image", :id => "save_as",:param_goto=> {:file_name => @file_name},:html_option=>{:remote => true, :class => "btn btn-primary"},:no_div=> true,:form => "tool_image_form"}%>
+							&nbsp;
+							<%= easy_tag('text', :instance => "image_tool", :field => "new_name", :with_label => "Nouveau nom".trn, :bootstrap => false, :bootstrap_length => false,:size=> 30, :value=> @image_tool_options[:new_name]) %>
+						</div>			
+					</div>	
+				<% end %>
+			<% end %>
+			<%if @output_file%>
+				<div class="row">
+					<%= easy_tag('text_only', :with_label => "Nouvelle image".trn, :bootstrap_form => true, :value => "public" + @output_file) %>
+					<div class="col-sm-offset-3 col-sm-5" style="width: 100%;"><img src="<%=@output_file%>" style="max-width: 500px; height: auto"/></div>			
+				</div>			
+				<div class="row">
+					<%info = "Type".trn + " : " + @mini_magick_image.type + "<BR>" + "Dimensions".trn + " : " + @mini_magick_image.dimensions.inspect + "<BR>" + "Taille (en bytes)".trn + " : " + @mini_magick_image.size.to_s + "<BR>" + "Résolution".trn + " : " + @mini_magick_image.resolution.inspect + "<BR>"%>
+					<%= easy_tag('text_only', :with_label => "Informations".trn, :bootstrap_form => true, :value => info.html_safe) %>
+				</div>			
+			<%end%>
+		<%end%>
+	</div>
+
+
+<script>
+		
+	jQuery(document).ready(function($){
+		$('#image_tool_image').on('change',function() {
+			$.ajax({
+		        url: "/es_templates/tool_image",
+                data: {
+						file_name: $(this).val(),
+						rotate: $("#image_tool_rotate").val(),
+						negate: $("#image_tool_negate").val(),
+						width: $("#image_tool_width").val(),
+						height: $("#image_tool_height").val()
+				      },
+		        dataType: 'script'
+		    });	    
+		   	return false;  			
+		});
+
+		$( ".tools_image_to_hide" ).on('click',function() {			
+			$('#tool_image').empty();
+		});		
+	});
+	$('.filepicker').fileSelector();
+	
+	init_datepicker();	
+	init_inputmask();		
+
+</script>

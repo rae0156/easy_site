@@ -24,7 +24,7 @@
       y               = options[:link_y].presence || options_parameters[:y].presence || 0 
       no_link         = options[:no_link].presence || options_parameters[:no_link].presence || "N" 
       
-      style = (x==0 && y==0) ? "style='z-index:999;'" : "style='position: absolute;left: #{x}px;top: #{y}px; z-index:999;'"
+      style = (x==0 && y==0) ? "style='z-index:802;'" : "style='position: absolute;left: #{x}px;top: #{y}px; z-index:802;'"
       
       
       is_asset_image  = !Rails.application.assets.find_asset(image_name).nil?

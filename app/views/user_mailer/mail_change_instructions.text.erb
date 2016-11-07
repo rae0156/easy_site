@@ -1,12 +1,10 @@
 <%="Bonjour".trn.html_safe%> <%=@name%>,
 <%="Une demande de changement de mail vient d'être faite sur le site".trn.html_safe%> <%=@web_site_name%>.
-<%if @confirm_new_mail.blank?%>
-	<%="Votre nouvelle adresse".trn.html_safe%> : <%= @new_mail %>
+<%="Votre nouvelle adresse".trn.html_safe%> : <%= @new_mail %>
 <%="Si vous n'avez pas effectué cette demande, merci de nous le signaler via notre site".trn.html_safe%>.
-<%else%>
-
-<%="Si vous avez effectué cette demande, il vous suffit de cliquer sur le lien ci-dessous pour activer cette nouvelle adresse".trn.html_safe%>.
-<%= @confirm_new_mail %>
+<%unless @confirm_new_mail.blank?%>
+	<%="Si vous avez effectué cette demande, il vous suffit de cliquer sur le lien ci-dessous pour activer cette nouvelle adresse".trn.html_safe%>.
+	<%= @confirm_new_mail %>
 <%end%>
 
 <%="Si le lien ci-dessus ne fonctionne pas, tentez de le copier / coller directement dans votre navigateur".trn.html_safe%>.

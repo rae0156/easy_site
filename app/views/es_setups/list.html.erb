@@ -1,10 +1,10 @@
 <% @title = "Préférences".trn %>
 
 <div class="center-menu">
-    <h2><%= image_tag("appli/setup_48.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
+    <h2><%= image_tag("appli/48/setup.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
 	
 	<ul>
-		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Exporter".trn,:image => "appli/excel_32.png", :action => "export_csv", :form => "setup_list_form"}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Exporter".trn,:image => "appli/32/excel.png", :action => "export_csv", :form => "setup_list_form"}%></li>
 	</ul>
 	
 	
@@ -18,16 +18,18 @@
 <%= errors_for(flash[:errors_destroy], "delete").html_safe if flash[:errors_destroy] %>
 
 <%= form_tag({ :action => 'new' }, { :name => 'setup_list_form'}) do%>
-    <button type="button" id="view_hide", class = "btn btn-default" ><%="Choisir une catégorie".trn%></button>
 
 
-	<div id="fileTree_element">
+
+    <!--button type="button" id="view_hide", class = "btn btn-default" ><%="Choisir une catégorie".trn%></button-->
+
+
+<div class="col-lg-3">
+	<div id="fileTree_element", style="position: static;">
 		
 	</div>
-
-
-<!-- Data table -->
-<div id="setup_div">
+</div>
+<div id="setup_div" class="col-lg-9">
   <%= render :partial => 'list' %>
 </div>
 
@@ -42,15 +44,15 @@
 		});
     });
         
-	$(document ).on('click','#view_hide', function() {
-		$('#fileTree_element').toggle();
-	});
-	$('#fileTree_element').mouseleave(function(ev) {
-        ev.preventDefault();
-        $('#fileTree_element').hide();
-        return false;
-	});
-	$('#fileTree_element').hide();
+//	$(document ).on('click','#view_hide', function() {
+//		$('#fileTree_element').toggle();
+//	});
+//	$('#fileTree_element').mouseleave(function(ev) {
+//        ev.preventDefault();
+//        $('#fileTree_element').hide();
+//        return false;
+//	});
+	//$('#fileTree_element').hide();
         
         
 </script>

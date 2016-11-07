@@ -19,7 +19,6 @@ class AdminsController < ApplicationController
       end          
     end
 
-
     def create_super_admin
       esrole = EsRole.find_by_name("superadmin")
       if current_user.nil?
@@ -70,6 +69,12 @@ class AdminsController < ApplicationController
         end
       end
     end
+
+    def cancel_pub
+      session[:es_cancel_pub] = (session[:es_cancel_pub].presence||'N') == 'N' ? 'Y' : 'N'
+      redirect_to root_url 
+    end
+
 
     def change_site
       site_id     = params[:id].presence||0
@@ -243,7 +248,17 @@ class AdminsController < ApplicationController
         render :action => 'edit_site'
       end
     end
- 
+
+
+    #voir exemple dans INPORTANT_NOTES.txt section "Clipboard"
+    def test_copy_paste
+      args = ["cb_#{params[:id]}"]
+      args << params[:key]   if params[:key].present? 
+      args << params[:value] if params[:value].present? 
+      
+      flash[:notice] = send(*args).inspect
+      redirect_to root_url 
+    end 
 
 #    def create_site
 #      site_code         = params[:site_code].presence||'code_%{number}'.trn(:number =>DateTime.now.strftime('%Q'))

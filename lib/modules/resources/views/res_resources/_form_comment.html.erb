@@ -1,0 +1,15 @@
+	<h4><%= field_description "Données obligatoires".trn, true %></h4>
+
+<%
+  case @object.class.name
+    when "ResAction"%>
+		<%= easy_tag('text_only',{:value => "Action - " + (@object.description||''), :with_label => "Concerne".trn, :bootstrap_form => true}) %>
+		<%= easy_tag('text', 	:instance => "object", :field => "comment_text", :cols => 80, :rows => 10,:maxlength => 1000, :mandatory => false, :with_label => "Commentaire".trn, :bootstrap_form => true) %>
+    <%when "ResResource"%> 
+	<%= easy_tag('text_only',{:value => "Ressource - " + (@object.get_description||''), :with_label => "Concerne".trn, :bootstrap_form => true}) %>
+	<%= easy_tag('text', 	:instance => "object", :field => "comment_text", :cols => 80, :rows => 10,:maxlength => 1000, :mandatory => false, :with_label => "Commentaire".trn, :bootstrap_form => true) %>
+  <%end 
+%>
+
+
+

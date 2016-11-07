@@ -1,8 +1,8 @@
 <!-- Data table header and content -->
+<p><big><%="Chemin".trn%></big> : <%=@branch%></p>
 <table cellpadding="4" width="100%" class='table'>
   <tr>
-    <th width="200"><%="Chemin".trn%></th>
-	<th><%= sort_link_remote :text => "Nom".trn, :column => "name", :controller =>  "es_setups", :action => 'list'%></th>
+	<th  width="30%"><%= sort_link_remote :text => "Nom".trn, :column => "name", :controller =>  "es_setups", :action => 'list'%></th>
     <th><%= sort_link_remote :text => "Valeur".trn, :column => "value", :controller => "es_setups", :action => 'list' %></th>
     <th><%="Type".trn%></th>
   </tr>

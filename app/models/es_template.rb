@@ -121,31 +121,36 @@ class EsTemplate < ActiveRecord::Base
 
   
   def save_design(containers)
-    template_cols = []
-    self.es_template_lines.each do |l|
-      template_cols += l.es_template_cols.map(&:id)
-    end
+#    template_cols = []
+#    self.es_template_lines.each do |l|
+#      template_cols += l.es_template_cols.map(&:id)
+#    end
     containers.each do |num_part,container|
       container.each do |container_name,part_caract|
         part_id = container_name[14..-1]
         if num_part.to_i==0
           col_id  = 0
         else
-          col_id  = template_cols[num_part.to_i - 1]
+#          col_id  = template_cols[num_part.to_i - 1]
+          col_id  = part_caract[:col_id]
         end
-        EsPart.find(part_id).update_attributes({:es_template_col_id => col_id, :num => part_caract[:num_row]})
+        part = EsPart.find_by_id(part_id)
+        part.update_attributes({:es_template_col_id => col_id, :num => part_caract[:num_row]})
       end
     end
   end
   
   def self.load_template_file
+    template_files = []
     tmp_dir = File.join(Rails.root,"app","views","templates")
     Dir.entries(tmp_dir).each do |file|
       if File.file?(File.join(tmp_dir, file)) && (File.extname(file)=='.erb' && file.starts_with?('_'))
+        template_files << File.join("templates", file)
         name = file.split('.')[0][1..-1]
         EsTemplate.create(:name => name, :description => "Fichier template '%{temp}'".trn(:temp => name), :validated => 'N', :es_category_id => 0,:template_type => 'TEMPLATE')  unless EsTemplate.where(:name => name).first
       end
     end
+    template_files
   end
 
 

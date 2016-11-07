@@ -66,8 +66,8 @@ class EsContent < ActiveRecord::Base
           if v.blank?
             element[p_name.to_sym]=nil
           else
-            element[p_name.to_sym]= v
-          end             
+            element[p_name.to_sym]= v.is_a?(Array) ? v.join(',') : v
+          end
         end
         element.save
         element.errors.full_messages.each do |m|
@@ -139,6 +139,9 @@ private
       when "parent_style"
         tmp_css_attr      = "parent_style"
         tmp_css_value     = value
+      when "cancel_float"
+        tmp_css_attr      = "cancel_float"
+        tmp_css_value     = value
       when "parent_display"
         tmp_css_value     = "display:#{value}"
       when "parent_position"
@@ -156,30 +159,44 @@ private
 
 
   def self.get_properties_detail(element_type, element_id,init_properties)
+    
+    # ATTENTION : l'appelant a un rescue, du coup on ne voit pas les erreurs
+    
     tmp_tabs = {}
     tmp_info_tabs   = {}
 
-    DynAttributeType.all(:conditions => ["attribute_type = ?", element_type]).each do |at|
-      category = at.category.split('/')
-      
-      new_tab = !tmp_info_tabs[category[0]].present?
-      tmp_info_tabs[category[0]] = {:tab_num => tmp_info_tabs.size + 1} if new_tab
-      num_tab = tmp_info_tabs[category[0]][:tab_num]
-      new_group = !tmp_info_tabs[category[0]][category[1]].present? 
-      tmp_info_tabs[category[0]][category[1]] = {:group_num => tmp_info_tabs[category[0]].size} if new_group
-      num_group = tmp_info_tabs[category[0]][category[1]][:group_num]
+     if class_exists?(element_type.to_s)
+      element_class = element_type.constantize
+      DynAttributeType.all(:conditions => ["attribute_type = ?", element_type]).each do |at|
+        category = at.category.split('/')
+        
+        new_tab = !tmp_info_tabs[category[0]].present?
+        tmp_info_tabs[category[0]] = {:tab_num => tmp_info_tabs.size + 1} if new_tab
+        num_tab = tmp_info_tabs[category[0]][:tab_num]
+        new_group = !tmp_info_tabs[category[0]][category[1]].present? 
+        tmp_info_tabs[category[0]][category[1]] = {:group_num => tmp_info_tabs[category[0]].size} if new_group
+        num_group = tmp_info_tabs[category[0]][category[1]][:group_num]
+  
+        tmp_choice = (at.choices || "")
+        if !(tmp_choice.blank?) && tmp_choice.starts_with?("[") && tmp_choice.ends_with?("]") && element_class.respond_to?(tmp_choice[1..-2])
+          choices = element_class.send(tmp_choice[1..-2])
+        else
+          choices = tmp_choice.split(',')
+        end
 
+        tmp_tabs[category[0]]={:title => category[0].trn} if new_tab        
+        if new_group
+          tmp_tabs[category[0]]["title_#{num_group}".to_sym]=category[1].trn 
+          tmp_tabs[category[0]]["group_#{num_group}".to_sym]=[]
+        end
+        
+        tmp_value = !init_properties[at.name].nil? ? init_properties[at.name] : (element_type.constantize.find(element_id)[at.name] || at.default_value)
+        tmp_value = tmp_value.split(',') if at.type_data=='list' && at.type_param == 'multiple_list' && tmp_value.is_a?(String)
 
-      
-      tmp_tabs[category[0]]={:title => category[0].trn} if new_tab        
-      if new_group
-        tmp_tabs[category[0]]["title_#{num_group}".to_sym]=category[1].trn 
-        tmp_tabs[category[0]]["group_#{num_group}".to_sym]=[]
+        tmp_tabs[category[0]]["group_#{num_group}".to_sym]  << add_property(at.name   , tmp_value  , :description => at.comments, :format => at.type_data, :length => at.length, :read_only => at.read_only, :addon_params => at.type_param, :value_list => choices)
+  
       end
-      tmp_value = !init_properties[at.name].nil? ? init_properties[at.name] : (element_type.constantize.find(element_id)[at.name] || at.default_value)
-      tmp_tabs[category[0]]["group_#{num_group}".to_sym]  << add_property(at.name   , tmp_value  , :description => at.comments, :format => at.type_data, :length => at.length, :read_only => 'N', :addon_params => at.type_param, :value_list => (at.choices || "").split(','))
-
-    end if class_exists?(element_type.to_s)
+    end
 
 
     tabs =[]
@@ -199,6 +216,14 @@ private
     value=value.split(",") if options[:format] == "multiple_list"
     return {:name => name ,:description=>options[:description].trn  ,:format => options[:format], :length => options[:length], :value => value,:read_only => options[:read_only], :mandatory => options[:mandatory], :value_list => options[:value_list] , :addon_params => options[:addon_params] }
   end  
+
+
+  def self.get_structured_parent_list
+    tmp_list=['2+10','2+4+6', '2+6+4', '2+2+8', '2+8+2', '2+2+2+2+2+2', '3+9', '3+3+3+3', '3+6+3', '3+3+6', '4+8', '4+4+4', '4+2+6', '5+7', '5+3+4', '6+6', '6+2+4', '6+4+2', '7+5', '7+3+2', '8+4', '8+2+2', '9+3' , '10+2']
+    return tmp_list.map{|e| ["%{nbr} colonnes (%{detail})".trn(:nbr => e.split('+').count, :detail => e),e]}.sort
+  end
+
+
 
 private
   def self.manage_pixel_attribute(value)

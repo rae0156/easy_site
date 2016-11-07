@@ -22,7 +22,7 @@
 	<%= list_item.sequence.to_i %>  
   </td>
   <td>
-	<%= image_tag(list_item.editable=="Y" ? "appli/ok_32.png" : "appli/cancel_32.png", 
+	<%= image_tag(list_item.editable=="Y" ? "appli/32/ok.png" : "appli/32/nok.png", 
 						    {:alt => "", :align => "middle", :border => "0",
 						    :class => "app_tooltip", :title => list_item.editable=="Y" ? "Ce contenu est modifiable".trn : "Ce contenu n'est pas modifiable".trn, "data-placement" => "left"}) %>  
   </td>
@@ -30,7 +30,7 @@
 	<%= list_item.content_type %>  
   </td>
   <td>
-	<%= image_tag(list_item.used? ? "appli/ok_32.png" : "appli/cancel_32.png", 
+	<%= image_tag(list_item.used? ? "appli/32/ok.png" : "appli/32/nok.png", 
 						    {:alt => "", :align => "middle", :border => "0",
 						    :class => "app_tooltip", :title => list_item.used? ? "Ce contenu est utilisé dans une partie".trn : "Ce contenu n'est pas encore utilisé".trn, "data-placement" => "left"}) %>  
   </td>

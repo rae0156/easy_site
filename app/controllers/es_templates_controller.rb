@@ -52,8 +52,7 @@ class EsTemplatesController < ApplicationController
   end
   
   def refresh_file
-    EsTemplate.load_template_file
-    flash[:notice] = "Les templates par fichier ont été rafraichis.".trn
+    session[:template_files_to_load] = EsTemplate.load_template_file
     redirect_to :action => :list
   end
   
@@ -167,6 +166,7 @@ class EsTemplatesController < ApplicationController
   def design_parts
     id = params[:id]
     @template = EsTemplate.find_by_id(id)
+    session[:parts_preview] = []
   end
   
   def update_design_parts
@@ -302,12 +302,12 @@ class EsTemplatesController < ApplicationController
   end
 
 
-  def edit_part
-    id = params[:id]
-    @part = EsPart.find_by_id(id)
-    @template = @part.es_template
-    @name_list = EsPart.get_name_list
-  end
+#  def edit_part
+#    id = params[:id]
+#    @part = EsPart.find_by_id(id)
+#    @template = @part.es_template
+#    @name_list = EsPart.get_name_list
+#  end
 
   def update_part
     id = params[:id]
@@ -571,6 +571,107 @@ class EsTemplatesController < ApplicationController
       format.js do 
         @element_id, @partial = 'div_wizard', 'es_templates/form_design_wizard'
         render 'shared/replace_content'
+      end
+    end
+  end
+  
+  def get_library_tool
+    @library_mode = params[:id]
+    
+    
+    respond_to do |format|
+      format.html {} 
+      format.js do 
+        case @library_mode
+          when 'tools'
+            @element_id, @partial = 'div_library_tool', 'es_templates/library_tool'
+            render 'shared/replace_content'
+          when 'list_image'
+            redirect_to :controller => "easy_generate_imagelists", :action => "list"
+          when 'video'
+            redirect_to :controller => "easy_generate_videos", :action => "list"
+          when 'banner'
+            redirect_to :controller => "easy_generate_carousels", :action => "list"
+          when 'dir'            
+            DirManager.create_dir_management('system_library','public','Appli')                        
+            redirect_to :controller => "dir_managers", :action => "explorer", :name_dir => 'system_library', :sub_dir => 'images'
+          when 'image'
+            create_dir(["public","archives","mini_magick"])
+            redirect_to :controller => "es_templates", :action => "tool_image"
+          else
+            @element_id, @partial = 'div_library_tool', 'es_templates/library_tool'
+            render 'shared/replace_content'
+        end
+      end
+    end
+  end
+
+  def tool_image
+    @file_name          = params["file_name"].presence||''
+    @image_name         = get_image_name(@file_name)
+    @image_tool_options = params["image_tool"].presence||{}
+    
+    if !@file_name.blank? && !@image_name.blank?
+      @mini_magick_image  = MiniMagick::Image.open(@file_name)
+      @init_info          = "Type".trn + " : " + @mini_magick_image.type + "<BR>" + "Dimensions".trn + " : " + @mini_magick_image.dimensions.inspect + "<BR>" + "Taille (en bytes)".trn + " : " + @mini_magick_image.size.to_s + "<BR>" + "Résolution".trn + " : " + @mini_magick_image.resolution.inspect + "<BR>"
+      
+      @image_tool_options.delete(:negate) if (@image_tool_options[:negate]||'N') == 'N'
+      @image_tool_options.delete(:flip) if (@image_tool_options[:flip]||'N') == 'N'
+      @image_tool_options.delete_if { |k, v| v.blank? }
+      
+      save_ok = false
+      unless @image_tool_options.empty?
+        @output_file = "/" + File.join("archives","mini_magick","#{request.session_options[:id]}_#{Time.now.strftime('%Y%m%d%H%M%S')}_#{File.basename(@file_name)}")
+
+        if params[:id].presence||"" == "save_as"
+            tmp_new_name = @image_tool_options[:new_name]
+          if tmp_new_name.blank?
+            flash[:error_message_ajax] = "Vous devez renseigner un nouveau nom.".trn 
+          else
+            tmp_file_name = sanitize_filename(tmp_new_name)
+            if tmp_file_name != tmp_new_name
+              flash[:error_message_ajax] = "'%{bad_name}' n'est pas un nom de fichier valide. Un nom valide pourrait être '%{new_name}'.".trn(:bad_name => tmp_new_name, :new_name => tmp_file_name)
+            elsif tmp_new_name == File.basename(@file_name)
+              flash[:error_message_ajax] = "Vous devez changer de nom, car vous avez choisi le nom de départ.".trn 
+            else
+              new_complete_name = File.join(Rails.root,File.dirname(@file_name),tmp_new_name)
+              if File.exist?(new_complete_name)
+                flash[:error_message_ajax] = "Ce nom de fichier existe déjà".trn
+              elsif File.extname(new_complete_name) != File.extname(@file_name)
+                flash[:error_message_ajax] = "L'extention de fichier doit être '%{ext}'.".trn(:ext=>File.extname(@file_name))
+              else
+                @output_file = new_complete_name.gsub(File.join(Rails.root,'public'),'')
+                save_ok = true
+              end
+            end
+          end
+        end
+
+        @mini_magick_image.combine_options do |b|
+          b.resize "#{@image_tool_options[:width]}x#{@image_tool_options[:height]}" if !@image_tool_options[:width].blank? && !@image_tool_options[:height].blank?
+          b.rotate @image_tool_options[:rotate] unless @image_tool_options[:rotate].blank?
+          b.negate if @image_tool_options[:negate]=='Y'
+          b.flip if @image_tool_options[:flip]=='Y'          
+        end
+  
+        FileUtils.rm Dir.glob(File.join(Rails.root,"public","archives","mini_magick","*_*_#{File.basename(@file_name)}")), :force => true
+        
+        @mini_magick_image.write File.join(Rails.root,"public",@output_file)
+        
+      end
+
+    end    
+
+    if save_ok == true
+      redirect_to :action => "tool_image", :file_name => "public" + @output_file
+      return false
+    else      
+      respond_to do |format|
+        format.html {} 
+        format.js do 
+          @element_id, @partial = 'tool_image', 'es_templates/tool_image'
+          render 'shared/replace_content'
+        end
       end
     end
   end

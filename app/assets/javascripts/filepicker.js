@@ -33,6 +33,7 @@ jQuery.fn.fileSelector = function() {
      
     $(div).fileTree({ root: dir, script: script + extention }, function(file) {
         $(sel).val(file);
+        $(sel).trigger('change');
         /*$(div).hide();*/
         return false;
 

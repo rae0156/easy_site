@@ -1,14 +1,14 @@
 <% @title = "Gestion des parties du template %{name}".trn(:name=>@template.name) %>
 
 <div class="center-menu">
-    <h2><%= image_tag("appli/setup_48.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
+    <h2><%= image_tag("appli/48/setup.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
 	
 <ul>
 	<%if @template.is_dynamic%>
-	<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Nouvelle partie".trn,:image => "appli/new_32.png", :action => "new_part", :id => @template.id} %></li>
-	<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Placer les parties".trn,:image => "appli/execute_32.png", :action => "design_parts", :id => @template.id} %></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Nouvelle partie".trn,:image => "appli/32/add.png", :action => "new_part", :id => @template.id} %></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Placer les parties".trn,:image => "appli/32/execute.png", :action => "design_parts", :id => @template.id} %></li>
 	<%end%>
-	<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour".trn,:image => "appli/back_32.png", :action => "list"}%></li>
+	<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour".trn,:image => "appli/32/arrow_left.png", :action => "list"}%></li>
 </ul>
 	
 	<!-- Search -->

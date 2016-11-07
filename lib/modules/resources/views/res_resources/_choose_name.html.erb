@@ -5,8 +5,8 @@
 <div class="center-menu">
     <h2><%= @title %></h2>
 	<ul>
-		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/save_32.png", :action => "save_other", :param_goto => {:year => @year},  :form => "resource_name_form", :remote => true}%></li>
-		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour".trn,:image => "appli/back_32.png", :action => "show_resources", :html_option => {:remote => true}}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/32/save_data.png", :action => "save_other", :param_goto => {:year => @year},  :form => "resource_name_form", :remote => true}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour".trn,:image => "appli/32/arrow_left.png", :action => "show_resources", :html_option => {:remote => true}}%></li>
 	</ul>
 	<div class="clearer"></div>
 </div>

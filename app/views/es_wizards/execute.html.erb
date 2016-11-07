@@ -1,49 +1,54 @@
 <% @title = "Assistant : %{description}".trn(:description=> session[:wizard][:description])%>
 
-<div class="cadre bg-primary">
-	<h2><%= image_tag("appli/setup_48.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
-
-
-<%= form_tag({}, { :name => 'wizard_selected_form',:class => 'form-horizontal'}) do%>
-
-	<%if session[:wizard][:button].include?("goto")%>
-	    <div class="col-sm-6 btn">
-			<%= easy_tag('list',:instance => "wizard", :field => "selected",:selected_value=> session[:wizard][:wizard_detail].sequence, :value_list_array => session[:wizard][:wizard_details],:number_of_line=>1,:multiple => false)%>
+<div class="cadre bg-white">
+	<div class='row'>
+	    <div class="col-sm-6">
+			<h2><%= image_tag("appli/48/setup.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
 		</div>
-	<%end%>
+	
+	    <div class="col-sm-6">
+			<%= form_tag({}, { :name => 'wizard_selected_form',:class => 'form-horizontal'}) do%>
+			
+				<%if session[:wizard][:button].include?("goto")%>
+					<%= easy_tag('list',:instance => "wizard", :field => "selected",:selected_value=> session[:wizard][:wizard_detail].sequence, :value_list_array => session[:wizard][:wizard_details],:number_of_line=>1,:multiple => false)%>
+				<%end%>
+			
+			<% end %>
+		
+		    <ul>
+				<%if session[:wizard][:button].include?("goto")%>
+					<li class="btn btn-default">
+						<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Executer".trn, :action => "execute",  :form => "wizard_selected_form", :fa => "fa-play", :param_goto => {:code_action => "goto"}}%>
+					</li>
+				<%end%>
+				<%if session[:wizard][:button].include?("previous")%>
+					<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => session[:wizard][:wizard_detail].previous.description,:fa => "fa-backward", :action => "execute", 
+																											:param_goto => {:code_action => "previous"}}%>
+					</li>
+				<%end%>
+				<%if session[:wizard][:button].include?("next")%>
+					<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => session[:wizard][:wizard_detail].next.description,:fa => "fa-forward", :action => "execute", 
+																											:param_goto => {:code_action => "next"}}%>
+					</li>
+				<%end%>
+				<%if session[:wizard][:button].include?("refresh")%>
+					<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Rafraîchir".trn,:fa => "fa-refresh", :action => "execute", :param_goto => {:code_action => "refresh"}}%></li>
+				<%end%>
+				<%if session[:wizard][:button].include?("stop")%>
+					<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Arrêter".trn,:fa => "fa-stop", :action => "execute", :param_goto => {:code_action => "stop"}}%></li>
+				<%end%>
+		    </ul>
+		</div>
+	</div>
 
-<% end %>
-
-    <ul>
-		<%if session[:wizard][:button].include?("goto")%>
-			<li class="btn btn-default">
-				<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Executer".trn, :action => "execute",  :form => "wizard_selected_form", :image => "appli/next_32.png", :param_goto => {:code_action => "goto"}}%>
-			</li>
-		<%end%>
-		<%if session[:wizard][:button].include?("previous")%>
-			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => session[:wizard][:wizard_detail].previous.description,:image => "appli/back_32.png", :action => "execute", 
-																									:param_goto => {:code_action => "previous"}}%>
-			</li>
-		<%end%>
-		<%if session[:wizard][:button].include?("next")%>
-			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => session[:wizard][:wizard_detail].next.description,:image => "appli/next_32.png", :action => "execute", 
-																									:param_goto => {:code_action => "next"}}%>
-			</li>
-		<%end%>
-		<%if session[:wizard][:button].include?("refresh")%>
-			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Rafraîchir".trn,:image => "appli/process_32.png", :action => "execute", :param_goto => {:code_action => "refresh"}}%></li>
-		<%end%>
-		<%if session[:wizard][:button].include?("stop")%>
-			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Arrêter".trn,:image => "appli/cancel_32.png", :action => "execute", :param_goto => {:code_action => "stop"}}%></li>
-		<%end%>
-    </ul>
-	<hr />
 	<%if session[:wizard][:render_name].presence.blank?%>
 	  <p><%="Cet partie de l'assitant est vide".trn%></p>
 	<%else%>		
-		<h3><%=session[:wizard][:step]%>/<%=session[:wizard][:total_step]%> : <%= session[:wizard][:wizard_detail].description %></h3>
-		<div id='main_wizard' class="bg-primary">
-		  <%= link_to("<i class='glyphicon glyphicon-fullscreen'></i>".html_safe,"#",:id => 'btn_wizard_fullscreen')%>		
+		<div id='main_wizard' class="bg-white well well-sm">
+		  <p class="bg-info">
+		  	<small><%= link_to("<i class='glyphicon glyphicon-fullscreen'></i>".html_safe,"#",:id => 'btn_wizard_fullscreen')%></small>
+		  	<strong><%=session[:wizard][:step]%>/<%=session[:wizard][:total_step]%> : <%= session[:wizard][:wizard_detail].description %></strong>		  	
+		  </p>		
 		  <div id='wizard_render'>
 		  	<%= render :partial => session[:wizard][:render_name] %>	
 		  </div>

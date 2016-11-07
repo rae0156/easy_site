@@ -1,15 +1,19 @@
-    <!-- Navigation -->
-	<%= get_template_part("part_login")%>
 
     <!-- Page Content -->
-    <div class="container">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+			    <!-- Navigation -->
+				<%= get_template_file_part("part_login")%>
+            </div>
+        </div>
 
         <div class="row">
 
             <!-- Blog Post Content Column -->
             <div class="col-lg-8">
-				<%= get_template_part("part_dynamic")%>
-				<%= get_template_part("blog_main")%>
+				<%= get_template_file_part("part_dynamic")%>
+				<%= get_template_file_part("blog_main")%>
             </div>
 
             <!-- Blog Sidebar Widgets Column -->
@@ -17,13 +21,12 @@
 
                 <!-- Blog Search Well -->
                 <div class="well">
-					<%= get_template_part("blog_search")%>
+					<%= get_template_file_part("blog_search")%>
                 </div>
 
                 <!-- Blog Categories Well -->
                 <div class="well">
-					<%= get_template_part("blog_category")%>
-                    </div>
+					<%= get_template_file_part("blog_category")%>
                 </div>
 
             </div>
@@ -36,7 +39,7 @@
         <footer>
             <div class="row">
                 <div class="col-lg-12">
-					<%= get_template_part("copyright")%>
+					<%= get_template_file_part("copyright")%>
                 </div>
             </div>
             <!-- /.row -->

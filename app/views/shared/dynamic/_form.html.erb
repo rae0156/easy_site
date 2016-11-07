@@ -117,7 +117,7 @@
 	            	<%= easy_tag('file', :size=>column[:length_field], :instance => "instance", :field => column[:name],:value=> value_field, :read_only=> tmp_readonly, :option_file => column[:option_file],:with_label => column[:column_name], :class => "window_fixed", :bootstrap_form => true, :help_text => column[:column_text]) %>
 				<%end%>
 			  <% when "link"%>
-            	<%= easy_tag('link',:instance => "instance", :field => column[:name],:value=> value_field, :read_only=> tmp_readonly) %>
+            	<%= easy_tag('link',:instance => "instance", :field => column[:name],:value=> value_field, :read_only=> tmp_readonly, :with_label => column[:column_name], :bootstrap_form => true, :help_text => column[:column_text]) %>
 		      <% else %>
 				<%= easy_tag('text_only', :value => value_field, :with_label => column[:column_name], :bootstrap_form => true) %>
 		      <% end %>		

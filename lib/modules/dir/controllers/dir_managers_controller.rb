@@ -4,6 +4,9 @@ class DirManagersController < ApplicationController
 
   has_es_interface_controllers
 
+  #le protect_from_forgery empêche d'executer un load de fichier
+  skip_before_filter :verify_authenticity_token, :only=> [:explorer_action]
+
   @@default_sort    = 'name' 
   @@param_name      = "element"
   @@model           = DirManager
@@ -196,7 +199,7 @@ class DirManagersController < ApplicationController
     @sub_dir = params[:sub_dir].presence||''
 
     get_dir_content(ident)
-
+    
     error_txt = session[:error_txt].presence||''
     session.delete(:error_txt)
     if error_txt.blank?
@@ -386,26 +389,27 @@ private
       @parent = File.join(@parent, user_id.to_s) if @dir_manager.sub_dir_by_user=='Y'
 
       @sub_dir = '' unless access_dir
-
       unless @parent.blank?
-        tmp_path = File.join(@parent,@sub_dir||'')        
+        tmp_parent =  File.expand_path(@parent)
+        tmp_path = File.join(tmp_parent,@sub_dir||'')
         unless File.directory?(tmp_path)
-          tmp_path = @parent
+          tmp_path = tmp_parent
           flash[:error]="Le sous répertoire %{name} n'existe pas".trn(:name => @sub_dir)
         end           
-        if File.expand_path(tmp_path).starts_with?(@parent)
-          @sub_dir = File.expand_path(tmp_path)[@parent.size+1..-1]
+        if File.expand_path(tmp_path).starts_with?(tmp_parent)
+          @sub_dir = File.expand_path(tmp_path)[tmp_parent.size+1..-1]
         else
           @sub_dir = nil
         end
-        FileUtils.mkdir_p(@parent) unless File.directory?(@parent)
-        @dir = DirContent.new(@parent, @typefile).get_content(@sub_dir||'')
+        FileUtils.mkdir_p(tmp_parent) unless File.directory?(tmp_parent)
+        @dir = DirContent.new(tmp_parent, @typefile).get_content(@sub_dir||'')
+
         @dir[0]=[] unless access_dir
         @dir[1]=[] unless access_file        
         unless access_dir
           @dir_tree = ''
         else
-          tmp_tree = DirContent.new(@parent, @typefile).get_dir_tree_html('') #@sub_dir||''
+          tmp_tree = DirContent.new(tmp_parent, @typefile).get_dir_tree_html('') #@sub_dir||''
           tmp_tree.each_with_index do |t,i|
             if t.is_a?(Array)
               t[0]= @dir_manager.name if t[0]=='..'

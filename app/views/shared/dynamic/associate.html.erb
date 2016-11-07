@@ -5,9 +5,9 @@
     <h2> <%= @title %></h2>
     <ul>
 		<%unless (@setup_controller[:readonly_exists] && @instance["read_only"]=='Y')%>
-			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/save_32.png", :action => "update_associate", :id => params[:id],  :form => "associate_#{@setup_controller[:instance_name]}"}%></li>
+			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/32/save_data.png", :action => "update_associate", :id => params[:id],  :form => "associate_#{@setup_controller[:instance_name]}"}%></li>
 		<%end%>
-		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:back => true, :text => "Retour".trn,:image => "appli/back_32.png", :action => "list", :param_goto => {:parent_id => (@parent.blank? ? "" : @parent.id)}}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:back => true, :text => "Retour".trn,:image => "appli/32/arrow_left.png", :action => "list", :param_goto => {:parent_id => (@parent.blank? ? "" : @parent.id)}}%></li>
     </ul>
     <div class="clearer"></div>
   </div>

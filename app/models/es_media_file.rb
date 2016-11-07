@@ -15,6 +15,10 @@ class EsMediaFile < ActiveRecord::Base
     self.name
   end
   
+  def self.get_image_size
+    [['Petite'.trn,1],['Moyenne'.trn,2],['Grande'.trn,3]]
+  end
+  
   def self.get_code_citation
     EsMediaFile.where(:media_type => 'citation').all.map{|element| element.name}.uniq
   end

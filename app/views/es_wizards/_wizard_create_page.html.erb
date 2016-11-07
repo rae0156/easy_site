@@ -5,10 +5,10 @@
 <%= form_tag({}, { :name => 'admin_form', :id => 'admin_form',:class => 'form-horizontal'}) do%>
 
 	<ul class="nav nav-tabs " id="myTab">
-	    <li class="<%=@mode_page=="list" ? 'active' : ''%>"><a href="#page_list" data-toggle="tab"><%="Pages".trn%></a></li>
+	    <li class="<%=@mode_page=="list" ? 'active' : ''%>"><a href="#page_list" data-toggle="tab"><%="Liste des pages".trn%></a></li>
 	    <li class="<%=@mode_page=="new" ? 'active' : ''%>"><a href="#add_page" data-toggle="tab"><%= (@template.id.blank? ? "Nouvelle page".trn : "Modification de la page '%{name}'".trn(:name => @template.name))%></a></li>
 	 	<%unless @template.id.blank?%>	
-	      <li class="<%=@mode_page=="design" ? 'active' : ''%>"><a href="#content_page" data-toggle="tab"><%=@template.name%></a></li>
+	      <li class="<%=@mode_page=="design" ? 'active' : ''%>"><a href="#content_page" data-toggle="tab"><%="Dessin de la page '%{name}'".trn(:name =>@template.name)%></a></li>
 	    <%end%>	
 	</ul>
 	<div class="tab-content">
@@ -44,6 +44,8 @@
 									:confirm =>"Voulez vous vraiment supprimer cette page ?".trn,
 									:title =>"Supprimer".trn)
 						%>					
+				  	<%else%>
+						<i class='fa fa-info' title='<%= "Impossible de supprimer cette page, car il y a %{nbr} partie(s) remplie(s)".trn(:nbr=> t.es_parts.count)%>'></i>				
 				  	<%end%>
 				  </td>
 				</tr>

@@ -12,7 +12,7 @@ class EsUser < ActiveRecord::Base
 
   has_and_belongs_to_many :es_roles
   belongs_to :es_category  
-  has_many :es_abilities
+  #has_many :es_abilities
   
   #include encryption method
   include BCrypt
@@ -44,6 +44,12 @@ class EsUser < ActiveRecord::Base
   end
   
   def check_dependances
+
+    linked = detect_association(['audits','es_roles'])  
+    unless linked.blank?
+      errors.add(:base, "La suppression de l'utilisateur ne peut être faite, car une ou plusieurs liaisons existent. (%{linked})".trn(:linked => linked.join(', ')))
+    end
+
     unless self.es_roles.empty?
       errors.add "base", "Impossible de supprimer l'utilisateur, parce qu'il est déjà associé à un rôle".trn
     end
@@ -142,5 +148,17 @@ class EsUser < ActiveRecord::Base
     return false
   end  
     
+  def detect_association(exception_models=[])
+    linked=[]
+    EsUser.reflect_on_all_associations.each do |elem|
+      unless exception_models.include?(elem.name.to_s)
+        case elem.macro.to_s
+        when "has_many", "has_and_belongs_to_many"
+          linked << elem.name.to_s.humanize if  self.send(elem.name).count > 0
+        end
+      end        
+   end
+   return linked
+  end
   
 end

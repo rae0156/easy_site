@@ -6,8 +6,8 @@
 <div class="center-menu">
     <h2><%= @title %> : <%="Sélection".trn%></h2>
 		<ul>
-		    <li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => { :action => "execute_with_vars", :id => @dyn_export.id, :form => "search_form", :image => "appli/excel_32.png",  :text => "Exporter".trn}%></li>
-		    <li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => { :url_text => @old_url, :image => "appli/back_32.png" ,  :text => "Retour".trn}%></li>
+		    <li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => { :action => "execute_with_vars", :id => @dyn_export.id, :form => "search_form", :image => "appli/32/excel.png",  :text => "Exporter".trn}%></li>
+		    <li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => { :url_text => @old_url, :image => "appli/32/arrow_left.png" ,  :text => "Retour".trn}%></li>
 		</ul>
 	
 	<div class="clearer"></div>

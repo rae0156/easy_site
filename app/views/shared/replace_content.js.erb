@@ -1,7 +1,9 @@
 $(document).ready(function() {
-	<%if @element_id.class.to_s == 'String' && @partial.class.to_s == 'String' %>
+	
+	<%@locals = {} if @locals.nil?
+	  if @element_id.class.to_s == 'String' && @partial.class.to_s == 'String' %>
 		<%if @format.blank?%>
-			$('#<%=@element_id%>').html("<%= escape_javascript(render :partial => @partial) %>");
+			$('#<%=@element_id%>').html("<%= escape_javascript(render :partial => @partial, :locals => @locals) %>");
 		<%elsif @format.to_s == 'text'%>
 			$('#<%=@element_id%>').html("<%=@partial.html_safe%>");
 		<%end%>

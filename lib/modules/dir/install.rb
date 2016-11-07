@@ -4,6 +4,7 @@ class InstallDir
     
     create_or_update_local_path('Public','public')
     create_or_update_local_path('Log','log')
+    create_or_update_local_path('Appli','.')
     
   end  
   

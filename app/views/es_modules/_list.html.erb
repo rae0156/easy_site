@@ -4,6 +4,7 @@
 	<th><%= sort_link_remote :text => "Nom du module".trn, :column => "module_name", :controller =>  "es_modules", :action => 'list'%></th>
     <th><%="Version".trn%></th>
     <th><%="Activé".trn%></th>
+    <th><%="Option".trn%></th>
   </tr>
   <%= render :partial => 'es_modules/list_item', :collection => @modules %>
 </table>

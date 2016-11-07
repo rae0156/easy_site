@@ -4,7 +4,7 @@ interface:
     - EasySystemsController
   mailers: / 
 
-version: 0.0.0.1
+version: 0.0.0.2
 
 activated: Y<<boolean-N-Module actif>>
 
@@ -35,3 +35,5 @@ controllers:
         user_connect: Connexion 
         user_password_lost: Retrouver son mot de passe perdu
         user_signin: S'inscrire
+        user_test_mail: Tester son mail
+        cancel_pub: Cacher/Montrer les parties Pub

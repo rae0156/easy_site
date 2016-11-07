@@ -1,24 +1,3 @@
-<% return unless session[:flag_connection] %>
-    <div class="navbar-default " role="navigation"> <!--class navbar retirée pour l'espace de 20px en dessous-->
-        <div class="container-fluid ">
-	  	    <div class="navbar-right">
-			  <p class="navbar-text">
-				<% if self.logged_in? %>
-				  <span><%= current_user.pseudo.blank? ? current_user.mail : current_user.pseudo %></span> <%="est connecté".trn%>.&nbsp;
-				  <%= link_to 'Modifier son profile'.trn, {:controller => 'es_users', :action => 'profile'}, :class => 'navbar-link' %> |
-				  <%= link_to 'Modifier son mot de passe'.trn, {:controller => 'es_users', :action => 'password'}, :class => 'navbar-link' %> |
-				  <%= link_to 'Modifier son mail'.trn, {:controller => 'es_users', :action => 'mail'}, :class => 'navbar-link' %> |
-				  <%= link_to "Se déconnecter".trn, {:controller => 'es_users', :action => 'logout'}, method: :delete, :class => 'navbar-link'  %>
-				<% else %>
-				  <%= link_to "S'incrire".trn, {:controller => 'es_users', :action => 'new_user'}, :class => 'navbar-link'  %> |
-				  <%= link_to 'Mot de passe perdu'.trn, {:controller => 'es_users', :action => 'password_lost'}, :class => 'navbar-link' %> |
-				  <%= link_to "Se connecter".trn, {:controller => 'es_users', :action => 'login'}, :class => 'navbar-link'  %>
-				<% end %>
-				&nbsp;
-		      </p>
-	        </div>
-        </div>
-    </div>
-
+<%=get_template_part("part_login","../../lib/modules/easy_generate/views/easy_generates",true)%>
 
 

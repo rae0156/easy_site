@@ -100,6 +100,7 @@ class ResCategory < ActiveRecord::Base
     end
   end
 
+
   def responsible_text
     text = []
     text << responsible_a.complete_name unless responsible_a.blank?
@@ -107,14 +108,46 @@ class ResCategory < ActiveRecord::Base
     return text.join(' - ')
   end
 
-  def get_actions(user)
-    result = self.res_actions.order('sequence')
+  def get_actions(user,options={})
+    
+    tmp_order, tmp_include, tmp_join, tmp_where = "sequence",nil,nil,nil
+    options.each do |k,v|
+      case k
+      when :order
+        tmp_order=v.gsub('[LOCAL_TABLE]',"res_actions") unless v.blank?
+      when :include
+        tmp_include=v unless v.nil?
+      when :join
+        tmp_join=v.map{|e|e.gsub('[LOCAL_TABLE]',"res_actions")} unless v.nil?
+      when :where
+        tmp_where=v.map{|e|e.gsub('[LOCAL_TABLE]',"res_actions")} unless v.nil?
+      end
+    end
+    
+    result = self.res_actions.order(tmp_order).includes(tmp_include).joins(tmp_join).where(tmp_where)
     result = result.where(:es_user_id => user) unless (user||0)==0
     result
   end
 
-  def get_resources(user,include_other_user=false)
-    result = self.res_resources.order('res_resources.sequence')
+  def get_resources(user,options={})
+
+    tmp_order, tmp_include, tmp_join, tmp_where, include_other_user = "res_resources.sequence",nil,nil,nil,false
+    options.each do |k,v|
+      case k
+      when :order
+        tmp_order=v.gsub('[LOCAL_TABLE]',"res_resources") unless v.blank?
+      when :include
+        tmp_include=v unless v.nil?
+      when :include_other_user
+        include_other_user =v unless v.nil?
+      when :join
+        tmp_join=v.map{|e|e.gsub('[LOCAL_TABLE]',"res_resources")} unless v.nil?
+      when :where
+        tmp_where=v.map{|e|e.gsub('[LOCAL_TABLE]',"res_resources")} unless v.nil?
+      end
+    end
+    
+    result = self.res_resources.order(tmp_order).includes(tmp_include).joins(tmp_join).where(tmp_where)
     unless (user||0)==0
       if include_other_user
         result = result.where(["res_actions.es_user_id = ? OR res_resources.es_user_id = ?",user,user]).includes(:res_action)
@@ -133,7 +166,7 @@ class ResCategory < ActiveRecord::Base
     self.res_evals.where(:year => year).order('sequence')
   end
 
-  def export_data(category=0,user=0)
+  def export_data(category,user,resource_order,resource_include,resource_join,resource_where)    
     year = self.name
     file_name = ResCategory.get_export_file_name(:name => "res_#{self.name.gsub(/[^0-9A-Za-z]/, '_')}.xls", :prefix => true)    
     book = Spreadsheet::Workbook.new 
@@ -148,8 +181,8 @@ class ResCategory < ActiveRecord::Base
     format_sub_title = Spreadsheet::Format.new :pattern_fg_color => "xls_color_20", 
                                             :color => "white", 
                                             :pattern => 1, 
-                                            :align => :center, 
-                                            :horizontal_align => "center", 
+                                            :align => :left, 
+                                            :horizontal_align => "left", 
                                             :vertical_align => "center", 
                                             :size => 11                                     
     
@@ -159,30 +192,118 @@ class ResCategory < ActiveRecord::Base
                                             :align => :center, 
                                             :horizontal_align => "center", 
                                             :vertical_align => "center", 
+                                            :border           => :thin,
                                             :size => 10                                     
     
     format_row    = Spreadsheet::Format.new :pattern_fg_color => "xls_color_14", 
                                             :color => "Black", 
                                             :pattern => 1, 
+                                            :border           => :thin,
                                             :size => 10
-    format_row2   = Spreadsheet::Format.new :pattern_fg_color => "white", 
+
+    format_row_bold= Spreadsheet::Format.new :pattern_fg_color => "xls_color_14", 
                                             :color => "Black", 
                                             :pattern => 1, 
+                                            :border           => :thin,
+                                            :size => 10,
+                                            :weight => :bold
+                                            
+    format_row_w   = Spreadsheet::Format.new :pattern_fg_color => "xls_color_23", 
+                                            :color => "Black", 
+                                            :pattern => 1, 
+                                            :border           => :thin,
                                             :size => 10
 
+    format_row_bold_w = Spreadsheet::Format.new :pattern_fg_color => "xls_color_23", 
+                                            :color => "Black", 
+                                            :pattern => 1, 
+                                            :border           => :thin,
+                                            :size => 10,
+                                            :weight => :bold
+                                            
+    format_row1   = Spreadsheet::Format.new :pattern_fg_color => "xls_color_14", 
+                                            :color => "Black", 
+                                            :pattern => 2, 
+                                            :size => 10,
+                                            :vertical_align => "top",
+                                            :border           => :thin,
+                                            :text_wrap => true
+                                            
+    format_row2   = Spreadsheet::Format.new :pattern_fg_color => "white", 
+                                            :color => "Black", 
+                                            :pattern => 2, 
+                                            :border           => :thin,
+                                            :size => 10
 
-    if user!=0 then
+    if category==-1 then
+      row_id = -1
+      sheet1 = book.create_worksheet :name => "Evaluations".trn
+      [35,35,50,50,15,15,50].each_with_index do |w,i|
+        sheet1.column(i).width = w
+      end
+      self.children.each do |c|
+        row_id += 1
+        sheet1.row(row_id).default_format = format_header 
+        sheet1.row(row_id).push *[c.description, c.responsible_text]
+
+        unless c.long_description.blank?
+          row_id += 1
+          row_id += 1
+          sheet1.row(row_id).default_format = format_sub_title
+          sheet1.row(row_id).push *["Description".trn]            
+          row_id += 1
+          sheet1.row(row_id).default_format = format_row1
+          sheet1.row(row_id).height = 120
+          sheet1.row(row_id).push *[Nokogiri::HTML(c.long_description).text.gsub(13.chr,'')] 
+          sheet1.merge_cells(row_id, 0, row_id, 6)
+        end
+        
+        evals = c.get_evals(year.to_i)
+        if evals.size > 0
+          row_id += 1
+          row_id += 1
+          sheet1.row(row_id).default_format = format_sub_title
+          sheet1.row(row_id).push *["Evaluations pour l'année '%{year}'".trn(:year => year.to_i)]            
+          evals.each do |e|
+            row_id += 1
+            sheet1.row(row_id).default_format = format_row1 
+            sheet1.row(row_id).height = 80
+            sheet1.row(row_id).push *[Nokogiri::HTML(e.description).text.gsub(13.chr,'')] 
+            sheet1.merge_cells(row_id, 0, row_id, 6)
+          end
+        end
+
+        c.get_eval_years.each do |tmp_year|
+          if tmp_year != year.to_i
+            evals = c.get_evals(tmp_year)
+            if evals.size > 0
+              row_id += 1
+              row_id += 1
+              sheet1.row(row_id).default_format = format_sub_title
+              sheet1.row(row_id).push *["Evaluations pour l'année '%{year}'".trn(:year => tmp_year)]            
+              evals.each do |e|
+                row_id += 1
+                sheet1.row(row_id).default_format = format_row1 
+                sheet1.row(row_id).height = 80
+                sheet1.row(row_id).push *[Nokogiri::HTML(e.description).text.gsub(13.chr,'')]            
+                sheet1.merge_cells(row_id, 0, row_id, 6)
+              end
+            end
+          end
+        end
+      end          
+    elsif user!=0 then
       row_id = -1
       user_name = EsUser.find_by_id(user).complete_name
       sheet1 = book.create_worksheet :name => user_name  
-      [35,35,50,15,15,50].each_with_index do |w,i|
+      [8,8,8,50,15,15,50,50].each_with_index do |w,i|
         sheet1.column(i).width = w
       end
       self.children.each do |c|
         if c.id==category || category==0
 
-          actions = c.get_actions(user)
-          ressources = c.get_resources(user,true)
+          actions = c.get_actions(user,{:order => resource_order,:include => resource_include,:join => resource_join,:where => resource_where})
+          ressources = c.get_resources(user,{:include_other_user=>true,:order => resource_order,:include => resource_include,:join => resource_join,:where => resource_where})
 
           next if actions.size==0 && ressources.size==0 
           
@@ -196,11 +317,11 @@ class ResCategory < ActiveRecord::Base
             sheet1.row(row_id).push *["Actions de %{user}".trn(:user => user_name)]            
             row_id += 1
             sheet1.row(row_id).default_format = format_sub_header 
-            sheet1.row(row_id).push *["Priorité".trn,"Statut".trn,"Description".trn,"Quand".trn,"Pour quand".trn,"Ressource(s)".trn]            
+            sheet1.row(row_id).push *["Priorité".trn,"Statut".trn,"","Description".trn,"Quand".trn,"Pour quand".trn,"Ressource(s)".trn]            
             actions.each do |a|
               row_id += 1
               sheet1.row(row_id).default_format = format_row 
-              sheet1.row(row_id).push *[a.res_priority.get_code_text,a.res_status.get_code_text,a.description,a.get_start_date,a.get_end_date,a.get_resources_text]            
+              sheet1.row(row_id).push *[a.res_priority.code,a.res_status.code,"",a.description.gsub(13.chr,''),a.get_start_date,a.get_end_date,a.get_resources_text]            
             end
           end
           
@@ -210,11 +331,12 @@ class ResCategory < ActiveRecord::Base
             sheet1.row(row_id).push *["Ressources de %{user}".trn(:user => user_name)]            
             row_id += 1
             sheet1.row(row_id).default_format = format_sub_header 
-            sheet1.row(row_id).push *["Priorité".trn,"Statut".trn,"Description".trn,"Quand".trn,"Pour quand".trn,"Responsable".trn,"Besoin".trn]            
+            sheet1.row(row_id).push *["Priorité".trn,"Statut".trn,"Besoin".trn,"Description".trn,"Quand".trn,"Pour quand".trn,"Action".trn,"Responsable".trn]            
             ressources.each do |r|
               row_id += 1
               sheet1.row(row_id).default_format = format_row 
-              sheet1.row(row_id).push *[r.res_priority.get_code_text,r.res_status.get_code_text,r.get_description + " - " + r.res_action.description,r.get_start_date,r.get_end_date,r.es_user ? r.es_user.complete_name : "",r.quantity_text]            
+              who_where = r.res_product ? self.res_stocks.where(:res_product_id => r.res_product_id).first.es_user : nil
+              sheet1.row(row_id).push *[r.res_priority.code,r.res_status.code,r.quantity,r.get_description.gsub(13.chr,''),r.get_start_date,r.get_end_date,r.res_action.description.gsub(13.chr,''),(r.es_user ? r.es_user.complete_name : "") + (who_where && who_where != r.es_user  ? " (chez %{user})".trn(:user=> who_where.complete_name) : "")]            
             end
           end
           
@@ -222,12 +344,12 @@ class ResCategory < ActiveRecord::Base
       end
       row_id = -1
       sheet2 = book.create_worksheet :name => "Ressources de %{user}".trn(:user => EsUser.find_by_id(user).complete_name) 
-      [50,15,15,15].each_with_index do |w,i|
+      [50,50,15,15,15].each_with_index do |w,i|
         sheet2.column(i).width = w
       end
       self.children.each do |c|
         if c.id==category || category==0
-          ressources = c.get_resources(user)
+          ressources = c.get_resources(user,{:order => resource_order,:include => resource_include,:join => resource_join,:where => resource_where})
 
           next if ressources.size == 0
           row_id += 1
@@ -238,11 +360,11 @@ class ResCategory < ActiveRecord::Base
           if ressources.size > 0
             row_id += 1
             sheet2.row(row_id).default_format = format_sub_header 
-            sheet2.row(row_id).push *["Description".trn,"Besoin".trn,"Reste".trn]            
+            sheet2.row(row_id).push *["Description".trn,"Action".trn,"Besoin".trn,"Reste après OP".trn, "Se trouve chez".trn]            
             ressources.each do |r|
               row_id += 1
               sheet2.row(row_id).default_format = format_row 
-              sheet2.row(row_id).push *[r.get_description + " - " + r.res_action.description,r.quantity, r.stockable=='Y' ? r.quantity_left : ""]            
+              sheet2.row(row_id).push *[r.get_description.gsub(13.chr,''),r.res_action.description.gsub(13.chr,''),r.quantity, r.stockable=='Y' ? r.quantity_left : "",r.res_product ? self.res_stocks.where(:res_product_id => r.res_product_id).first.es_user.complete_name : '']            
             end
           end
           
@@ -252,7 +374,7 @@ class ResCategory < ActiveRecord::Base
       sheet=[]
 
       sheet[0] = book.create_worksheet :name => "Récapitulatif".trn
-      [20,35,35,50,25,15,15,50].each_with_index do |w,i|
+      [20,8,8,8,50,50,15,15,200].each_with_index do |w,i|
         sheet[0].column(i).width = w
       end
       row_id_0 = -1
@@ -261,7 +383,7 @@ class ResCategory < ActiveRecord::Base
       sheet[0].row(row_id_0).push *["Récapitulatif des actions et ressources pour l'année '%{year}'".trn(:year => year)]
       row_id_0 +=1
       sheet[0].row(row_id_0).default_format = format_sub_header 
-      sheet[0].row(row_id_0).push *["Catégorie".trn,"Priorité".trn,"Statut".trn,"Description".trn,"Qui".trn,"Quand".trn,"Pour quand".trn,"Besoin".trn + "/" + "Ressource(s)".trn]            
+      sheet[0].row(row_id_0).push *["Catégorie".trn,"Priorité".trn,"Statut".trn,"Besoin".trn,"Description".trn,"Qui".trn,"Quand".trn,"Pour quand".trn,"Ressource(s)".trn]            
 
 
       sheet[1] = book.create_worksheet :name => "Stock produits".trn
@@ -274,7 +396,7 @@ class ResCategory < ActiveRecord::Base
       sheet[1].row(row_id_1).push *["Stock des produits pour l'année '%{year}'".trn(:year => year)]
       row_id_1 +=1
       sheet[1].row(row_id_1).default_format = format_sub_header 
-      sheet[1].row(row_id_1).push *["Produit".trn,"Responsable".trn,"Stock avant OP".trn,"Besoin".trn,"Quantité à acheter".trn,"Quantité achetée".trn,"Stock réel".trn,"Stock après OP".trn,"Stock restant des ressources".trn]            
+      sheet[1].row(row_id_1).push *["Produit".trn,"Se trouve chez".trn,"Stock avant OP".trn,"Besoin".trn,"Quantité à acheter".trn,"Quantité achetée".trn,"Stock réel".trn,"Stock après OP".trn,"Stock restant des ressources".trn]            
       self.res_stocks.each do |tmp_stk|
         row_id_1 += 1
         sheet[1].row(row_id_1).default_format = format_row 
@@ -285,7 +407,7 @@ class ResCategory < ActiveRecord::Base
 
 
       sheet[2] = book.create_worksheet :name => "Stock produits + détail".trn
-      [50,25,10,10,25,50].each_with_index do |w,i|
+      [50,25,25,10,10,25,75,75,75].each_with_index do |w,i|
         sheet[2].column(i).width = w
       end
       row_id_2 = -1
@@ -294,17 +416,27 @@ class ResCategory < ActiveRecord::Base
       sheet[2].row(row_id_2).push *["Stock des produits pour l'année '%{year}' et le détail par besoin".trn(:year => year)]
       row_id_2 +=1
       sheet[2].row(row_id_2).default_format = format_sub_header 
-      sheet[2].row(row_id_2).push *["Produit".trn,"Responsable du stock".trn,"Stock réel".trn,"Besoin".trn,"Utilisateur du besoin".trn,"Action".trn]            
+      sheet[2].row(row_id_2).push *["Produit".trn,"Se trouve chez".trn,"Responsable".trn,"Stock réel".trn,"Besoin".trn,"Utilisateur du besoin".trn,"Ressource".trn,"Action".trn,"Catégorie".trn]            
       self.res_stocks.each do |tmp_stk|
-        row_id_2 += 1
-        sheet[2].row(row_id_2).default_format = format_row 
-        sheet[2].row(row_id_2).push *[tmp_stk.res_product.name,(tmp_stk.es_user ? tmp_stk.es_user.complete_name : ''),tmp_stk.qty_real(tmp_stk.quantity||0,tmp_stk.quantity_added||0),tmp_stk.qty_need]         
-        tmp_stk.res_category.children.each do |c|
-          c.res_resources.each do |r|
-            if r.stockable=='Y' && r.res_product_id==tmp_stk.res_product_id
-              row_id_2 += 1
-              sheet[2].row(row_id_2).default_format = format_row2 
-              sheet[2].row(row_id_2).push *["",r.es_user ? r.es_user.complete_name : '',"",r.quantity||0,r.res_action.es_user ? r.res_action.es_user.complete_name : '',"#{r.get_description} - #{r.res_action.description}"]         
+
+        detail=false
+        if category==0
+          detail=true
+        else
+          detail = ResResource.where(:res_category_id =>category, :res_product_id => tmp_stk.res_product_id).first
+        end
+
+        if detail
+          row_id_2 += 1
+          sheet[2].row(row_id_2).default_format = format_row 
+          sheet[2].row(row_id_2).push *[tmp_stk.res_product.name,(tmp_stk.es_user ? tmp_stk.es_user.complete_name : ''),"",tmp_stk.qty_real(tmp_stk.quantity||0,tmp_stk.quantity_added||0),tmp_stk.qty_need]         
+          tmp_stk.res_category.children.each do |c|
+            c.res_resources.each do |r|
+              if r.res_product_id==tmp_stk.res_product_id #r.stockable=='Y' && 
+                row_id_2 += 1
+                sheet[2].row(row_id_2).default_format = format_row2 
+                sheet[2].row(row_id_2).push *[tmp_stk.res_product.name,(tmp_stk.es_user ? tmp_stk.es_user.complete_name : ''),r.es_user ? r.es_user.complete_name : '',"",r.quantity||0,r.res_action.es_user ? r.res_action.es_user.complete_name : '',r.get_description.gsub(13.chr,''),r.res_action.description.gsub(13.chr,''),c.name]         
+              end
             end
           end
         end
@@ -314,14 +446,20 @@ class ResCategory < ActiveRecord::Base
 
       
       s_i = 2
-      self.children.each do |c|
+      color_pair_impair=true
+      self.children.each do |c|        
         s_i +=1
         if c.id==category || category==0
           row_id = -1
           sheet[s_i] = book.create_worksheet :name => c.name
-          [35,35,50,25,15,15,50].each_with_index do |w,i|
+          [8,8,8,50,50,15,15,200].each_with_index do |w,i|
             sheet[s_i].column(i).width = w
           end
+  
+          actions = c.get_actions(user,{:order => resource_order,:include => resource_include,:join => resource_join,:where => resource_where})
+          ressources = c.get_resources(user,{:order => resource_order,:include => resource_include,:join => resource_join,:where => resource_where})
+
+          (color_pair_impair= color_pair_impair ? false : true) if actions.size > 0 || ressources.size > 0
   
           row_id += 1
           sheet[s_i].row(row_id).default_format = format_header 
@@ -333,10 +471,50 @@ class ResCategory < ActiveRecord::Base
             sheet[s_i].row(row_id).default_format = format_sub_title
             sheet[s_i].row(row_id).push *["Description".trn]            
             row_id += 1
-            sheet[s_i].row(row_id).default_format = format_row 
-            sheet[s_i].row(row_id).push *[Nokogiri::HTML(c.long_description).text] 
+            sheet[s_i].row(row_id).default_format = format_row1
+            sheet[s_i].row(row_id).height = 120
+            sheet[s_i].row(row_id).push *[Nokogiri::HTML(c.long_description).text.gsub(13.chr,'')] 
+            sheet[s_i].merge_cells(row_id, 0, row_id, 7)
           end
           
+          if actions.size > 0
+            row_id += 1
+            row_id += 1
+            sheet[s_i].row(row_id).default_format = format_sub_title
+            sheet[s_i].row(row_id).push *["Actions".trn]            
+            row_id += 1
+            sheet[s_i].row(row_id).default_format = format_sub_header 
+            sheet[s_i].row(row_id).push *["Priorité".trn,"Statut".trn,"","Description".trn,"Qui".trn,"Quand".trn,"Pour quand".trn,"Ressource(s)".trn]            
+            actions.each do |a|
+              row_id += 1
+              sheet[s_i].row(row_id).default_format = format_row 
+              sheet[s_i].row(row_id).push *[a.res_priority.code,a.res_status.code,"",a.description.gsub(13.chr,''),a.es_user ? a.es_user.complete_name : "",a.get_start_date,a.get_end_date,a.get_resources_text]            
+              row_id_0 += 1
+              sheet[0].row(row_id_0).default_format = color_pair_impair ? format_row : format_row_w
+              sheet[0].row(row_id_0).push *[c.name,a.res_priority.code,a.res_status.code,"",a.description.gsub(13.chr,''),a.es_user ? a.es_user.complete_name : "",a.get_start_date,a.get_end_date,a.get_resources_text]
+              sheet[0].row(row_id_0).set_format(4, color_pair_impair ? format_row_bold : format_row_bold_w) if a.res_resources.size>0          
+            end
+          end
+  
+          if ressources.size > 0
+            row_id += 1
+            row_id += 1
+            sheet[s_i].row(row_id).default_format = format_sub_title
+            sheet[s_i].row(row_id).push *["Ressources".trn]            
+            row_id += 1
+            sheet[s_i].row(row_id).default_format = format_sub_header 
+            sheet[s_i].row(row_id).push *["Priorité".trn,"Statut".trn,"Besoin".trn,"Description".trn,"Responsable".trn,"Quand".trn,"Pour quand".trn]            
+            ressources.each do |r|
+              who_where = r.res_product ? self.res_stocks.where(:res_product_id => r.res_product_id).first.es_user : nil
+              row_id += 1
+              sheet[s_i].row(row_id).default_format = format_row 
+              sheet[s_i].row(row_id).push *[r.res_priority.code,r.res_status.code,r.quantity,r.get_description.gsub(13.chr,''),(r.es_user ? r.es_user.complete_name : "") + (who_where && who_where != r.es_user  ? " (chez %{user})".trn(:user=> who_where.complete_name) : ""),r.get_start_date,r.get_end_date]            
+              row_id_0 += 1
+              sheet[0].row(row_id_0).default_format = color_pair_impair ? format_row : format_row_w 
+              sheet[0].row(row_id_0).push *[c.name,r.res_priority.code,r.res_status.code,r.quantity,r.get_description.gsub(13.chr,''),(r.es_user ? r.es_user.complete_name : "") + (who_where && who_where != r.es_user  ? " (chez %{user})".trn(:user=> who_where.complete_name) : ""),r.get_start_date,r.get_end_date]            
+            end
+          end
+  
   
           evals = c.get_evals(year.to_i)
           if evals.size > 0
@@ -346,49 +524,13 @@ class ResCategory < ActiveRecord::Base
             sheet[s_i].row(row_id).push *["Evaluations pour l'année '%{year}'".trn(:year => year.to_i)]            
             evals.each do |e|
               row_id += 1
-              sheet[s_i].row(row_id).default_format = format_row 
-              sheet[s_i].row(row_id).push *[Nokogiri::HTML(e.description).text] 
+              sheet[s_i].row(row_id).default_format = format_row1 
+              sheet[s_i].row(row_id).height = 80
+              sheet[s_i].row(row_id).push *[Nokogiri::HTML(e.description).text.gsub(13.chr,'')] 
+              sheet[s_i].merge_cells(row_id, 0, row_id, 7)
             end
           end
-          
-          actions = c.get_actions(user)
-          if actions.size > 0
-            row_id += 1
-            row_id += 1
-            sheet[s_i].row(row_id).default_format = format_sub_title
-            sheet[s_i].row(row_id).push *["Actions".trn]            
-            row_id += 1
-            sheet[s_i].row(row_id).default_format = format_sub_header 
-            sheet[s_i].row(row_id).push *["Priorité".trn,"Statut".trn,"Description".trn,"Qui".trn,"Quand".trn,"Pour quand".trn,"Ressource(s)".trn]            
-            actions.each do |a|
-              row_id += 1
-              sheet[s_i].row(row_id).default_format = format_row 
-              sheet[s_i].row(row_id).push *[a.res_priority.get_code_text,a.res_status.get_code_text,a.description,a.es_user ? a.es_user.complete_name : "",a.get_start_date,a.get_end_date,a.get_resources_text]            
-              row_id_0 += 1
-              sheet[0].row(row_id_0).default_format = format_row 
-              sheet[0].row(row_id_0).push *[c.name,a.res_priority.get_code_text,a.res_status.get_code_text,a.description,a.es_user ? a.es_user.complete_name : "",a.get_start_date,a.get_end_date,a.get_resources_text]            
-            end
-          end
-  
-          ressources = c.get_resources(user)
-          if ressources.size > 0
-            row_id += 1
-            row_id += 1
-            sheet[s_i].row(row_id).default_format = format_sub_title
-            sheet[s_i].row(row_id).push *["Ressources".trn]            
-            row_id += 1
-            sheet[s_i].row(row_id).default_format = format_sub_header 
-            sheet[s_i].row(row_id).push *["Priorité".trn,"Statut".trn,"Description".trn,"Responsable".trn,"Quand".trn,"Pour quand".trn,"Besoin".trn]            
-            ressources.each do |r|
-              row_id += 1
-              sheet[s_i].row(row_id).default_format = format_row 
-              sheet[s_i].row(row_id).push *[r.res_priority.get_code_text,r.res_status.get_code_text,r.get_description,r.es_user ? r.es_user.complete_name : "",r.get_start_date,r.get_end_date,r.quantity_text]            
-              row_id_0 += 1
-              sheet[0].row(row_id_0).default_format = format_row 
-              sheet[0].row(row_id_0).push *[c.name,r.res_priority.get_code_text,r.res_status.get_code_text,r.get_description,r.es_user ? r.es_user.complete_name : "",r.get_start_date,r.get_end_date,r.quantity_text]            
-            end
-          end
-  
+
           c.get_eval_years.each do |tmp_year|
             if tmp_year != year.to_i
               evals = c.get_evals(tmp_year)
@@ -399,8 +541,10 @@ class ResCategory < ActiveRecord::Base
                 sheet[s_i].row(row_id).push *["Evaluations pour l'année '%{year}'".trn(:year => tmp_year)]            
                 evals.each do |e|
                   row_id += 1
-                  sheet[s_i].row(row_id).default_format = format_row 
-                  sheet[s_i].row(row_id).push *[Nokogiri::HTML(e.description).text]            
+                  sheet[s_i].row(row_id).default_format = format_row1 
+                  sheet[s_i].row(row_id).height = 80
+                  sheet[s_i].row(row_id).push *[Nokogiri::HTML(e.description).text.gsub(13.chr,'')]            
+                  sheet[s_i].merge_cells(row_id, 0, row_id, 7)
                 end
               end
             end

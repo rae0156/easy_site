@@ -1,17 +1,15 @@
 <% @title = "Modification de votre profil".trn %>
 <div class="cadre bg-primary">
 
-    <h2><%= image_tag('appli/user_48.png', {:alt => @title, :align => "middle"}) %>&nbsp;<%= @title %></h2>
+    <h2><%= image_tag('appli/48/user.png', {:alt => @title, :align => "middle"}) %>&nbsp;<%= @title %></h2>
 
 	<%= errors_for(@user) %>
 
 	<%= form_tag({:controller => 'es_users',:action => 'profile_update'}, { :name => 'user_form', :class => "form-horizontal" }) do %>
         <%= render :partial => 'form' %>
 
-		<div class="form-group">  
-		    <div class="col-md-offset-4 btn btn-default">
-				<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/save_32.png", :form => "user_form"}%>
-			</div>
+	    <div class="btn btn-default">
+			<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/32/save_data.png", :form => "user_form"}%>
 		</div>
 	<% end %>
 

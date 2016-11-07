@@ -1,18 +1,23 @@
+<%id_ran = Time.zone.now.strftime("%Y%m%d%H%M%S%L") + rand(100..999).to_s%>
+
 <div class='container'>
 	
 	<% unless flash[:notice].nil? or flash[:notice].blank? %>
-		<div role="alert" class="alert alert-success fade in">
+		<div role="alert" class="alert alert-success fade in" id='no_<%=id_ran%>'>
 	      <button data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>
 		  <%= flash[:notice] %>
 	    </div>
 	<% end %>
 	<% unless flash[:error].nil? or flash[:error].blank? %>
-		<div role="alert" class="alert alert-danger fade in">
+		<div role="alert" class="alert alert-danger fade in" id='er_<%=id_ran%>'>
 	      <button data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>
   		  <%= flash[:error] %>
 	    </div>
 	<% end %>
 </div>
 
+<script>
+	$( "#no_<%=id_ran%>, #er_<%=id_ran%>" ).delay( 8000 ).slideUp( 1000 )
+</script>
 
 

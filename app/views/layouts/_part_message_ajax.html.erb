@@ -1,5 +1,6 @@
-	<% if flash[:message_ajax].present? %>
-		<div role="alert" class="alert alert-success fade in">
+	<%id_ran = Time.zone.now.strftime("%Y%m%d%H%M%S%L") + rand(100..999).to_s%>
+	<% if flash[:message_ajax].present? %>		
+		<div role="alert" class="alert alert-success fade in" id='ma_<%=id_ran%>'>
 	      <button data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>
 	      <%= flash[:message_ajax] %>
 	    </div>
@@ -7,11 +8,13 @@
 	   end %>
 	   
 	<% if flash[:error_message_ajax].present? %>
-		<div role="alert" class="alert alert-danger fade in">
+		<div role="alert" class="alert alert-danger fade in" id='ema_<%=id_ran%>'>
 	      <button data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>
 	      <%= flash[:error_message_ajax] %>
 	    </div>
 	<%   flash.delete(:error_message_ajax)
 	   end %>
 
-    
+    <script>
+    	$( "#ma_<%=id_ran%>, #ema_<%=id_ran%>" ).delay( 8000 ).slideUp( 1000 )
+    </script>

@@ -18,6 +18,10 @@ class EsWizardsController < ApplicationController
       step=0
     end
 
+    session[:es_cancel_pub] = 'N' if wizard_name=='site'
+
+
+
     case code_action
       when "goto"
         step        = params[:wizard][:selected].to_i if params[:wizard].present? && params[:wizard][:selected].present?
@@ -228,7 +232,7 @@ class EsWizardsController < ApplicationController
       end
     else
       @template = EsTemplate.find_by_id(params[:id])
-      dyn_page = DynPage.find(:first, :conditions => {:name => params[:template][:name], :es_template_id => @template.id })
+      dyn_page = DynPage.find(:first, :conditions => {:name => @template.name, :es_template_id => @template.id })
       @template.attributes = tmp_attr
       if !dyn_page
         @mode_page ="new"
@@ -310,12 +314,13 @@ class EsWizardsController < ApplicationController
     
   def wizard_template_content(code_action="action")
 
-    session[:parts_preview]=[]
     case code_action
     when "init"
       @template = EsTemplate.find_by_name(Rails.application.config.current_template)
+      session[:parts_preview] = @template.es_part_ids    
     when "action"
       @template = EsTemplate.find_by_name(Rails.application.config.current_template)
+      session[:parts_preview] = @template.es_part_ids    
       render "execute" 
     end    
   end  

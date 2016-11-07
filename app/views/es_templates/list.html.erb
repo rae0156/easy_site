@@ -1,27 +1,40 @@
+<%template_files_to_load = session.delete(:template_files_to_load)
+  if template_files_to_load
+	load_templates_only(template_files_to_load)
+%>
+	<div class="alert alert-success">
+		<%="Les templates par fichier ont été rechargés.".trn%>
+		<br />
+		<%="S'il vous plait, veuillez patienter jusqu'à l'actualisation automatique de la page ...".trn%>
+	</div>
+	<script>
+		setTimeout(function(){ window.location = '<%=url_for(:action => "list")%>'; }, 5000);
+	</script>
+<%else%>
 <% @title = "Gestion des templates".trn %>
 
-<div class="center-menu">
-    <h2><%= image_tag("appli/setup_48.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
-	
-<ul>
-	<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Exporter".trn,:image => "appli/excel_32.png", :action => "export_csv", :form => "template_list_form"}%></li>
-	<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Nouveau".trn,:image => "appli/new_32.png", :action => "new"} %></li>
-	<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Refresh template file".trn,:image => "appli/execute_32.png", :action => "refresh_file"} %></li>
-</ul>
-	
-	<!-- Search -->
-	<%= render :partial => 'shared/search' %>
-	
-	<div class="clearer"></div>	
-</div>
-
-<!-- Error messages -->	
-<%= errors_for(flash[:errors_destroy], "delete").html_safe if flash[:errors_destroy] %>
-
-<%= form_tag({ :action => 'new' }, { :name => 'template_list_form'}) do%>
-	<!-- Data table -->
-	<div id="template_div">
-	  <%= render :partial => 'list' %>
+	<div class="center-menu">
+	    <h2><%= image_tag("appli/48/setup.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
+		<ul>
+			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Exporter".trn,:image => "appli/32/excel.png", :action => "export_csv", :form => "template_list_form"}%></li>
+			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Nouveau".trn,:image => "appli/32/add.png", :action => "new"} %></li>
+			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Recharger les templates".trn,:image => "appli/32/execute.png", :action => "refresh_file", :confirm => "Voulez vous vraiment recharger tous les templates ?"} %></li>
+		</ul>
+			
+		<!-- Search -->
+		<%= render :partial => 'shared/search' %>
+			
+		<div class="clearer"></div>	
 	</div>
-<% end %>
+		
+	<!-- Error messages -->	
+	<%= errors_for(flash[:errors_destroy], "delete").html_safe if flash[:errors_destroy] %>
+	
+	<%= form_tag({ :action => 'new' }, { :name => 'template_list_form'}) do%>
+		<!-- Data table -->
+		<div id="template_div">
+		  <%= render :partial => 'list' %>
+		</div>
+	<% end %>
+<%end%>
 

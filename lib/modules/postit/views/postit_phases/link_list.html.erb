@@ -1,12 +1,12 @@
 <% @title = "Liaison de listes de tâches à une phase".trn %>
 
 <div class="center-menu">
-    <h2><%= image_tag("appli/setup_48.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
+    <h2><%= image_tag("appli/48/setup.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
 	
 	<ul>
-		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Liste de phases".trn,:image => "appli/back_32.png", :action => "list"}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Liste de phases".trn,:image => "appli/32/arrow_left.png", :action => "list"}%></li>
 		<%if @postit_phase.postit_process%>
-			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Processus parent".trn,:image => "appli/back_32.png", :controller => "postit_processes", :action => "link_phase", :id => @postit_phase.postit_process_id}%></li>
+			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Processus parent".trn,:image => "appli/32/arrow_left.png", :controller => "postit_processes", :action => "link_phase", :id => @postit_phase.postit_process_id}%></li>
 		<%end%>
 	</ul>
 	

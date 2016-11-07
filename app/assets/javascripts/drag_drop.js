@@ -34,7 +34,7 @@
 						stop: function( event, ui ) {set_id_grag_drop();}
 						});
 			$( ".templet" )
-			.addClass( "ui-widget ui-widget-content ui-helper-clearfix ui-corner-all" );
+			.addClass( "ui-widget ui-corner-all" ); //ui-helper-clearfix ui-widget-content
 		//	.find( ".templet-header" )
 		//	.addClass( "ui-widget-header ui-corner-all" );
 		
@@ -62,10 +62,12 @@ function set_id_grag_drop(){
 		$column.find('.templet').each(function(index_row){
 			$row = $(this);
 			parent_id = $row.parent().attr('parent_id');
+			col_id = $row.parent().attr('col_id');
 			temp_attr = {
 							num_part: index_part + 1,
 							num_row: index_row + 1,
-							parent_id: parent_id
+							parent_id: parent_id,
+							col_id: col_id
 						}; 
 						
 			$row.attr(temp_attr);

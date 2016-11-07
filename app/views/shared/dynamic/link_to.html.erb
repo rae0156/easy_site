@@ -24,7 +24,7 @@
 			<%= render :partial => 'shared/dynamic/link_to_model' %>
 			<br>
 			<%unless @setup_controller[:readonly_exists] && @model_link["read_only"]=='Y'%>
-				<div class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/save_32.png", :action => "link_to_model", :id => @model_link.id,:form => "link_form", :param_goto => {:link => @link_to[:model_linked].name}}%></div>
+				<div class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/32/save_data.png", :action => "link_to_model", :id => @model_link.id,:form => "link_form", :param_goto => {:link => @link_to[:model_linked].name}}%></div>
 			<%end%>
 		<%elsif @model_link.blank?%>
 			<%=("Selectionnez un '%{model_name}' pour choisir un " + ( ['has_and_belongs_to_many','has_many'].include?(@link_to[:association_type]) ? ' ou plusieurs' : '') + " '%{model_name_linked}'").trn(:model_name => @link_to[:model_name], :model_name_linked => @link_to[:model_name_linked])%>			 

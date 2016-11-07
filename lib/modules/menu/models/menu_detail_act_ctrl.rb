@@ -33,26 +33,32 @@ class MenuDetailActCtrl < ActiveRecord::Base
                            :order             => 4
                           }, 
                           {:name              => "controller",
-                           :label_name        => "Controller name",
-                           :column_name       => "Controller name",
+                           :label_name        => "Nom du contrôleur",
+                           :column_name       => "Nom du contrôleur",
                            :display_list      => false, 
                            :order             => 5
                           }, 
                           {:name              => "action",
-                           :label_name        => "Action name",
-                           :column_name       => "Action name",
+                           :label_name        => "Nom de l'action",
+                           :column_name       => "Nom de l'action",
+                           :display_list      => false, 
+                           :order             => 6
+                          }, 
+                          {:name              => "link_params",
+                           :label_name        => "Options supplémentaires",
+                           :column_name       => "Options supplémentaires",
                            :display_list      => false, 
                            :order             => 6
                           }, 
                           {:name              => "dummy_2",
                            :type              => "separate",
-                           :order             => 7
+                           :order             => 8
                           }, 
                           {:name              => "all_roles",
                            :label_name        => "Accès à tous",
                            :column_name       => "Accès à tous",
                            :display_list      => false, 
-                           :order             => 8
+                           :order             => 9
                           }, 
                           {:name              => "es_role_ids",
                            :label_name        => "Rôles",
@@ -60,12 +66,12 @@ class MenuDetailActCtrl < ActiveRecord::Base
                            :type              => "association",
                            :display_list      => false, 
                            :model_linked_field=> "name",
-                           :order             => 9
+                           :order             => 10
                           }, 
                           {:name              => "sequence",
                            :label_name        => "Séquence",
                            :column_name       => "Séquence",
-                           :order              => 10,
+                           :order              => 11,
                            :display_edit      => false,
                            :display_new       => false,
                            :display_show      => false

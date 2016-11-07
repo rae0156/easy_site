@@ -2,23 +2,40 @@
 	<div id="message_ajax">
 		  <%= render :partial => 'layouts/part_message_ajax' %>
 	</div>
-	<%case (@mode||'design')
-	    when 'design'%>
-			<div>
-				<h3 class="toggle_by_ref" data-reference-class='ref_1'>
+
+	<div id="div_library_tool">
+		  <%= render :partial => 'es_templates/library_tool' %>
+	</div>
+
+	<%case (@mode||'design')%>
+	  <%when 'edit_dynamic'%>
+			  <%= render :partial => 'edit_dynamic_elem' %>
+	  <%else%>
+			<div class="encadrement">
+				<h4 class="toggle_by_ref" data-reference-class='ref_1'>
 				  <%="Parties disponibles pour ce template".trn%>
-				</h3>
+				</h4>
 			
-				<div class='ref_1 init_hide'>
+				<div class='ref_1 init_hide container-fluid'>
 					<p><%="Faites glisser les parties disponnibles dans le dessin du template ci-dessous".trn%></p>
 					<%= generate_design_part_available(@template.name) %> 
 				</div>
 			</div>
-			<div>
-				<h3><%="Dessin du template".trn%></h3>
-				<div class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver le dessin".trn,:image => "appli/save_32.png", :action => "#",:html_option => {:id => "save_design_wizard"}}%></div>
+			<div class="encadrement" style="border-color:red;">
+				<h4><%="Dessin du template".trn%>
+				<div class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver le dessin".trn,:fa => "fa-floppy-o", :action => "#",:html_option => {:id => "save_design_wizard"}}%></div>
+				<div class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Outils".trn,:fa => "fa-cog", :action => "#",:html_option => {:id => "get_library_tool"}}%></div>
+				</h4>
+				<div class="container-fluid">
 				<%= generate_design_wizard(@template.name) %>
+				</div>
 			</div>
+	<%end%>
+
+
+<%unless ['design','edit_dynamic'].include?(@mode||'design')%>
+  	<div class='property_windows'>
+	<%case (@mode||'design')%>
 	  <%when 'rename'%>
 			  <%= render :partial => 'rename_part' %>
 	  <%when 'part_file'%>
@@ -27,13 +44,18 @@
 			  <%= render :partial => 'add_choosing_module' %>
 	  <%when 'edit_free'%>
 			  <%= render :partial => 'edit_free_elem' %>
-	  <%when 'edit_dynamic'%>
-			  <%= render :partial => 'edit_dynamic_elem' %>
 	  <%when 'edit_module'%>
 			  <%= render :partial => 'edit_module_elem' %>
 	  <%when 'edit_not_possible'%>
 			  <%= render :partial => 'no_edit_elem' %>
 	<%end%>
+
+  	</div>
+<%end%>
+
+<script>
+	initpostit();			
+</script>
 
 
 <script>
@@ -50,16 +72,28 @@
 		});		
 	});
 	
+	$(document).ready(function() {
+		$( "#get_library_tool" ).click(function() {
+			$.ajax({
+		        url: "/es_templates/get_library_tool/tools",
+		        data: {},
+		        dataType: 'script'
+		    });	    
+			return false;
+		});		
+	});
+	
 	//uniquement à cause du js, car après recharge, il faut initialiser le drag_drop
 	init_dragdrop_template();
 </script>
 
 <script>
+
 	$(document).ready(function() {
 		$('.label-info-hiden').hover(	  	  
 		  function () {
 			$(this).children("span:first").show();
-			$(this).css("z-index", "99");
+			$(this).css("z-index", "501");
 		  }, 
 		  function () {
 			$(this).css("z-index", "0");

@@ -9,19 +9,19 @@
 	
 	<ul>		
 		<%if @setup_controller[:option_export]%>
-			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Rapport".trn,:image => "appli/pdf_32.png", :action => "export_pdf_dyn", :form => "list_form"}%></li>
-			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Exporter".trn,:image => "appli/excel_32.png", :action => "export_csv_dyn", :form => "list_form"}%></li>
+			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Rapport".trn,:image => "appli/32/pdf.png", :action => "export_pdf_dyn", :form => "list_form"}%></li>
+			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Exporter".trn,:image => "appli/32/excel.png", :action => "export_csv_dyn", :form => "list_form"}%></li>
 		<%end%>
 		<%if !@setup_controller[:table_field_active] && @setup_controller[:delete_multi]%>
-			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Effacer".trn,:image => "appli/delete_32.png", :action => "destroy", :form => "list_form", :checkbox => "true", :check => "true"}%></li>
+			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Effacer".trn,:image => "appli/32/delete.png", :action => "destroy", :form => "list_form", :checkbox => "true", :check => "true"}%></li>
 		<%end%>
 		<%if @current_level_model.size == 1 && !@current_level_model[0].nil?%>
-			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Nouveau".trn,:image => "appli/new_32.png", :action => "new", :param_goto => {:model_type => @current_level_model[0].name, :parent_id => (@parent.blank? ? 0 : @parent.id)}, :html_option => {:remote => true}} %></li>
+			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Nouveau".trn,:image => "appli/32/add.png", :action => "new", :param_goto => {:model_type => @current_level_model[0].name, :parent_id => (@parent.blank? ? 0 : @parent.id)}, :html_option => {:remote => true}} %></li>
 		<%elsif @current_level_model.size <= 1%>
-			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Nouveau".trn,:image => "appli/new_32.png", :action => "new", :param_goto => {:parent_id => (@parent.blank? ? 0 : @parent.id)}, :html_option => {:remote => true}} %></li>
+			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Nouveau".trn,:image => "appli/32/add.png", :action => "new", :param_goto => {:parent_id => (@parent.blank? ? 0 : @parent.id)}, :html_option => {:remote => true}} %></li>
 		<%else
 			@current_level_model[1..-1].select{|m| !m.nil?}.each do |m|%>
-				<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => m.setup_model[:instance_name].singularize,:image => "appli/new_32.png", :action => "new", :param_goto => {:model_type => m.name ,:parent_id => (@parent.blank? ? 0 : @parent.id)}, :html_option => {:remote => true}} %></li>
+				<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => m.setup_model[:instance_name].singularize,:image => "appli/32/add.png", :action => "new", :param_goto => {:model_type => m.name ,:parent_id => (@parent.blank? ? 0 : @parent.id)}, :html_option => {:remote => true}} %></li>
 			<%end
 		  end%>
 	</ul>
@@ -43,7 +43,6 @@
 
 
 <%= form_tag({ :action => 'list' }, { :name => 'list_form',:id => 'list_form'}) do%>
-
 <div id="dynamic_list_div">
   <%= render :partial => 'shared/dynamic/list' %>
 </div>

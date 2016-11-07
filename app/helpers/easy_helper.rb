@@ -6,25 +6,25 @@ module EasyHelper
               :text             => ["instance","field","id","value","-Options html","class","style","read_only","maxlength","size","-Options Bootstrap","help_text","bootstrap","bootstrap_form","-Options additionnelles","with_label","ajax_action","mandatory"],
               :long_text        => ["instance","field","id","value","cols","rows","-Options html","class","style","read_only","maxlength","-Options Bootstrap","help_text","bootstrap","bootstrap_form","-Options additionnelles","with_label","ajax_action","mandatory"],
               :check_box        => ["instance","field","id","value","checked_value","unchecked_value","-Options html","class","style","read_only","-Options Bootstrap","help_text","bootstrap","bootstrap_form","-Options additionnelles","with_label","ajax_action","mandatory"], 
-              :list             => ["instance","field","id","value_list_array","selected_value","-Options visuelles","include_blank","number_of_line","multiple","-Options html","class","style","read_only","-Options Bootstrap","help_text","bootstrap","bootstrap_form","-Options additionnelles","with_label","ajax_action","mandatory"],
+              :list             => ["--Ne pas oublier le javascript 'init_autocompletion();'","instance","field","id","value_list_array","selected_value","-Options visuelles","include_blank","number_of_line","multiple","auto_completion","-Options html","class","style","read_only","-Options Bootstrap","help_text","bootstrap","bootstrap_form","-Options additionnelles","with_label","ajax_action","mandatory"],
               :list_collection  => ["instance","field","id","collection","value_method","text_method","selected_value","-Options visuelles","include_blank","number_of_line","multiple","-Options html","class","style","read_only","-Options Bootstrap","help_text","bootstrap","bootstrap_form","-Options additionnelles","with_label","ajax_action","mandatory"],
               :radio_button     => ["instance","field","id","labels","value","-Options html","class","style","read_only","-Options Bootstrap","help_text","bootstrap","bootstrap_form","-Options additionnelles","with_label","ajax_action","mandatory"],
               :mandatory        => ["label","-Options html","class","style"], 
-              :integer          => ["--Ne pas oublier le javascript 'init_inputmask();'","instance","field","id","value","-Options html","class","style","read_only","-Options Bootstrap","help_text","bootstrap","bootstrap_form","-Options additionnelles","with_label","ajax_action","mandatory"], 
-              :decimal          => ["--Ne pas oublier le javascript 'init_inputmask();'","instance","field","id","value","-Options html","class","style","read_only","-Options Bootstrap","help_text","bootstrap","bootstrap_form","-Options additionnelles","with_label","ajax_action","mandatory"], 
+              :integer          => ["--Ne pas oublier le javascript 'init_inputmask();'","instance","field","id","value","-Options html","class","style","read_only","size","-Options Bootstrap","help_text","bootstrap","bootstrap_form","-Options additionnelles","with_label","ajax_action","mandatory"], 
+              :decimal          => ["--Ne pas oublier le javascript 'init_inputmask();'","instance","field","id","value","-Options html","class","style","read_only","size","-Options Bootstrap","help_text","bootstrap","bootstrap_form","-Options additionnelles","with_label","ajax_action","mandatory"], 
               :date             => ["--Ne pas oublier le javascript 'init_datepicker();'","instance","field","id","value","-Options html","class","style","read_only","-Options Bootstrap","help_text","bootstrap","bootstrap_form","bootstrap_length","-Options additionnelles","with_label","ajax_action","mandatory"], 
               :time             => ["--Ne pas oublier le javascript 'init_datepicker();'","instance","field","id","value","-Options html","class","style","read_only","-Options Bootstrap","help_text","bootstrap","bootstrap_form","bootstrap_length","-Options additionnelles","with_label","ajax_action","mandatory"], 
               :date_time        => ["--Ne pas oublier le javascript 'init_datepicker();'","instance","field","id","value","-Options html","class","style","read_only","-Options Bootstrap","help_text","bootstrap","bootstrap_form","bootstrap_length","-Options additionnelles","with_label","ajax_action","mandatory"], 
-              :link             => ["instance","field","id","value","-Options html","class","style","read_only","-Options Bootstrap","help_text","bootstrap","bootstrap_form","-Options additionnelles","with_label","ajax_action","mandatory"], 
-              :file             => ["instance","field","id","value","-Options html","class","style","read_only","-Options Bootstrap","help_text","bootstrap","bootstrap_form","-Options pour fichier","option_file","directory","-Options additionnelles","with_label","ajax_action","mandatory"], 
+              :link             => ["--Ne pas oublier le javascript '.linkPicker()'","instance","field","id","value","-Options html","class","style","read_only","-Options Bootstrap","help_text","bootstrap","bootstrap_form","-Options additionnelles","with_label","ajax_action","mandatory"], 
+              :file             => ["--Ne pas oublier le javascript '.fileSelector()'","instance","field","id","value","-Options html","class","style","read_only","-Options Bootstrap","help_text","bootstrap","bootstrap_form","-Options pour fichier","option_file","directory","-Options additionnelles","with_label","ajax_action","mandatory"], 
               :font             => ["instance","field","id","value","-Options html","class","style","read_only","-Options Bootstrap","help_text","bootstrap","bootstrap_form","bootstrap_length","-Options additionnelles","with_label","ajax_action","mandatory"], 
-              :color            => ["instance","field","id","value","-Options html","class","style","read_only","-Options Bootstrap","help_text","bootstrap","bootstrap_form","bootstrap_length","-Options additionnelles","with_label","ajax_action","mandatory"], 
+              :color            => ["--Ne pas oublier le javascript '.colorPicker()'","instance","field","id","value","-Options html","class","style","read_only","-Options Bootstrap","help_text","bootstrap","bootstrap_form","bootstrap_length","-Options additionnelles","with_label","ajax_action","mandatory"], 
               :text_only        => ["value","-Options html","class","style","-Options Bootstrap","help_text","bootstrap","bootstrap_form","-Options additionnelles","with_label"], 
-              :image            => ["instance","field","id","value","-Options html","class","style","read_only","-Options Bootstrap","help_text","bootstrap","bootstrap_form","-Options pour fichier","directory","-Options additionnelles","with_label","ajax_action","mandatory"], 
-              :css              => ["instance","field","id","value","-Options html","class","style","read_only","-Options Bootstrap","help_text","bootstrap","bootstrap_form","-Options pour fichier","directory","-Options additionnelles","with_label","ajax_action","mandatory"], 
-              :directory        => ["instance","field","id","value","-Options html","class","style","read_only","-Options Bootstrap","help_text","bootstrap","bootstrap_form","-Options pour fichier","directory","-Options additionnelles","with_label","ajax_action","mandatory"], 
-              :sound            => ["instance","field","id","value","-Options html","class","style","read_only","-Options Bootstrap","help_text","bootstrap","bootstrap_form","-Options pour fichier","directory","-Options additionnelles","with_label","ajax_action","mandatory"], 
-              :video            => ["instance","field","id","value","-Options html","class","style","read_only","-Options Bootstrap","help_text","bootstrap","bootstrap_form","-Options pour fichier","directory","-Options additionnelles","with_label","ajax_action","mandatory"], 
+              :image            => ["--Ne pas oublier le javascript '.fileSelector()'","instance","field","id","value","-Options html","class","style","read_only","-Options Bootstrap","help_text","bootstrap","bootstrap_form","-Options pour fichier","directory","-Options additionnelles","with_label","ajax_action","mandatory"], 
+              :css              => ["--Ne pas oublier le javascript '.fileSelector()'","instance","field","id","value","-Options html","class","style","read_only","-Options Bootstrap","help_text","bootstrap","bootstrap_form","-Options pour fichier","directory","-Options additionnelles","with_label","ajax_action","mandatory"], 
+              :directory        => ["--Ne pas oublier le javascript '.fileSelector()'","instance","field","id","value","-Options html","class","style","read_only","-Options Bootstrap","help_text","bootstrap","bootstrap_form","-Options pour fichier","directory","-Options additionnelles","with_label","ajax_action","mandatory"], 
+              :sound            => ["--Ne pas oublier le javascript '.fileSelector()'","instance","field","id","value","-Options html","class","style","read_only","-Options Bootstrap","help_text","bootstrap","bootstrap_form","-Options pour fichier","directory","-Options additionnelles","with_label","ajax_action","mandatory"], 
+              :video            => ["--Ne pas oublier le javascript '.fileSelector()'","instance","field","id","value","-Options html","class","style","read_only","-Options Bootstrap","help_text","bootstrap","bootstrap_form","-Options pour fichier","directory","-Options additionnelles","with_label","ajax_action","mandatory"], 
               :hidden           => ["instance","field","id","value","-Options html","class"]
               }
     OPTIONS = {
@@ -47,6 +47,7 @@ module EasyHelper
                 :read_only          => {:mandatory => false , :html_option => false, :description => "true = lecture seule", :default_value => false}, 
                 :number_of_line     => {:mandatory => false , :html_option => false, :description => "Nombre de lignes à afficher", :default_value => 1},
                 :multiple           => {:mandatory => false , :html_option => true , :description => "Sélection multiple", :default_value => false},
+                :auto_completion    => {:mandatory => false , :html_option => false, :description => "Complète automatiquement", :default_value => false},                
                 :ajax_action        => {:mandatory => false , :html_option => true , :description => "Action associé à ajax (Ne pas oublier le javascript 'initajaxplus();')"},
                 :mandatory          => {:mandatory => false , :html_option => false, :description => "true = ajout de l'étoile rouge", :default_value => false},
                 :checked_value      => {:mandatory => false , :html_option => false, :description => "Valeur quand coché", :default_value => "Y"},
@@ -83,9 +84,11 @@ private
       field_options={}
       html_options=get_html_options(method, options)
 
-      field_mandatory = (options[:mandatory].presence || false) ? "<span class=\"text-error\">*</span>&nbsp;".html_safe : ""
+      field_mandatory = (options[:mandatory].presence || false) ? "<span class=\"text-danger\">*</span>&nbsp;".html_safe : ""
       tmp_label       = options[:with_label].present? ? options[:with_label] : ""
-      bootstrap_form = options[:bootstrap_form].nil? ? false : options[:bootstrap_form] 
+      bootstrap_form  = options[:bootstrap_form].nil? ? false : options[:bootstrap_form] 
+      auto_completion = options[:auto_completion].nil? ? false : options[:auto_completion]
+      
       if bootstrap_form
         bootstrap         = true 
         bootstrap_length  = true 
@@ -103,7 +106,7 @@ private
       when "label"
         field_result = label_tag(options[:for].presence || "", options[:label].presence,html_options )
       when "mandatory"
-        field_result = "<span class=\"text-error\">*</span><span class=\"text-error\">#{options[:label].presence}</span>".html_safe
+        field_result = "<span class=\"text-danger\">*</span><span class=\"text-danger\">#{options[:label].presence}</span>".html_safe
       when "text"
         html_options[:readonly]=options[:read_only].presence||false
         html_options[:size]= options[:size] unless options[:size].presence.blank?
@@ -114,17 +117,31 @@ private
         html_options[:readonly]=options[:read_only].presence||false
         html_options[:class]            += " inputmask"
         html_options["data-inputmask"]   = "'alias': 'integer'"
-        field_result = "<div class='input-group #{bootstrap_length ? 'col-md-6' : ''}'>".html_safe +
-                         text_field(options[:instance].presence, options[:field].presence,html_options) +
-                       "</div>".html_safe
+        html_options[:size]= options[:size] unless options[:size].presence.blank?
+        if bootstrap_length 
+          field_result = "<div class='input-group col-md-6'>".html_safe +
+                           text_field(options[:instance].presence, options[:field].presence,html_options) +
+                         "</div>".html_safe
+        else
+          field_result = "<span>".html_safe +
+                           text_field(options[:instance].presence, options[:field].presence,html_options) +
+                         "</span>".html_safe
+        end
       when "decimal"
         html_options[:readonly]=options[:read_only].presence||false
         html_options[:class]            += " inputmask"
         #html_options["data-inputmask"]   = "'alias': 'decimal', 'groupSeparator': ',', 'autoGroup': true"
         html_options["data-inputmask"]   = "'alias': 'decimal'"
-        field_result = "<div class='input-group #{bootstrap_length ? 'col-md-7' : ''}'>".html_safe +
-                         text_field(options[:instance].presence, options[:field].presence,html_options) +
-                       "</div>".html_safe
+        html_options[:size]= options[:size] unless options[:size].presence.blank?
+        if bootstrap_length 
+          field_result = "<div class='input-group col-md-7'>".html_safe +
+                           text_field(options[:instance].presence, options[:field].presence,html_options) +
+                         "</div>".html_safe
+        else
+          field_result = "<span>".html_safe +
+                           text_field(options[:instance].presence, options[:field].presence,html_options) +
+                         "</span>".html_safe
+        end
       when "date_time"
         html_options[:readonly]=options[:read_only].presence||false
         field_result = "<div class='input-group date #{bootstrap_length ? 'col-md-4' : ''}' data-behaviour='datetimepicker' data-date='#{options[:value].presence}'>".html_safe +
@@ -150,7 +167,8 @@ private
           field_options[:include_blank] = options[:include_blank].nil? ? true : options[:include_blank] 
         end
         field_options[:selected] = options[:selected_value] if options[:selected_value].present?
-        if method== "list"
+        if method== "list"          
+          html_options[:class] += " auto_completion" if auto_completion
           field_result = select(options[:instance].presence, options[:field].presence, options[:value_list_array].presence||[], 
                         field_options,
                         html_options
@@ -160,6 +178,7 @@ private
                         field_options,
                         html_options
                         )
+                        bootstrap_form 
         end
       when "link"
         html_options[:readonly]=options[:read_only].presence||false
@@ -170,7 +189,7 @@ private
       when "check_box"
         html_options[:disabled]=options[:read_only].presence||false
         html_options[:checked] = "checked" if options[:value]==(options[:checked_value]||"Y")
-        field_result = "<span class='#{bootstrap_length ? 'col-md-1' : ''}'>".html_safe +
+        field_result = "<span class='#{bootstrap_length ? 'col-sm-1' : ''}'>".html_safe +
                          check_box(options[:instance].presence, options[:field].presence,html_options, options[:checked_value]||"Y", options[:unchecked_value]||"N") +
                        "</span>".html_safe
       when "radio_button"

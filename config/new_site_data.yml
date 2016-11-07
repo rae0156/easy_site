@@ -104,7 +104,7 @@ es_setups:
       parent_id: 
       es_category_id: 
     - name: message_admin
-      value: <H2>Ce site est en construction.</H2>Pour remplacer ce message, allez dans le menu 'Administration/Préférences' puis changer le paramètre 'message_admin'.<BR><BR>
+      value: <H2>Ce site est en construction.</H2>Pour remplacer ce message, allez dans le menu 'Administration/Paramétrage' puis changer le paramètre 'message_admin'.<BR><BR>
       type_data: long text
       read_only: N
       path: administration/paramétrage
@@ -1018,7 +1018,7 @@ es_menus:
             all_roles: N
             model_type: MenuSub
             children:
-            - name: Menus horizintaux
+            - name: Menus horizontaux
               description: Paramétrage des menus horizontaux
               link_type: link
               controller: menus
@@ -1390,7 +1390,7 @@ dir_managers:
       real_dir: musiques
       file_ext: ! '*.mp3;*.ogg;*.wav'
       sub_dir_by_user: N
-      limit_size: 
+      limit_size: 10485760
 dir_accesses:
   keys: dir_manager_id,name
   rows:

@@ -1,5 +1,4 @@
 <tr class="<%= cycle("row0", "row1") %>">
-  <td><%= list_item.path.blank? ? '*' : list_item.path %></td> 
   <td>
   	<%if list_item.read_only=='Y'%>
 		<%= list_item.name.humanize %>

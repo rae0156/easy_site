@@ -8,10 +8,10 @@
 			</p>
 			<p>
 				<div class='btn'>
-					<%= render :partial => 'shared/goto_menu_item', :locals => { :action => "add_where_clause", :id => @dyn_export.id, :form => "details_form", :image => "appli/add_32.png" ,  :text => "Ajouter une condition".trn, :remote => true}%>		
+					<%= render :partial => 'shared/goto_menu_item', :locals => { :action => "add_where_clause", :id => @dyn_export.id, :form => "details_form", :image => "appli/32/add.png" ,  :text => "Ajouter une condition".trn, :remote => true}%>		
 				</div>
 				<div class='btn'>
-					<%= render :partial => 'shared/goto_menu_item', :locals => { :action => "add_empty_where_clause", :id => @dyn_export.id, :form => "details_form", :image => "appli/new_32.png" ,  :text => "Ajouter une condition libre".trn, :remote => true}%>		
+					<%= render :partial => 'shared/goto_menu_item', :locals => { :action => "add_empty_where_clause", :id => @dyn_export.id, :form => "details_form", :image => "appli/32/add.png" ,  :text => "Ajouter une condition libre".trn, :remote => true}%>		
 				</div>
 			</p>
 		</div>
@@ -26,7 +26,7 @@
 			</p>
 			<p>
 				<div class='btn'>
-					<%= render :partial => 'shared/goto_menu_item', :locals => { :action => "save_where_string", :id => @dyn_export.id, :form => "details_form", :image => "appli/save_32.png" ,  :text => "Sauver".trn, :remote => true}%>		
+					<%= render :partial => 'shared/goto_menu_item', :locals => { :action => "save_where_string", :id => @dyn_export.id, :form => "details_form", :image => "appli/32/save_data.png" ,  :text => "Sauver".trn, :remote => true}%>		
 				</div>
 			</p>
 			<p><%="Peut être vide. Si c'est le cas, chaque conditions sera liées par un 'AND'".trn%></p>

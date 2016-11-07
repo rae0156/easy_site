@@ -9,12 +9,12 @@
 	<%= list_part_item.description.limit(50) %>  
   </td>
   <td>
-	<%= list_part_item.placed ||  image_tag("appli/cancel_32.png",
+	<%= list_part_item.placed ||  image_tag("appli/32/nok.png",
 						    {:alt => "", :align => "middle", :border => "0",
 						    :class => "app_tooltip", :title => "Cette partie n'est pas placée".trn, "data-placement" => "left"}) %>  
   </td>
   <td>
-	<%= image_tag(list_part_item.content ? "appli/ok_32.png" : "appli/cancel_32.png",
+	<%= image_tag(list_part_item.content ? "appli/32/ok.png" : "appli/32/nok.png",
 						    {:alt => "", :align => "middle", :border => "0",
 						    :class => "app_tooltip", :title => list_part_item.content ? (list_part_item.es_content ? "Attaché au contenu '%{content}'".trn(:content => list_part_item.es_content.name) : "Contenu fichier".trn)  : "Pas de contenu".trn, "data-placement" => "left"}) %>  
 	
@@ -37,13 +37,13 @@
 		<%if list_part_item.es_content.blank?%>
 			<%= link_to("<i class='glyphicon glyphicon-plus'></i>".html_safe, 
 						url_for(:action => "new_content", :id => list_part_item['id']),
-						:title =>"Créer le contenu".trn)
+						:title =>"Créer le contenu de cette partie".trn)
 			%>					
 	  	<%else%>
 			<%= link_to("<i class='glyphicon glyphicon-remove-circle'></i>".html_safe, 
 						url_for(:action => "detach_content", :id => list_part_item['id']),
 						:confirm =>"Voulez vous vraiment détacher le contenu de cette partie ?".trn,
-						:title =>"Détacher le contenu".trn)
+						:title =>"Détacher le contenu de cette partie".trn)
 			%>					
 	  	<%end%>
 	<%end%>

@@ -77,13 +77,15 @@
                   length      = tmp_type_setup[1]
                   updatable   = param_setup[1] || 'Y'
                   description = param_setup[2] || ''
+                  mandatory = param_setup[4] || 'N'
+
                   if ["file"].include?(type_setup)
                     other_params  = param_setup[3] || ''
                   else
                     value_list = param_setup[3]
                     value_list.gsub!('[[DASH]]','-') unless value_list.blank?
+                    other_params = param_setup[5] || ''
                   end
-                  mandatory = param_setup[4] || 'N'
                 end
                 
                 # puts "ici :  #{type_setup.inspect} #{updatable.inspect} #{description.inspect} #{value_list.inspect}#{other_params.inspect} #{category}/#{group}"
@@ -142,14 +144,36 @@
         end
     else
       if template_name.blank?
-        if caller.first.split('/')[-2] == "templates"
-          template_name = caller.first.split('/').last.split('.').first[1..-1]
-          #create template and part if does not exist    
+        
+        template_name = get_caller_template           
+            
+        unless template_name.blank?
+          #create template and part + line and col + content + content detail if does not exist    
           template = EsTemplate.find_by_name(template_name)
           template = EsTemplate.create({:name => template_name, :description => template_name, :es_category_id => EsCategory.get_id("Site","template")}) if template.blank?
-          if EsPart.is_dynamic(part_name, directory)
+          #if EsPart.is_dynamic(part_name, directory)
             part = template.es_parts.find_by_name(part_name)
-            part = template.es_parts.create({:name => part_name, :description => part_name, :num => 0}) if part.blank?
+            part = template.es_parts.create({:name => part_name, :description => part_name, :num => 1}) if part.blank?
+            line = template.es_template_lines.find_by_num(part.id)
+            line = template.es_template_lines.create({:es_col_parent_id => 0, :num => part.id}) if line.blank?
+            col  = line.es_template_cols.find_by_num(1)
+            if col.blank?
+              col  = line.es_template_cols.create({:num => 1, :width => 12, :description => part_name}) 
+            else
+              col.update_attribute('description', part_name)
+            end
+            part.update_attributes(:es_template_col_id => col.id)
+          if EsPart.is_dynamic(part_name, directory)
+            content = EsContent.find_by_name(part_name)
+            if content.blank?
+              content = EsContent.create({:name => part_name})
+              part.update_attributes(:es_content_id => content.id)
+            end
+            if content.es_content_details.size == 0
+              content_detail = content.es_content_details.create({:sequence => 1, :content => "", :editable => 'Y', :content_type => "dynamic"})
+              content_detail.update_attribute("content","<%= generate_dynamic_part(#{content_detail.id})%>") 
+            end          
+            
           end
         else
           template_name=Rails.application.config.current_template
@@ -161,7 +185,8 @@
         if partial          
           return render(:partial=> tmp_layout.gsub('/_','/'))
         else
-          return render(tmp_layout.gsub('/_','/'))
+          text = render(tmp_layout.gsub('/_','/'))
+          return text
         end
       else
         #find setup for current template
@@ -189,6 +214,24 @@
           return render(:inline => es_content_text)
         end
       end
+    end
+  end
+  
+  def get_caller_template
+    #can be caller.first : file template => get_template_part 
+    #    or caller[1]    : file template => get_template_file_part => get_template_part 
+    #    or caller[2] 
+    tmp_caller=caller.clone
+    
+    tmp_template_full_name = ""
+    (0..2).each do |i|
+      tmp_template_full_name = tmp_caller[i] if tmp_caller[i].split('/')[-2] == "templates"
+    end
+
+    if !tmp_template_full_name.blank?
+      return tmp_template_full_name.split('/').last.split('.').first[1..-1]
+    else
+      return ""
     end
   end
 
@@ -249,6 +292,46 @@
   rescue
     false
   end    
+
+
+  def color_hex_to_rgba(input,opacity=1)
+    a = ( input.match /#(..?)(..?)(..?)/ )[1..3]
+    a.map!{ |x| x + x } if input.size == 4
+    "rgba(#{a[0].hex},#{a[1].hex},#{a[2].hex},#{opacity})"
+  end
+
+  def get_image_name(file_name)
+    check_name = ""
+    is_asset_image  = !Rails.application.assets.find_asset(file_name).nil?
+    unless is_asset_image
+      tmp_image_name = file_name.starts_with?("public") ? file_name[6..-1] : file_name
+      check_name = tmp_image_name.starts_with?(Rails.root) ? tmp_image_name : File.join(Rails.root,'public',tmp_image_name)
+    else
+      tmp_image_name = file_name
+    end
+    if is_asset_image || File.file?(check_name) 
+      return tmp_image_name
+    else
+      return ""
+    end
+  end
+
+  def sanitize_filename(filename,add_caract='')
+    # Split the name when finding a period which is preceded by some
+    # character, and is followed by some character other than a period,
+    # if there is no following period that is followed by something
+    # other than a period (yeah, confusing, I know)
+    fn = filename.split /(?<=.)\.(?=[^.])(?!.*\.[^.])/m
+  
+    # We now have one or two parts (depending on whether we could find
+    # a suitable period). For each of these parts, replace any unwanted
+    # sequence of characters with an underscore
+    fn.map! { |s| s.gsub /[^a-z0-9\-#{add_caract}]+/i, '_' }
+  
+    # Finally, join the parts with a period and return the result
+    return fn.join '.'
+  end
+
 
 
 class Numeric

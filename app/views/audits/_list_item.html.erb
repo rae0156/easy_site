@@ -29,15 +29,15 @@
 	  <td><a href='#' id='group_by_<%=id%>' link_group = '<%=@link_group%>'><%=h(list_item.created_at.strftime('%Y-%m-%d')) 					-%></a></td>
   <%elsif @link_group == "date_user" %>
 	  <td><a href='#' id='group_by_<%=id%>' link_group = '<%=@link_group%>'><%=h(list_item.created_at.strftime('%Y-%m-%d')) 					-%></a></td>
-	  <td><%= h(EsUser.find(list_item.user_id).cleaned_long_name) if list_item.es_user	-%></td>
+	  <td><%= h(EsUser.find(list_item.user_id).complete_name) if list_item.es_user	-%></td>
   <%elsif @link_group == "user_date" %>
-	  <td><a href='#' id='group_by_<%=id%>' link_group = '<%=@link_group%>'><%=h(EsUser.find(list_item.user_id).cleaned_long_name) if list_item.es_user 					-%></a></td>
+	  <td><a href='#' id='group_by_<%=id%>' link_group = '<%=@link_group%>'><%=h(EsUser.find(list_item.user_id).complete_name) if list_item.es_user 					-%></a></td>
 	  <td><%=h(list_item.created_at.strftime('%Y-%m-%d')) 	-%></td>
   <%elsif @link_group == "object_type" %>
 	  <td><a href='#' id='group_by_<%=id%>' link_group = '<%=@link_group%>'><%=h(list_item.auditable_type_label) 					-%></a></td>
   <%elsif @link_group == "version" %>
 	  <td><%= h(list_item.created_at.strftime('%Y-%m-%d %H:%M:%S')) -%></td>
-	  <td><%= h(list_item.es_user.cleaned_long_name) if list_item.es_user	-%></td>
+	  <td><%= h(list_item.es_user.complete_name) if list_item.es_user	-%></td>
 	  <td><%= h(list_item.action) 					-%></td>
 	  <td><%= h(audit_dev_type)					    -%></td>
 	  <td><%= h(audit_dev_obj)  					-%></td>
@@ -46,7 +46,7 @@
 	  <td><%= link_to('<span class="glyphicon glyphicon-list-alt"></span>'.html_safe,url_for({:controller => 'audits', :action => 'show', :id => list_item.id}),{:remote => true, :id => "view_buton", "data-placement" => "left"})%></td>
   <%else%>
 	  <td><%= h(list_item.created_at.strftime('%Y-%m-%d %H:%M:%S')) -%></td>
-	  <td><%= h(list_item.es_user.cleaned_long_name) if list_item.es_user	-%></td>
+	  <td><%= h(list_item.es_user.complete_name) if list_item.es_user	-%></td>
 	  <td><%= h(list_item.action) 					-%></td>
 	  <td><%= h(audit_dev_type)					    -%></td>
 	  <td><%= h(audit_dev_obj)  					-%></td>

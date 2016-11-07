@@ -3,13 +3,13 @@
   <td><%= (list_item_task_list.description||"").limit(50) %></td>
   <td><%= list_item_task_list.sequence.to_i %></td>
   <td>
-	<%= image_tag(list_item_task_list.optional == 'N' ? "appli/ok_32.png" : "appli/cancel_32.png", 
+	<%= image_tag(list_item_task_list.optional == 'N' ? "appli/32/ok.png" : "appli/32/nok.png", 
 						    {:alt => "", :align => "middle", :border => "0",
 						    :class => "app_tooltip", :title => list_item_task_list.optional=='N'  ? "cette tâche est optionnelle".trn : "cette tâche n'est pas obligatoire".trn, "data-placement" => "left"}) %>  
   </td>
 <%if list_item_task_list.postit_list.checkable=='Y'%>
   <td>
-	<%= image_tag(list_item_task_list.checked == 'Y' ? "appli/ok_32.png" : "appli/cancel_32.png", 
+	<%= image_tag(list_item_task_list.checked == 'Y' ? "appli/32/ok.png" : "appli/32/nok.png", 
 						    {:alt => "", :align => "middle", :border => "0",
 						    :class => "app_tooltip", :title => list_item_task_list.status_name, "data-placement" => "left"}) %>  
   </td>

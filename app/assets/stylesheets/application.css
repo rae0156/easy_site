@@ -9,7 +9,9 @@
  * compiled file, but it's generally better to create a new file per style scope.
  *
  *= require bootstrap
+ *= require font-awesome
  *= require menu
+ ** => pas de css menu_option ici, uniquement en dernier dans application.html
  *= require jquery-ui-1.10.3.custom
  *= require bootstrap-datetimepicker
  *= require drag_drop.css
@@ -18,7 +20,7 @@
  *= require postit.css
  *= require filestyle.css
  *= require jquery.treeview.css
-
+ *= require select2.min.css
  *= require_self
  * require_tree .
  */
@@ -39,18 +41,25 @@ tr.inactive_row {
 
 .field_with_errors {display:inline-block;background-color: #FF0000;}
 
-.text-error {    color: #B94A48;}
-
 .thumbnails {
     list-style: none outside none;
     margin-left: -20px;
 }
 
 .cadre {
-  padding: 30px;
-  margin-bottom: 30px;
+  padding: 10px;
+  margin-bottom: 10px;
   color: inherit;
   border-radius: 6px;
+}
+
+.encadrement {
+  margin : 5px;
+  padding: 5px;
+  border-style:solid;
+  border-width:1px;
+  border-color: #000000;
+  border-radius: 2px;
 }
 
 div#spinner img{
@@ -81,3 +90,29 @@ p#spinner_text {
 .red, .red a {
   color: #f00;
 }
+
+.bg-white {background-color: white;}
+
+
+/*arrangement des propriétés*/
+.properties.panel{
+	margin-bottom: 5px;
+}
+.properties .panel-heading {
+    padding: 2px 15px;
+   }
+
+.properties .panel-body {
+    padding: 2px;
+   }
+
+.properties .panel-body .form-control{
+    padding: 2px;
+   }
+
+.properties .panel-body .control-label{
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-right: 2px;
+   }
+

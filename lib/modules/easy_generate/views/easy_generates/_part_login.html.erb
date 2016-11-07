@@ -1,0 +1,40 @@
+<% return unless session[:flag_connection] %>
+    <div class="navbar-default " role="navigation"> <!--class navbar retirée pour l'espace de 20px en dessous-->
+        <div class="container-fluid">
+	  	    <div class="navbar-right">
+			  <p class="navbar-text">
+				<% if self.logged_in? %>
+			      <%if @option_who_is == 'Y'%>
+					  <span><%= current_user.pseudo.blank? ? current_user.mail : current_user.pseudo %></span> <%="est connecté".trn%>.&nbsp;
+			      <%end%>
+			      <%if @option_update_profile == 'Y'%>
+					  <%= link_to 'Modifier son profile'.trn, {:controller => 'es_users', :action => 'profile'}, :class => 'navbar-link' %> |
+			      <%end%>
+			      <%if@option_update_psw == 'Y'%>
+					  <%= link_to 'Modifier son mot de passe'.trn, {:controller => 'es_users', :action => 'password'}, :class => 'navbar-link' %> |
+			      <%end%>
+			      <%if @option_update_mail == 'Y'%>
+					  <%= link_to 'Modifier son mail'.trn, {:controller => 'es_users', :action => 'mail'}, :class => 'navbar-link' %> |
+			      <%end%>
+			      <%if (@option_disconnect||'Y') == 'Y'%>
+					  <%= link_to "Se déconnecter".trn, {:controller => 'es_users', :action => 'logout'}, method: :delete, :class => 'navbar-link'  %>
+			      <%end%>
+				<% else %>
+			      <%if @option_subscribe == 'Y'%>
+					  <%= link_to "S'incrire".trn, {:controller => 'es_users', :action => 'new_user'}, :class => 'navbar-link'  %> |
+			      <%end%>
+			      <%if @option_lost_psw == 'Y'%>
+					  <%= link_to 'Mot de passe perdu'.trn, {:controller => 'es_users', :action => 'password_lost'}, :class => 'navbar-link' %> |
+			      <%end%>
+			      <%if (@option_connect||'Y') == 'Y'%>
+					  <%= link_to "Se connecter".trn, {:controller => 'es_users', :action => 'login'}, :class => 'navbar-link'  %>
+			      <%end%>
+				<% end %>
+				&nbsp;
+		      </p>
+	        </div>
+        </div>
+    </div>
+
+
+

@@ -1,17 +1,28 @@
+<%
+	@no_save = "N" if @no_save.nil?
+	@no_test = "N" if @no_test.nil?
+%>
 
   <div class="row">
 
 	<div class="col-md-12">
+	<%if @no_save=='N'%>
 		<div class="alert alert-warning">
 			<%="Dessin".trn%> : 
 		</div>
+	<%end%>
 		<%= form_tag({ :action => 'test_tinymce' },{:id => "form_tinymce"}) do%>
 			<textarea name="tinymce_exemple" id="tinymce_exemple" class='tinymce' rows="10"><%=@content_tiny%></textarea> 		
-			<a href="#" class="btn btn-primary btn_tinymce" id="tester_tinymce"><%="Tester".trn%></a>
-			<a href="#" class="btn btn-primary btn_tinymce" id="sauver_tinymce"><%="Sauver".trn%></a>
+			<%if @no_test=='N'%>
+				<a href="#" class="btn btn-primary btn_tinymce" id="tester_tinymce"><%="Tester".trn%></a>
+			<%end%>
+			<%if @no_save=='N'%>
+				<a href="#" class="btn btn-primary btn_tinymce" id="sauver_tinymce"><%="Sauver".trn%></a>
+			<%end%>
 		<% end %>
 	</div>
   </div><!--/row-->
+<%if @no_test=='N'%>
   <BR>
   <div class="row">
 	<div class="col-md-12">
@@ -23,12 +34,15 @@
 		</div>
 	</div>
   </div><!--/row-->
-
+<%end%>
 
 <script>
 	$('.btn_tinymce').on('click', function(form){
 	    // save TinyMCE instances before serialize
-	    tinyMCE.triggerSave();
+		//Ne pas supprimer, même si ailleurs il n'y en a pas besoin
+		try {
+		 	tinyMCE.triggerSave();
+		} catch(err) {}
 	
 	    var data = $("#form_tinymce").serialize() + "&content_detail_id=<%=@content_detail_id%>&id_button=" + $(this).attr('id');
 	    $.ajax({

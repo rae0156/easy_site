@@ -1,6 +1,6 @@
 <% @title = "Modification du mail".trn %>
 <div class="cadre bg-primary">
-    <h2><%= image_tag('appli/padlock_32.png', {:alt => @title, :align => "middle"}) %>&nbsp;<%= @title %></h2>
+    <h2><%= image_tag('appli/32/lock.png', {:alt => @title, :align => "middle"}) %>&nbsp;<%= @title %></h2>
 
 	<%= errors_for(@user) %>
 
@@ -11,6 +11,10 @@
 		    <label class="col-sm-4 control-label" for="user_mail"><%="Mail actuel".trn%> : </label>
 		    <div class="col-sm-7">
 				<p class="form-control-static"><%= @user.mail %></p>
+			    <div class="btn btn-default">
+					<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Tester votre mail actuel".trn,:fa => "fa-envelope-o", :controller => "es_users", :action => "test_mail" }%>
+				</div>
+
 			</div>
 		</div>
 		<div class="form-group">  
@@ -24,9 +28,10 @@
 				<p><%="Un mail d'activation vous sera automatiquement envoyé".trn%></p>
 				<p><%="L'ancien mail reste valide jusqu'à l'activation du nouveau".trn%></p>
 			</div>
-		    <div class="col-md-offset-4 btn btn-default">
-				<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/process_32.png", :form => "mail_form" }%>
-			</div>
+		</div>
+
+	    <div class="btn btn-default">
+			<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/32/ok.png", :form => "mail_form" }%>
 		</div>
 
 	<% end %>

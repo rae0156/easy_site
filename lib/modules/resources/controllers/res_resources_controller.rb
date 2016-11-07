@@ -5,7 +5,7 @@ class ResResourcesController < ApplicationController
   include ActionView::Helpers::TextHelper
 
   has_es_interface_controllers
-  before_filter :init_user, :only => [:show_resources]
+#  before_filter :init_user, :only => [:show_resources]
   before_filter :init_filter, :except => [:init_category]
   
   
@@ -15,13 +15,100 @@ class ResResourcesController < ApplicationController
     redirect_to :action => "show_resources" 
   end
   
-  def show_resources
 
+  def execute_multiple_action
+    
+    resource_ids = params["cid_r"].presence||[]
+    action_ids   = params["cid_a"].presence||[]
+    
+    multi_action = params["multi_action"].presence||{}
+    priority_id  = multi_action["value1"].presence||nil
+    status_id    = multi_action["value2"].presence||nil
+    user_id      = multi_action["value3"].presence||nil
+    stockable    = multi_action["value4"].presence||nil
+
+    priority_action_id,priority_resource_id = nil,nil
+    tmp_pr = ResPriority.find_by_id(priority_id)
+    if tmp_pr
+      priority_action_id   = priority_id if tmp_pr.type_priority=='A'
+      priority_resource_id = priority_id if tmp_pr.type_priority=='R'
+    end
+
+    resource_ids.each do |id|
+      elem = ResResource.find_by_id(id)
+      if elem
+        elem.res_priority_id  = priority_resource_id unless priority_resource_id.blank? 
+        elem.res_status_id    = status_id unless status_id.blank?
+        elem.es_user_id       = user_id unless user_id.blank?
+        elem.qty_not_used     = 0 if stockable=='N' 
+        elem.stockable        = stockable unless stockable.blank?
+        elem.save
+      end
+    end
+    
+    action_ids.each do |id|
+      elem = ResAction.find_by_id(id)
+      if elem
+        elem.res_priority_id = priority_action_id unless priority_action_id.blank? 
+        elem.res_status_id    = status_id unless status_id.blank?
+        elem.es_user_id       = user_id unless user_id.blank?
+        elem.save
+      end
+    end
+    
+    init_current_category
+    
+    respond_to do |format|
+      format.html {}
+      format.js do 
+        @element_id, @partial = 'resource_div', 'resource'
+        render 'shared/replace_content'
+      end
+    end
+  end
+
+  def lock_resource
+    
+    ResResource.set_message_lock
+    
+    init_current_category
+    
+    respond_to do |format|
+      format.html {}
+      format.js do 
+        @element_id, @partial = 'resource_div', 'resource'
+        render 'shared/replace_content'
+      end
+    end
+  end
+
+
+  def clean_tools
+
+    @res_sort = {}
+    session[:res_sort] = @res_sort
+    @res_where = {}
+    session[:res_where] = @res_where
 
     init_current_category
     
     respond_to do |format|
       format.html {}
+      format.js do 
+        @element_id, @partial = ['resource_tool_div','resource_filter_div'], ['resource_tool','resource_filter']
+        render 'shared/replace_content'
+      end
+    end
+    
+  end
+  
+
+  def show_resources
+
+    init_current_category
+    
+    respond_to do |format|
+      format.html {    session[:copy_action_multiple],session[:copy_resource_multiple]="","" }
       format.js do 
         @element_id, @partial = 'resource_div', 'resource'
         render 'shared/replace_content'
@@ -87,6 +174,170 @@ class ResResourcesController < ApplicationController
     session[:copy_action]=ResAction.find_by_id(id)
     redirect_to :action => "show_resources" 
   end
+
+  def copy_multiple
+    resource_ids = params["cid_r"].presence||[]
+    action_ids   = params["cid_a"].presence||[]
+    session[:copy_resource_multiple] = (resource_ids.size > 0 ? resource_ids : "")
+    session[:copy_action_multiple]   = (action_ids.size > 0 ? action_ids : "")
+    
+    if resource_ids.size > 0 && action_ids.size > 0
+      session[:copy_resource_multiple] = ""
+      flash[:error_message_ajax] = "Des ressources sont sélectionnées avec des actions, elle ne seront pas copiées individuellement. Ne sélectionnez que des actions, car leurs ressources les suivront lors de la copie.".trn
+    end
+
+    init_current_category
+    
+    respond_to do |format|
+      format.html {}
+      format.js do 
+        @element_id, @partial = ['resource_tool_div','resource_filter_div','message_ajax'], ['resource_tool','resource_filter','layouts/part_message_ajax']
+        render 'shared/replace_content'
+      end
+    end
+  end
+
+  def cancel_copy_multiple
+    session[:copy_action_multiple]=""
+    session[:copy_resource_multiple]=""
+
+    init_current_category
+    
+    respond_to do |format|
+      format.html {}
+      format.js do 
+        @element_id, @partial = ['resource_tool_div','resource_filter_div','message_ajax'], ['resource_tool','resource_filter','layouts/part_message_ajax']
+        render 'shared/replace_content'
+      end
+    end
+  end
+
+  def paste_multiple_action
+    
+    ids = session[:copy_action_multiple]||[]
+    
+    cat_to,where = "0","TOP"
+    if params[:copy_multiple].present?
+      cat_to,where = (params[:copy_multiple][:category].presence||"0").to_i,(params[:copy_multiple][:where].presence||"")
+    end
+    
+    actions,cats_from=[],[cat_to]
+    msgs=[]
+    if cat_to==0
+      msgs << "Vous devez sélectionner une catégorie".trn
+    elsif ids.size > 1000
+      msgs << "Vous ne pouvez pas copier plus de %{nbr} actions à la fois".trn(:nbr => 1000)
+    else
+      ids.each do |id|
+        act= ResAction.find_by_id(id)
+        if act
+          #if act.res_category_id==cat_to
+          #  msgs << "Vous ne pouvez pas copier des éléments de la catégorie '%{cat}' vers elle-même.".trn(:cat => act.res_category.description) 
+          #  break 
+          #else
+            cats_from << act.res_category_id unless cats_from.include?(act.res_category_id)
+            actions << act
+          #end
+        end
+      end      
+    end
+
+    if msgs.size == 0
+
+      tmp_num= (where=='BOTTOM' ? 99999999 : -99999999)
+      actions.each do |a|
+        tmp_num+=1
+        tmp_num= tmp_num.round(5)
+        a.update_attributes(:sequence=>tmp_num, :res_category_id => cat_to)
+        a.res_resources.each do |r|
+          tmp_num+=1
+          tmp_num= tmp_num.round(5)
+          r.update_attributes(:sequence=>tmp_num, :res_category_id => cat_to)
+        end unless a.res_category_id==cat_to
+      end
+      
+      cats_from.each do |c_id|
+        ressource = ResResource.find_by_res_category_id(c_id)
+        ressource.compress_sequence if ressource
+        action = ResAction.find_by_res_category_id(c_id)
+        action.compress_sequence if action
+      end
+            
+      session[:copy_action_multiple]=""
+      session[:copy_resource_multiple]=""
+    end
+    
+    respond_to do |format|
+      format.html {}
+      format.js do
+        if msgs.size > 0
+          flash[:error_message_ajax] = msgs.join('<BR>').html_safe 
+          @element_id, @partial = ['resource_tool_div','resource_filter_div','message_ajax'], ['resource_tool','resource_filter','layouts/part_message_ajax']
+          render 'shared/replace_content'
+        else
+          redirect_to :action => "show_resources" 
+        end       
+      end
+    end
+    
+  end
+
+  def paste_multiple_resource
+    
+    ids = session[:copy_resource_multiple]||[]
+    
+    where = "TOP"
+    if params[:copy_multiple].present?
+      where = (params[:copy_multiple][:where].presence||"")
+    end
+    
+    resources,cats_from=[],[]
+    msgs=[]
+    if ids.size > 1000
+      msgs << "Vous ne pouvez pas copier plus de %{nbr} ressources à la fois".trn(:nbr => 1000)
+    else
+      ids.each do |id|
+        res= ResResource.find_by_id(id)
+        if res
+          cats_from << res.res_category_id unless cats_from.include?(res.res_category_id)
+          resources << res
+        end
+      end      
+    end
+
+    if msgs.size == 0
+
+      tmp_num= (where=='BOTTOM' ? 99999999 : -99999999)
+      resources.each do |r|
+        tmp_num+=1
+        tmp_num= tmp_num.round(5)
+        r.update_attributes(:sequence=>tmp_num)
+      end
+      
+      cats_from.each do |c_id|
+        ressource = ResResource.find_by_res_category_id(c_id)
+        ressource.compress_sequence if ressource
+      end
+            
+      session[:copy_action_multiple]=""
+      session[:copy_resource_multiple]=""
+    end
+    
+    respond_to do |format|
+      format.html {}
+      format.js do
+        if msgs.size > 0
+          flash[:error_message_ajax] = msgs.join('<BR>').html_safe 
+          @element_id, @partial = ['resource_tool_div','resource_filter_div','message_ajax'], ['resource_tool','resource_filter','layouts/part_message_ajax']
+          render 'shared/replace_content'
+        else
+          redirect_to :action => "show_resources" 
+        end       
+      end
+    end
+    
+  end
+
 
   def resource_paste
     id = params[:id]
@@ -175,13 +426,19 @@ class ResResourcesController < ApplicationController
     redirect_to :action => "show_resources"
   end
 
+  def action_change_priority
+    action = ResAction.find_by_id(params[:id])
+    action.update_attribute("res_priority_id", params[:status_id])
+    redirect_to :action => "show_resources"
+  end
+
   def action_insert_end
 
    @object = ResAction.new(:res_category_id => params[:id], :sequence => -1)
 
     respond_to do |format|
       format.js do 
-        @element_id, @partial = 'resource_div', 'new_edit_resource'
+        @element_id, @partial = 'resource_edit_div', 'new_edit_resource'
         render 'shared/replace_content'
       end
     end
@@ -193,7 +450,7 @@ class ResResourcesController < ApplicationController
 
     respond_to do |format|
       format.js do 
-        @element_id, @partial = 'resource_div', 'new_edit_resource'
+        @element_id, @partial = 'resource_edit_div', 'new_edit_resource'
         render 'shared/replace_content'
       end
     end
@@ -205,7 +462,7 @@ class ResResourcesController < ApplicationController
 
     respond_to do |format|
       format.js do 
-        @element_id, @partial = 'resource_div', 'new_edit_resource'
+        @element_id, @partial = 'resource_edit_div', 'new_edit_resource'
         render 'shared/replace_content'
       end
     end
@@ -217,7 +474,7 @@ class ResResourcesController < ApplicationController
 
     respond_to do |format|
       format.js do 
-        @element_id, @partial = 'resource_div', 'new_edit_resource'
+        @element_id, @partial = 'resource_edit_div', 'new_edit_resource'
         render 'shared/replace_content'
       end
     end
@@ -248,7 +505,7 @@ class ResResourcesController < ApplicationController
 
     respond_to do |format|
       format.js do 
-        @element_id, @partial = 'resource_div', 'new_edit_resource'
+        @element_id, @partial = 'resource_edit_div', 'new_edit_resource'
         render 'shared/replace_content'
       end
     end
@@ -272,13 +529,19 @@ class ResResourcesController < ApplicationController
     redirect_to :action => "show_resources"
   end
 
+  def ressource_change_priority
+    resource = ResResource.find_by_id(params[:id])
+    resource.update_attribute("res_priority_id", params[:status_id])
+    redirect_to :action => "show_resources"
+  end
+
   def resource_insert_end
 
    @object = ResResource.new(:res_category_id => params[:id], :sequence => -1, :stockable => 'Y')
 
     respond_to do |format|
       format.js do 
-        @element_id, @partial = 'resource_div', 'new_edit_resource'
+        @element_id, @partial = 'resource_edit_div', 'new_edit_resource'
         render 'shared/replace_content'
       end
     end
@@ -290,7 +553,7 @@ class ResResourcesController < ApplicationController
 
     respond_to do |format|
       format.js do 
-        @element_id, @partial = 'resource_div', 'new_edit_resource'
+        @element_id, @partial = 'resource_edit_div', 'new_edit_resource'
         render 'shared/replace_content'
       end
     end
@@ -302,7 +565,7 @@ class ResResourcesController < ApplicationController
 
     respond_to do |format|
       format.js do 
-        @element_id, @partial = 'resource_div', 'new_edit_resource'
+        @element_id, @partial = 'resource_edit_div', 'new_edit_resource'
         render 'shared/replace_content'
       end
     end
@@ -324,10 +587,10 @@ class ResResourcesController < ApplicationController
     end
     @object.attributes = params[:object]
     @object.qty_not_used = 0 if (@object.stockable||'N') == 'N'
-    
     respond_to do |format|
       format.js do 
-        @element_id, @partial = 'resource_div', 'new_edit_resource'
+        @element_id, @partial = 'form_resource_stock', 'form_resource_stock'
+#        @element_id, @partial = 'resource_edit_div', 'new_edit_resource'
         render 'shared/replace_content'
       end
     end
@@ -339,7 +602,7 @@ class ResResourcesController < ApplicationController
 
     respond_to do |format|
       format.js do 
-        @element_id, @partial = 'resource_div', 'new_edit_resource'
+        @element_id, @partial = 'resource_edit_div', 'new_edit_resource'
         render 'shared/replace_content'
       end
     end
@@ -351,7 +614,7 @@ class ResResourcesController < ApplicationController
 
     respond_to do |format|
       format.js do 
-        @element_id, @partial = 'resource_div', 'new_edit_resource'
+        @element_id, @partial = 'resource_edit_div', 'new_edit_resource'
         render 'shared/replace_content'
       end
     end
@@ -369,6 +632,8 @@ class ResResourcesController < ApplicationController
     
     id          = params[:id]
     object_type = params[:object_type]
+    do_refresh  = params[:refresh].presence||'Y'
+    
     
     if id
       @object = object_type.constantize.find_by_id(id)
@@ -378,7 +643,6 @@ class ResResourcesController < ApplicationController
     new_record  = @object.new_record?
 
     @object.attributes = params[:object]
-
     case object_type
     when "ResEval"
       @object.datetime = DateTime.now
@@ -415,13 +679,18 @@ class ResResourcesController < ApplicationController
       @element_id, @partial = 'resource_div', 'resource'
     else
       #flash[:error_message_ajax] = @object.new_record? ? "Une erreur est apparue lors de la création".trn : "Une erreur est apparue lors de la modification".trn
-      @element_id, @partial = 'resource_div', 'new_edit_resource'
+      do_refresh = "Y"
+      @element_id, @partial = 'resource_edit_div', 'new_edit_resource'
     end
     
     respond_to do |format|
       format.js do 
         #@element_id, @partial = 'resource_div', 'new_edit_resource'
-        render 'shared/replace_content'
+        if do_refresh=='Y'
+          render 'shared/replace_content'
+        else
+          render :nothing => true     
+        end
       end
     end
   end
@@ -559,7 +828,8 @@ class ResResourcesController < ApplicationController
         flash[:message_ajax] = "Aucune ressource n'existe pour l'année '%{year}'".trn(:year => @year) 
         redirect_to :action => "show_resources"  
       else  
-        file_name = cat.export_data(@category,@user) 
+        init_order_where_include
+        file_name = cat.export_data(@category,@user,@resource_order,@resource_include,@resource_join,@resource_where) 
         if !file_name.blank? && File.file?(file_name) 
           download_xls file_name 
         else 
@@ -579,7 +849,7 @@ class ResResourcesController < ApplicationController
       category.get_resources(@user).where(:stockable => 'Y').each do |resource|
         @stock["id_#{resource.id}"]=resource.quantity_left
         @stock_buy["id_#{resource.id}"]=0
-      end
+      end if session[:res_category]==0 || session[:res_category]==category.id
     end
 
     respond_to do |format|
@@ -651,7 +921,59 @@ class ResResourcesController < ApplicationController
       end
     end
   end
+
+
     
+  def init_stock_before_op
+    @object = ResCategory.where(:name => params[:year], :parent_id => 0).first
+    @stock, @stock_buy,@stock_after, @stock_responsible = params[:stock], params[:stock_buy], params[:stock_after], (params[:stock_responsible]||{})
+    
+    @stock_error = []
+    @stock.keys.each do |k|
+
+      id = k[3..-1].to_i
+  
+      tmp_stk = ResStock.find_by_id(id)
+      
+      init_stocks_hash(tmp_stk,k)
+    
+      @stock[k]=tmp_stk.qty_need if @stock[k].to_i == 0
+    
+    end unless @stock.blank?
+
+    respond_to do |format|
+      format.js do 
+        @element_id, @partial = 'resource_div', 'show_stock'
+        render 'shared/replace_content'
+      end
+    end
+  end
+
+  def init_stock_after_op
+    @object = ResCategory.where(:name => params[:year], :parent_id => 0).first
+    @stock, @stock_buy,@stock_after, @stock_responsible = params[:stock], params[:stock_buy], params[:stock_after], (params[:stock_responsible]||{})
+    
+    @stock_error = []
+    @stock.keys.each do |k|
+
+      id = k[3..-1].to_i
+  
+      tmp_stk = ResStock.find_by_id(id)
+      
+      init_stocks_hash(tmp_stk,k)
+    
+      @stock_after[k]=tmp_stk.qty_total_not_used if @stock_after[k].to_i == 0
+    
+    end unless @stock.blank?
+
+    respond_to do |format|
+      format.js do 
+        @element_id, @partial = 'resource_div', 'show_stock'
+        render 'shared/replace_content'
+      end
+    end
+  end
+
   def save_stock(do_save=true)
     check   = (params[:check].presence||'Y')
     @needs  = params[:needs]=="true"
@@ -800,6 +1122,38 @@ class ResResourcesController < ApplicationController
     redirect_to :action => "show_stock", :year => @year, :needs => @needs
   end
 
+  def resource_comment
+    @object = params[:obj_type].classify.constantize.find(params[:id])
+    
+    respond_to do |format|
+      format.js do 
+        @element_id, @partial = 'resource_edit_div', 'new_edit_comment'
+        render 'shared/replace_content'
+      end
+    end
+  end
+
+  def comment_save
+    @object = params[:obj_type].classify.constantize.find(params[:id])
+
+    @object.attributes = params[:object]
+    @object.comment_user_date = DateTime.now.strftime("%d/%m/%Y %H:%M:%S") + ' ' + current_user.complete_name
+    
+    if @object.valid?
+      flash[:message_ajax] = "Commentaire attaché".trn
+      @object.save(validate: false)
+      @object.reload
+      init_current_category
+      redirect_to :action => "show_resources" 
+    else
+      respond_to do |format|
+        format.js do 
+          @element_id, @partial = 'resource_edit_div', 'new_edit_comment'
+          render 'shared/replace_content'
+        end
+      end
+    end
+  end
 
   private
   
@@ -829,11 +1183,65 @@ class ResResourcesController < ApplicationController
       end
     end
     
-    @res_categories = res_cat_year ? res_cat_year.children.select{|cat| @category==0 || cat.id==@category} : []
+    @res_categories = res_cat_year ? res_cat_year.children.select{|cat| [0,-1].include?(@category) || cat.id==@category} : []
+
+    init_order_where_include
+    
   end
+
+  def init_order_where_include
+    @resource_order,@resource_include,@resource_join,@resource_where=[],[],[],[""]
+    (1..3).each do |i|
+      tmp_field = @res_sort["field#{i}"]
+      tmp_order = @res_sort["order#{i}"].presence || "ASC"
+      case tmp_field
+        when "PR"
+          @resource_order << "res_priorities.sequence #{tmp_order}"
+          @resource_include << :res_priority
+        when "ST"
+          @resource_order << "res_statuses.sequence #{tmp_order}"
+          @resource_include << :res_status
+        when "WHO"
+          @resource_order << "es_users.name #{tmp_order}, es_users.firstname #{tmp_order}"
+          @resource_include << :es_user
+        when "WHEN"
+          @resource_order << "res_when_starts.sequence #{tmp_order}"
+          @resource_join << "INNER JOIN res_whens res_when_starts ON [LOCAL_TABLE].res_when_start_id = res_when_starts.id"         
+        when "UNTILWHEN"  
+          @resource_order << "res_when_ends.sequence #{tmp_order}"
+          @resource_join << "INNER JOIN res_whens res_when_ends ON [LOCAL_TABLE].res_when_end_id = res_when_ends.id"         
+        when "SEQUENCE"  
+          @resource_order << "[LOCAL_TABLE].sequence #{tmp_order}"
+      end
+    end
+    (1..4).each do |i|
+      tmp_sign  = @res_where["sign#{i}"].presence || "="
+      tmp_value = @res_where["value#{i}"]
+      unless tmp_value.blank?
+        @resource_where[0] += " AND " unless @resource_where[0].blank?
+        @resource_where << tmp_value
+        case i
+          when 1 #priorite
+            @resource_where[0] += "([LOCAL_TABLE].res_priority_id #{tmp_sign} ?)"
+          when 2 #status
+            @resource_where[0] += "([LOCAL_TABLE].res_status_id #{tmp_sign} ?)"
+          when 3 #quand
+            @resource_where[0] += "([LOCAL_TABLE].res_when_start_id #{tmp_sign} ?)"
+          when 4 #pour quand 
+            @resource_where[0] += "([LOCAL_TABLE].res_when_end_id #{tmp_sign} ?)"
+        end
+      end
+    end
+
+    @resource_order   = @resource_order.join(', ') unless @resource_order.empty?
+    @resource_include = @resource_include.uniq     unless @resource_include.empty?
+
+   
+  end
+
   
   def init_filter
-    param_year = params[:filter].present? && params[:filter][:year].present? ? params[:filter][:year] : (session[:res_year] || Date.today.year.to_s) 
+    param_year = params[:filter].present? && params[:filter][:year].present? ? params[:filter][:year] : (session[:res_year] || "") 
     param_year = nil unless ResCategoryYear.where(:name => param_year, :parent_id => 0).first
     @year = param_year
     session[:res_year] = @year
@@ -846,10 +1254,21 @@ class ResResourcesController < ApplicationController
     param_user = params[:filter].present? ? (params[:filter][:user].presence || 0) : (session[:res_user] || 0)
     @user = param_user.to_i 
     session[:res_user] = @user
+    
+    @res_sort = params[:sort].present? ? params[:sort] : (session[:res_sort] || {})
+    session[:res_sort] = @res_sort
+    
+    @res_where = params[:where].present? ? params[:where] : (session[:res_where] || {})
+    session[:res_where] = @res_where
+    
+    #@multi_action = params[:multi_action].present? ? params[:multi_action] : {}    
+    
+    @copy_multiple_where = params[:copy_multiple_where].present? ? params[:copy_multiple_where] : ''
+    
   end
 
-  def init_user
-    (session[:res_user]= (EsUser.current_user ? EsUser.current_user.id : 0)) if self.request.format== 'text/html'
-  end
+#  def init_user
+#    (session[:res_user]= (EsUser.current_user ? EsUser.current_user.id : 0)) if self.request.format== 'text/html'
+#  end
 
 end

@@ -15,7 +15,7 @@
 	<%= list_item.file_ext %>  
   </td>
   <td>
-	<%= image_tag(list_item.sub_dir_by_user=='Y' ? "appli/ok_32.png" : "appli/cancel_32.png", 
+	<%= image_tag(list_item.sub_dir_by_user=='Y' ? "appli/32/ok.png" : "appli/32/nok.png", 
 						    {:alt => "", :align => "middle", :border => "0",
 						    :class => "app_tooltip", :title => list_item.sub_dir_by_user=='Y' ? "Création d'un répertoire par utilisateur".trn : "Pas de création d'un répertoire par utilisateur".trn, "data-placement" => "left"}) %>  
   </td>

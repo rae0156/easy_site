@@ -5,10 +5,10 @@
 <div class="center-menu">
     <h2><%= @title %></h2>
 	<ul>
-	    <li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => { :action => "execute", :id => @dyn_export.id, :form => "details_form", :image => "appli/execute_32.png" ,  :text => "Voir SQL".trn, :param_goto =>{:export_type => "SQL"}}%></li>
-	    <li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => { :action => "execute", :id => @dyn_export.id, :form => "details_form", :image => "appli/excel_32.png" ,  :text => "Essayer".trn}%></li>
-	    <li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => { :controller => "dyn_exports", :action => "destroy_all", :id => @dyn_export.id, :check => 'true', :image => "appli/cancel_32.png" ,  :text => "Supprimer l'exportation".trn}%></li>
-	    <li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => { :controller => "dyn_exports", :action => "list", :image => "appli/back_32.png", :text => "Retour".trn}%></li>
+	    <li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => { :action => "execute", :id => @dyn_export.id, :form => "details_form", :image => "appli/32/execute.png" ,  :text => "Voir SQL".trn, :param_goto =>{:export_type => "SQL"}}%></li>
+	    <li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => { :action => "execute", :id => @dyn_export.id, :form => "details_form", :image => "appli/32/excel.png" ,  :text => "Essayer".trn}%></li>
+	    <li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => { :controller => "dyn_exports", :action => "destroy_all", :id => @dyn_export.id, :check => 'true', :image => "appli/32/nok.png" ,  :text => "Supprimer l'exportation".trn}%></li>
+	    <li class="btn"><%= render :partial => 'shared/goto_menu_item', :locals => { :controller => "dyn_exports", :action => "list", :image => "appli/32/arrow_left.png", :text => "Retour".trn}%></li>
 	</ul>
 	<div class="clearer"></div>
 </div>

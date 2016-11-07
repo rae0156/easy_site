@@ -12,11 +12,16 @@ tmp_update = !(@setup_controller[:table_field_active] && list_item[:active]== 'N
 
     <%if @setup_controller[:parent_exists] %>
 		<td>
-			<%if tmp_update && @current_level < @setup_controller[:max_level]%>
-				<%if list_item.children.count>0 || (list_item.respond_to?("model_type") && list_item.can_have_children?)%>
-					<%= link_to "<i class='glyphicon glyphicon-indent-left'></i>".html_safe,  {:action => 'list'.trn, :parent_id => list_item.id}, {:remote => true, :title => "Afficher %{element}".trn(:element => (@setup_controller[:column_name_exists] ? list_item.name : "l'enfant".trn))} %> 
-				<%elsif list_item.can_have_children?%>
-					<%= link_to "<i class='glyphicon glyphicon-plus-sign'></i>".html_safe,  {:action => 'new'.trn, :parent_id => list_item.id}, {:remote => true, :title => "Créer un enfant".trn} %>
+			<%if tmp_update
+				label = list_item.respond_to?(@setup_controller[:default_column_name]) ? list_item.send(@setup_controller[:default_column_name]) : nil
+			%>
+				<%= link_to "<i class='fa fa-copy'></i>".html_safe,  {:action => 'copy_item', :id => list_item.id, :model_name => @setup_controller[:model].to_s, :label=> label}, {:remote => true, :title => "Copier '%{element}' pour le déplacer".trn(:element => (label || "l'élément".trn))} %> 
+				<%if @current_level < @setup_controller[:max_level]%>
+					<%if list_item.children.count>0 || (list_item.respond_to?("model_type") && list_item.can_have_children?)%>
+						<%= link_to "<i class='glyphicon glyphicon-indent-left'></i>".html_safe,  {:action => 'list', :parent_id => list_item.id}, {:remote => true, :title => "Afficher %{element}".trn(:element => (@setup_controller[:column_name_exists] ? list_item.name : "l'enfant".trn))} %> 
+					<%elsif list_item.can_have_children?%>
+						<%= link_to "<i class='glyphicon glyphicon-plus-sign'></i>".html_safe,  {:action => 'new', :parent_id => list_item.id}, {:remote => true, :title => "Créer un enfant".trn} %>
+					<%end%>
 				<%end%>
 			<%end%>
 		</td>  

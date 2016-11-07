@@ -17,6 +17,9 @@
     <%unless Rails.application.config.current_theme.blank?%>
 	    <%= stylesheet_link_tag "themes/#{Rails.application.config.current_theme}", :media => "all" %>
 	<%end%>
+	
+    <%= stylesheet_link_tag "menu_option", :media => "all" %>
+	
 	<!-- File Tree -->
 	<%= stylesheet_link_tag 'jqueryFileTree.css' %>		
 
@@ -37,9 +40,11 @@
   	<%= render :partial => "shared/spinner" %>
 	
 	<%if !current_user.nil? && current_user.role?("superadmin")%>
-		<%= get_template_part("part_system") %>
+		<%= render "layouts/menu_system" %>
 	<%end%>
-	<%= render "layouts/part_message" %>
+	<div id='part_message_div'>
+		<%= render "layouts/part_message" %>
+	</div>
 	
     <%if session[:custom_error].presence==true
     	session.delete(:custom_error)	%>
@@ -63,6 +68,7 @@
 	</div>
 
 
+
 <%if "#{Rails.env}".upcase == "DEVELOPMENT"%>
 	<script>
 		$(document).ready( function($) { 
@@ -70,6 +76,14 @@
 				document.getElementsByTagName('BODY')[0].innerHTML = request.responseText
 				alert('Ajax error : ' + errors);
 			})
+		});
+	</script>
+<%end%>
+
+<%if (session[:es_cancel_pub].presence||'N') == "Y"%>
+	<script>
+		$(document).ready( function($) { 
+			$('.cancel_pub').hide();
 		});
 	</script>
 <%end%>

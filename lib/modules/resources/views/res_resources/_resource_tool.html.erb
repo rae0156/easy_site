@@ -1,0 +1,168 @@
+
+<%if !@year.blank?%> 
+	<div class="alert alert-info">
+		<p class="toggle_by_ref init_close" data-reference-class='ref_ressource_tool'>		  		
+		  <%="Sélection, tris et actions groupées".trn%>
+		</p>
+	</div>
+	<div class='ref_ressource_tool'>
+		<div class="form-inline">
+			<table cellpadding="4" width="100%" class='table alert alert-success'>
+				<tr><th colspan="4"><%= "Tri".trn%></th></tr>  
+				<tr>
+					<td>
+						<%= easy_tag('list',:instance => "sort", :field => "field1",:value_list_array => [['Priorité'.trn,'PR'],['Status'.trn,'ST'],['Qui'.trn,'WHO'],['Quand'.trn,'WHEN'],['Pour quand'.trn,'UNTILWHEN'],['Séquence'.trn,'SEQUENCE']], :selected_value => @res_sort['field1'],:number_of_line=>1,:multiple => false)%>
+						<%= easy_tag('list',:instance => "sort", :field => "order1",:value_list_array => [['Ascendant'.trn,'ASC'],['Descendant'.trn,'DESC']], :selected_value => @res_sort['order1'],:number_of_line=>1,:multiple => false)%>
+					</td>
+					<td>
+						<%= easy_tag('list',:instance => "sort", :field => "field2",:value_list_array => [['Priorité'.trn,'PR'],['Status'.trn,'ST'],['Qui'.trn,'WHO'],['Quand'.trn,'WHEN'],['Pour quand'.trn,'UNTILWHEN'],['Séquence'.trn,'SEQUENCE']], :selected_value => @res_sort['field2'],:number_of_line=>1,:multiple => false)%>
+						<%= easy_tag('list',:instance => "sort", :field => "order2",:value_list_array => [['Ascendant'.trn,'ASC'],['Descendant'.trn,'DESC']], :selected_value => @res_sort['order2'],:number_of_line=>1,:multiple => false)%>
+					</td>
+					<td>
+						<%= easy_tag('list',:instance => "sort", :field => "field3",:value_list_array => [['Priorité'.trn,'PR'],['Status'.trn,'ST'],['Qui'.trn,'WHO'],['Quand'.trn,'WHEN'],['Pour quand'.trn,'UNTILWHEN'],['Séquence'.trn,'SEQUENCE']], :selected_value => @res_sort['field3'],:number_of_line=>1,:multiple => false)%>
+						<%= easy_tag('list',:instance => "sort", :field => "order3",:value_list_array => [['Ascendant'.trn,'ASC'],['Descendant'.trn,'DESC']], :selected_value => @res_sort['order3'],:number_of_line=>1,:multiple => false)%>
+					</td>
+				</tr>
+			</table>
+			<table cellpadding="4" width="100%" class='table alert alert-success'>
+				<tr><th colspan="4"><%= "Sélection".trn%></th></tr>  
+				<tr>
+					<td>
+						<%="Priorité".trn%>
+						<%= easy_tag('list',:instance => "where", :field => "sign1",:value_list_array => [['='],['<>'],['<'],['>'],['<='],['>=']], :selected_value => @res_where['sign1'],:number_of_line=>1,:multiple => false)%>
+						<%= easy_tag('list',:instance => "where", :field => "value1",:value_list_array => ResPriority.order("type_priority asc,sequence asc").all.map{|pr| ["#{pr.code} - #{pr.description}",pr.id]}, :selected_value => @res_where['value1'],:number_of_line=>1,:multiple => false)%>
+					</td>
+					<td>
+					</td>
+					<td>
+						<%="Status".trn%>
+						<%= easy_tag('list',:instance => "where", :field => "sign2",:value_list_array => [['='],['<>'],['<'],['>'],['<='],['>=']], :selected_value => @res_where['sign2'],:number_of_line=>1,:multiple => false)%>
+						<%= easy_tag('list',:instance => "where", :field => "value2",:value_list_array => ResStatus.order("sequence asc").all.map{|st| ["#{st.code} - #{st.description}",st.id]}, :selected_value => @res_where['value2'],:number_of_line=>1,:multiple => false)%>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<%="Quand".trn%>
+						<%= easy_tag('list',:instance => "where", :field => "sign3",:value_list_array => [['='],['<>'],['<'],['>'],['<='],['>=']], :selected_value => @res_where['sign3'],:number_of_line=>1,:multiple => false)%>
+						<%= easy_tag('list',:instance => "where", :field => "value3",:value_list_array => ResWhen.order("sequence asc").all.map{|wh| [wh.name,wh.id]}, :selected_value => @res_where['value3'],:number_of_line=>1,:multiple => false)%>
+					</td>
+					<td>
+					</td>
+					<td>
+						<%="Pour quand".trn%>
+						<%= easy_tag('list',:instance => "where", :field => "sign4",:value_list_array => [['='],['<>'],['<'],['>'],['<='],['>=']], :selected_value => @res_where['sign4'],:number_of_line=>1,:multiple => false)%>
+						<%= easy_tag('list',:instance => "where", :field => "value4",:value_list_array => ResWhen.order("sequence asc").all.map{|wh| [wh.name,wh.id]}, :selected_value => @res_where['value4'],:number_of_line=>1,:multiple => false)%>
+					</td>
+				</tr>
+			</table>
+		<%if EsUser.role?('user') || EsUser.role?('admin')%> 
+			<table cellpadding="4" width="100%" class='table alert alert-success'>
+				<tr><th colspan="3"><%= "Couper/coller".trn%></th></tr>
+				<tr>
+					<td>
+						<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "",:fa => "fa-files-o fa-2x",
+																					:action => "copy_multiple",
+																					:no_div => true,
+																					:form => 'resource_form',
+																					:html_option => {:remote => true, :title =>"Copie de ressources multiple".trn}}%>
+						
+
+						<%if session[:copy_action_multiple].is_a?(Array)%>
+							<%="Il y a %{nbr} ressource(s) copiée(s)".trn(:nbr => session[:copy_action_multiple].size)%>
+							&nbsp;
+							<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "",:fa => "fa-ban fa-2x",
+																						:action => "cancel_copy_multiple",
+																						:no_div => true,
+																						:form => 'resource_form',
+																						:html_option => {:remote => true, :title =>"Annuler la copie".trn}}%>
+						<%elsif session[:copy_resource_multiple].is_a?(Array)%>
+							<%="Il y a %{nbr} action(s) copiée(s)".trn(:nbr => session[:copy_resource_multiple].size)%>
+							&nbsp;
+							<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "",:fa => "fa-ban fa-2x",
+																						:action => "cancel_copy_multiple",
+																						:no_div => true,
+																						:form => 'resource_form',
+																						:html_option => {:remote => true, :title =>"Annuler la copie".trn}}%>
+						<%end%>
+					</td>
+					<td colspan="2">
+						<%if session[:copy_action_multiple].is_a?(Array)%>
+							<%="Déplacer dans".trn%>
+							<%= easy_tag('list',:instance => "copy_multiple", :field => "category",:value_list_array => ResCategory.get_category(@year), :selected_value => @category,:number_of_line=>1,:multiple => false)%>
+							<%= easy_tag('list',:instance => "copy_multiple", :field => "where",:value_list_array => [['En haut'.trn,'TOP'],['En bas'.trn,'BOTTOM']], :selected_value => @copy_multiple_where,:number_of_line=>1,:multiple => false)%>
+	
+							<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "",:fa => "fa-clipboard fa-2x",
+																						:action => "paste_multiple_action",
+																						:no_div => true,
+																						:form => 'resource_form',
+																						:html_option => {:remote => true, :title =>"Coller".trn}}%>
+						<%elsif session[:copy_resource_multiple].is_a?(Array)%>
+							<%="Déplacer où".trn%>
+							<%= easy_tag('list',:instance => "copy_multiple", :field => "where",:value_list_array => [['En haut'.trn,'TOP'],['En bas'.trn,'BOTTOM']], :selected_value => @copy_multiple_where,:number_of_line=>1,:multiple => false)%>
+	
+							<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "",:fa => "fa-clipboard fa-2x",
+																						:action => "paste_multiple_resource",
+																						:no_div => true,
+																						:form => 'resource_form',
+																						:html_option => {:remote => true, :title =>"Coller".trn}}%>
+						<%end%>
+					</td>
+				</tr>
+				<tr><th colspan="3"><%= "Actions groupées pour tous les éléments sélectionnés".trn%></th></tr>  
+				<tr>
+					<td>
+						<%="Mettre la priorité à".trn%>
+						<%= easy_tag('list',:instance => "multi_action", :field => "value1",:value_list_array => ResPriority.order("type_priority asc,sequence asc").all.map{|pr| ["#{pr.code} - #{pr.description}",pr.id]}, :selected_value => "",:number_of_line=>1,:multiple => false)%>
+					</td>
+					<td>
+					</td>
+					<td>
+						<%="Mettre le status à".trn%>
+						<%= easy_tag('list',:instance => "multi_action", :field => "value2",:value_list_array => ResStatus.order("sequence asc").all.map{|st| ["#{st.code} - #{st.description}",st.id]}, :selected_value => "",:number_of_line=>1,:multiple => false)%>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<%="Assigner à".trn%>
+						<%= easy_tag('list',:instance => "multi_action", :field => "value3",:value_list_array => EsUser.order("name,firstname").all.map{|u| [u.complete_name,u.id]}, :selected_value => "",:number_of_line=>1,:multiple => false)%>
+					</td>
+					<td>
+					</td>
+					<td>
+						<%="La ressource est".trn%>
+						<%= easy_tag('list',:instance => "multi_action", :field => "value4",:value_list_array => [['Consommable'.trn,'Y'],['Non consommable'.trn,'N']], :selected_value => "",:number_of_line=>1,:multiple => false)%>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="3">
+						<div style="text-align: center;">
+							<div>
+								<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "",:fa => "fa-thumbs-o-up fa-3x",
+																							:action => "execute_multiple_action",
+																							:confirm => "Voulez vous vraiment exécuter cette action ?".trn,
+																							:no_div => true,
+																							:form => 'resource_form',
+																							:html_option => {:class => "btn-sm", :remote => true, :title =>"Exécuter l'action".trn}}%>
+								
+								<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "",:fa => "fa-times-circle-o fa-3x",
+																							:action => "clean_tools",
+																							:no_div => true,
+																							:form => 'resource_form',
+																							:html_option => {:id => "btn_clean_tools", :class => "btn-sm", :remote => true, :title =>"Vider les informations 'Tri' et 'Sélection'".trn}}%>
+								
+								<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "",:fa => "fa-lock fa-3x",
+																							:action => "lock_resource",
+																							:confirm => "Voulez vous vraiment bloquer les ressources ?".trn,
+																							:no_div => true,
+																							:form => 'resource_form',
+																							:html_option => {:class => "btn-sm", :remote => true, :title =>"Bloquer les ressources".trn}}%>
+							</div>					
+						</div>						
+					</td>
+				</tr>
+			</table>
+		<%end%> 
+		</div>
+	</div>
+<%end%> 
+

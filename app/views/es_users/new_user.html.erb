@@ -1,13 +1,13 @@
 <% @title = "Nouvelle inscription".trn %>
 <div class="cadre bg-primary">
-    <h2><%= image_tag('appli/user_48.png', {:alt => @title, :align => "middle"}) %> <%= @title %></h2>
+    <h2><%= image_tag('appli/48/user.png', {:alt => @title, :align => "middle"}) %> <%= @title %></h2>
 
 	<%= errors_for(@user) %>
 
 	<%= form_tag({:controller => 'users',:action => 'create'}, { :name => 'user_form', :class => 'form-horizontal' }) do %>
 		  <h4><%= field_description "Données obligatoires".trn, true %></h4>
 		  <div class="form-group">
-		    <label for="user_pseudo" class="col-sm-4 control-label"><%="Speudo".trn%> : </label>
+		    <label for="user_pseudo" class="col-sm-4 control-label"><%="Pseudo".trn%> : </label>
 			<div class="col-sm-7">
 				<%= text_field "user", "pseudo", :maxlength => 60, :class => "form-control" %>
 		    </div>
@@ -47,10 +47,8 @@
 
 	<% end %>
 
-	<div class="form-group ">  
-	    <div class="col-md-offset-4 btn btn-default">
-			<%= render :partial => 'shared/goto_menu_item', :locals => { :controller => 'es_users',:action => 'create', :image => "appli/process_32.png", :text => "S'inscrire".trn, :form => "user_form"}%>
-		</div>
+    <div class="btn btn-default">
+		<%= render :partial => 'shared/goto_menu_item', :locals => { :controller => 'es_users',:action => 'create', :image => "appli/32/ok.png", :text => "S'inscrire".trn, :form => "user_form"}%>
 	</div>
 
 </div>

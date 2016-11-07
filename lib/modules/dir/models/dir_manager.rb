@@ -12,6 +12,7 @@ class DirManager < ActiveRecord::Base
   attr_accessible :name, :description, :real_dir, :file_ext, :sub_dir_by_user, :dir_base_id, :limit_size
 
   validates_presence_of :name, :message => '#' + 'Le nom est obligatoire'.trn
+  validates_presence_of :description, :message => '#' + 'La description est obligatoire'.trn
   validates_presence_of :dir_base_id, :message => '#' + 'Le chemin de base est obligatoire'.trn
   validates_presence_of :real_dir, :message => '#' + 'Le nom du répertoire est obligatoire'.trn
   validates_presence_of :file_ext, :message => '#' + "L'exention de fichier est obligatoire".trn
@@ -29,6 +30,14 @@ class DirManager < ActiveRecord::Base
   def get_audit_label
     self.name
   end
+
+  def self.create_dir_management(dir_name, real_dir, dir_base_name)
+    unless DirManager.find_by_name(dir_name)
+      dir_base = DirBase.find_by_name(dir_base_name) || DirBase.find_by_name('Appli')
+      DirManager.create(:name => dir_name, :description => dir_name, :real_dir => real_dir, :file_ext => '*.*', :sub_dir_by_user => 'N', :dir_base_id => dir_base.id, :limit_size => (1024 * 1024))
+    end
+  end
+
 
   def self.action_available?(dir_name,action="")
     dir = DirManager.find_by_name(dir_name)

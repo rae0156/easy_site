@@ -10,7 +10,7 @@
 	<%= list_task_item.sequence.to_i %>  
   </td>
   <td>
-	<%= image_tag(list_task_item.optional == 'N' ? "appli/ok_32.png" : "appli/cancel_32.png", 
+	<%= image_tag(list_task_item.optional == 'N' ? "appli/32/ok.png" : "appli/32/nok.png", 
 						    {:alt => "", :align => "middle", :border => "0",
 						    :class => "app_tooltip", :title => list_task_item.optional=='N'  ? "cette tâche est optionnelle".trn : "cette tâche n'est pas obligatoire".trn, "data-placement" => "left"}) %>  
   </td>

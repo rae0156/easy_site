@@ -37,3 +37,5 @@ require "#{Rails.root}/lib/modules/load_modules.rb" if File.exist?( "#{Rails.roo
 
 EsTheme.load_themes
 EsTemplate.load_template_file
+
+include About::Constants

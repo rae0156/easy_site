@@ -1,9 +1,9 @@
 <% @title = "Dessiner le template %{name}".trn(:name=>@template.name) %>
 
-<div class="cadre bg-primary">
-	<h2><%= image_tag("appli/setup_48.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
+<div>
+	<h2><%= image_tag("appli/48/setup.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
     <ul>
-		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sortir".trn,:image => "appli/back_32.png", :action => "list"}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sortir".trn,:image => "appli/32/arrow_left.png", :action => "list"}%></li>
     </ul>
 	<%= errors_for(@template) %>
 

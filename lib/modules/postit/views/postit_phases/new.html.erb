@@ -1,10 +1,10 @@
 <% @title = "Nouvelle phase".trn %>
 
 <div class="cadre bg-primary">
-	<h2><%= image_tag("appli/setup_48.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
+	<h2><%= image_tag("appli/48/setup.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
     <ul>
-		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/save_32.png", :action => "create",  :form => "element_form"}%></li>
-		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour".trn,:image => "appli/back_32.png", :action => "list"}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/32/save_data.png", :action => "create",  :form => "element_form"}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour".trn,:image => "appli/32/arrow_left.png", :action => "list"}%></li>
     </ul>
 	<%= errors_for(@postit_phase) %>
 

@@ -1,0 +1,237 @@
+==================
+= NE PAS OUBLIER =
+==================
+
+SARAFI : Il y a ce message dans le log => WARNING: Can't verify CSRF token authenticity
+		 Il faut autoriser les cookies.
+		 Retirer protect_from_forgery n'y change rien
+
+Attention : 
+	- le caching des classe en mode production. Exemple : les constante/variable de classe ne sont pas rechargée (et changée de valeurs) puisque mise en cache
+	- ne pas faire de redirection à partir de l'adresse principale sur le port 80
+	- ne pas oublier qu'il existe acts_as_detect_action dans les actions
+
+L'utilisattion des PUBs :
+	Mettre la class 'cancel_pub' dans un élément HTML et utiliser l'option système "cancel_pub: Cacher/Montrer les parties Pub" 
+
+En ajax, si la requete est trop longue (lourde), il faut utiliser ceci :
+	        type: "POST",
+	        proccessData: false, 
+
+
+Font Awesome : 
+
+	Changer de version de Font Awesome
+		- mettre la font dans le rep assets\stylesheets\fonts
+		- dans assets\stylesheets\font-awesome.css, il faut remplacer '../fonts/' par './fonts/'  
+
+les thèmes BOOTSTRAP : 
+
+	Creation de thème : http://pikock.github.io/bootstrap-magic/app/index.html#!/editor
+		- A mettre dans stylesheets/themes
+		- Modifier les font-s (se baser sur les déjà fait)
+			pour bootstrap de base, il faut mettre ./fonts dans src: url('
+			pour un thème, il faut mettre ../fonts dans src: url('
+
+	Changer de version de Bootstrap
+		- glyph icon à mettre au bon endroit dans le rep assets\stylesheets\fonts
+		- dans assets\stylesheets\bootstrap.css, il faut remplacer '../fonts/' par './fonts/' => ex: url('./fonts/glyphicons-halflin  
+
+	Trouver des themes bootstrap : 	
+			http://startbootstrap.com/template-categories/all/
+			http://www.w3schools.com/bootstrap/bootstrap_templates.asp
+			https://speckyboy.com/2014/05/16/free-bootstrap-admin-themes/
+			https://colorlib.com/wp/free-bootstrap-admin-dashboard-templates/
+			http://bootswatch.com/ 
+			http://bootsnipp.com/ est un site qui vous propose des éléments de code designé
+	
+	 
+
+templates et parties :
+	generate_template_render dans es_utils.rb 			pour la génération d'un template
+	get_template_part dans es_utils.rb 					pour la génération d'un es_part ou d'un fichier render ou d'un id de es_content_details
+	get_content_detail dans es_utils.rb					pour la génération d'un contenu sans passer par une partie
+	generate_module_part dans application_helper.rb 	pour la génération d'une part d'un module
+
+Les attributs dynamiques :
+	Pour créer des attributs dynamiques, il faut remplir le fichier config/dynamic_attributes.yml
+
+Backup :
+	La procédure de backup se trouve dans D:\backup easy_site
+	Eléménts à sauver :  db mngtools_easysite + source (dans D:\ruby\tfe\easy_site) + Ruby et Rails (si besoin quand nouveau gem par exemple) 
+
+administration de sites :
+	admins/create_super_admin => creation du premier super admin
+	admins/admin_site => gestion des sites
+	admins/reset_template => initialise le template admin
+	admins/init_workspace => relance l'initialisation des variables Rails
+	admins/change_site/id => change de site
+	admins/reload_module?name=module_name => recharger le yml d'un module
+	es_users/test_mail => tester son mail		
+
+Aptana plante et le serveur ne démarre plus :
+	fermer Aptana
+	renomer '.launches' en '.launches old' dans D:\ruby\tfe\.metadata\.plugins\org.eclipse.debug.core\ 
+	ourvir Aptana
+	le server redémarre
+
+============================================
+= mini_magick + GraphicsMagick sur windows =
+============================================
+
+Il faut au préalable installer GraphicsMagick 1.3.25-Q16-win32 sur windows  (pas imagemagick)
+	installer dans C:\GraphicsMagick (car des rep avec espace ne fonctionneront pas) 
+	laisser les case par defaut
+
+dans une session dos :
+	vérifier que le path comprend bien 'C:\GraphicsMagick' 
+		insérer dans gemfile gem "mini_magick", '4.5.1'
+		faire un bundle install
+
+dans application.rb, ajouter ceci :
+	MiniMagick.configure do |config|
+	  config.cli = :graphicsmagick
+	end
+
+redemarrer Aptana
+ 
+========
+= UNIX =
+========
+	ps -ef | grep -i mngtools   => visu des processus en cours
+	kill -9 pid 				=> arrete un processus
+	df -k . 					=> taille du disque
+	free -k 					=> taille mémoire
+
+===========
+= Lenteur =
+===========
+	A) La gem 'rails-dev-tweaks' a été installée
+	B) Créer des index sur les tables avec es_site_id 
+		l'index de la table 'EsMenu' est déjà créé
+	C) Amélioration réalisée sur le scope site_id 
+	D) un exemple de log avec caller existe dans 'log/exemple de log development avec timing.log'
+	E) Les lenteurs sont provoquées en grande partie par la mise en place du tactilog. 
+		Il a été désactivé en indiquant 'scope: nothing'
+		Pour remettre tactilog, il faut utiliser le fichier 'config/sample_of_active_tactilog.yml'
+
+================
+= Ancien index =
+================
+<div class="alert alert-info">
+	<h2><%="Template '%{template}' - Thème '%{theme}'".trn(:template => Rails.application.config.current_template, :theme => Rails.application.config.current_theme)%></h2>
+</div>
+
+
+
+==========
+= toggle =
+==========
+mettre ceci : class="toggle_by_ref" data-reference-class='ref_1'
+  dans un div à gérer par un toggle +/-
+mettre ceci : <div class='ref_1 init_hide'>
+  sur ce qu'il faut toggleler
+init_toggle_by_ref => jquery
+
+=======
+= GIT =
+=======
+reset =>
+	delete .git/index
+	git reset
+
+
+=======
+= GEM =
+=======
+
+procédure gem
+	creation dans le rep de easy_site :
+		commande : bundle gem xxxx
+		ensuite déplacer dans le répertoire tfe
+	
+	ouvrir dans aptana
+		cocher "I'll generate my own code"
+		
+	modifier le fichier xxxx.gemspec  
+	  gem.authors       = ["Régis André"]
+	  gem.email         = ["regis.andre.home@gmail.com"]
+	  gem.description   = %q{ma description}
+	  gem.summary       = %q{mon résumé}
+
+	créer le gem ou déplacer le code d'un plugin dans ce gem
+	  
+	construction le gem
+		gem build xxxx.gemspec
+		dans le rep du gem
+	installer le gem en local
+		gem install xxxx
+		dans le rep du gem
+	mettre le gem dans l'appli dans le gemfile
+		gem 'xxxx', '0.0.1'
+		bundle install
+
+=============
+= REMARQUES =
+=============
+
+	- Suppression d'un site complet sur son numéro
+		127.0.0.1:3005/admins/destroy_site?id=10
+		
+	- Export d'une table d'un site en vue de la création d'un nouveau site
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsTheme&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsCategory&exclude_fields=id,es_site_id,parent_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsRole&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsAbilities&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsPages&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsSetups&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsTemplates&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsTemplateLines&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsTemplateCols&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsContents&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsContentDetails&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsContentDetailParams&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsMediaFiles&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsParts&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsMenus&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsMenuRoles&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsWizards&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=EsWizardDetails&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=DirAccesses&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=DirBase&exclude_fields=id,es_site_id
+		127.0.0.1:3005/admins/export_to_yaml?model_name=DirManagers&exclude_fields=id,es_site_id
+
+	- Exemple de shortcut avec une connexion automatique 
+		127.0.0.1:3000/admins/shortcut?go_controller=es_wizards&go_action=execute&name=site&code_action=step&step=6
+
+	- Page de gestion de sites
+		127.0.0.1:3005/admins/admin_site
+	
+
+=============
+= Clipboard =
+=============
+					
+	127.0.0.1:3000/admins/test_copy_paste/view
+	127.0.0.1:3000/admins/test_copy_paste/copy?key=key 1&value=test 1
+	127.0.0.1:3000/admins/test_copy_paste/get?key=key 1
+	127.0.0.1:3000/admins/test_copy_paste/paste?key=key 1
+	127.0.0.1:3000/admins/test_copy_paste/log
+	127.0.0.1:3000/admins/test_copy_paste/clear
+	127.0.0.1:3000/admins/test_copy_paste/get_all_session
+	127.0.0.1:3000/admins/test_copy_paste/clear_all_session
+
+
+===========
+= Z-index =
+===========
+
+	500  : Points de menu
+	501  : label-info-hiden
+	502  : Action : bouton up et down
+	800  : Menu slide : bouton principal
+	801  : Menu slide : menu
+	802  : Ecran de propriétés + Postit + Actions
+	1000 : Wizard taille MAX
+	
+	

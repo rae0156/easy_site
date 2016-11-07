@@ -124,6 +124,14 @@ class EsPart < ActiveRecord::Base
     return !self.is_dynamic ? "Fichier".trn : "Dynamique".trn
   end
   
+  def content_type
+    if self.es_content && self.es_content.es_content_details.size>0
+      self.es_content.es_content_details.first.content_type
+    else
+      ""
+    end
+  end
+  
   def self.get_name_list(type_content=['part','content'])
     name_list = []
     files_list = Dir.glob("#{Rails.root}/app/views/parts/_part_*.html.erb").map{|f| File.basename(f,".html.erb")[1..-1]}

@@ -1,13 +1,13 @@
 <% 
-	@title 		 = "Besoins pour l'année '%{year}'".trn(:year => @year) 
+	@title 		 = "Stock après OP de l'année '%{year}'".trn(:year => @year) 
 	@title 		+= " - " + "Utilisateur '%{user}'".trn(:user => EsUser.find_by_id(@user).complete_name) unless @user == 0%>
 
 <div class="center-menu">
     <h2><%= @title %></h2>
 	<ul>		
-		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Vérifier".trn,:image => "appli/process_32.png", :action => "save_need", :param_goto => {:year => @year, :check => 'Y'},  :form => "stock_form", :remote => true}%></li>
-		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/save_32.png", :action => "save_need", :param_goto => {:year => @year, :check => 'N'},  :form => "stock_form", :remote => true}%></li>
-		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour".trn,:image => "appli/back_32.png", :action => "show_resources", :html_option => {:remote => true}}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Vérifier".trn,:image => "appli/32/ok.png", :action => "save_need", :param_goto => {:year => @year, :check => 'Y'},  :form => "stock_form", :remote => true}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/32/save_data.png", :action => "save_need", :param_goto => {:year => @year, :check => 'N'},  :form => "stock_form", :remote => true}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour".trn,:image => "appli/32/arrow_left.png", :action => "show_resources", :html_option => {:remote => true}}%></li>
 	</ul>
 	<div class="clearer"></div>
 </div>
@@ -23,6 +23,7 @@
 	<%= errors_for(@object) %>
 	
 	<%@object.children.each do |category|
+		next unless session[:res_category]==0 || session[:res_category]==category.id
 		tmp_resources = category.get_resources(@user) %>
 		<%if tmp_resources.size > 0%>
 		<div class="alert alert-info">
@@ -38,7 +39,7 @@
 			    <th width=1><%="Statut".trn%></th>
 			    <th><%="Description".trn%></th>
 			    <th><%="Qui".trn%></th>
-			    <th><%="Reste".trn%></th>
+			    <th><%="Reste après OP".trn%></th>
 			    <th><%="Besoin".trn%></th>
 			  </tr>
 			  <%tmp_resources.each do |resource|%>
@@ -46,7 +47,8 @@
 				    <td style="background-color:<%=resource.res_priority.color%>;color:#000000;text-align:center;"><span title="<%=resource.res_priority.description%>"><%=resource.res_priority.code%></span></td>
 				    <td style="background-color:<%=resource.res_status.color%>;color:#000000;text-align:center;"><span title="<%=resource.res_status.description%>"><%=resource.res_status.code%></span></td>
 				    <td><%=truncate(resource.get_description,:length => 40)%> - <%=truncate(resource.res_action.description,:length => 40)%></td>				    
-				    <td><%=resource.es_user.complete_name%></td>
+				    <%who_where = resource.res_product ? @object.res_stocks.where(:res_product_id => resource.res_product_id).first.es_user : nil%>
+				    <td><%=(resource.es_user ? resource.es_user.complete_name : "") + (who_where && who_where != resource.es_user  ? " (se trouve chez %{user})".trn(:user=> who_where.complete_name) : "")%></td>
 				    <td width="100" style="background-color:<%=@stock_error.include?(resource.id) ? '#FF0000' : ''%>">
 						<%if resource.stockable=='Y'%>
 							<%= easy_tag('decimal', :mandatory => false, :bootstrap_form => false, :bootstrap_length => false, :id => "stock[id_#{resource.id}]", :value => @stock["id_#{resource.id}"]) %>

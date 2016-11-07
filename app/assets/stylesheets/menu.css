@@ -1,3 +1,9 @@
+
+
+.menu {
+	z-index:500; /*501 pour la partie label-info-hiden de la création du paramétrage du modèle*/
+}
+
 .menu > .dropdown-menu {
     display: block;
     position: static;
@@ -109,3 +115,5 @@ ul.nav > li.dropdown:hover > ul.dropdown-menu{ display: block; }
      -moz-border-radius: 6px 0 6px 6px;
           border-radius: 6px 0 6px 6px;
 }
+
+

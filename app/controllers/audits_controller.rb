@@ -11,21 +11,21 @@ class AuditsController < ApplicationController
                         },
             :date => {
                           :model        => "select distinct DATE_FORMAT(audits.created_at,'%d-%m-%Y') created_at FROM audits",
-                          :sort         => "created_at desc",
+                          :sort         => "audits.created_at desc",
                           :subquery     => {:conditions => "DATE_FORMAT(created_at,'%d-%m-%Y') = ?", :include => [:es_user], :fields => ["created_at"], :sort => "audits.id DESC", :id_fields => "created_at", :remove_old_conditions => false},
                           :field_group  => "date",
                           :name         => "Par date".trn
                         },
             :date_user => {
                           :model        => "select distinct DATE_FORMAT(audits.created_at,'%d-%m-%Y') created_at, audits.user_id  FROM audits JOIN es_users on es_users.id = audits.user_id",
-                          :sort         => "created_at desc",
+                          :sort         => "audits.created_at desc",
                           :subquery     => {:conditions => "DATE_FORMAT(created_at,'%d-%m-%Y') = ? AND user_id = ?", :include => [:es_user], :fields => ["created_at","user_id"], :sort => "audits.id DESC", :id_fields => "created_at,user_id", :remove_old_conditions => false},
                           :field_group  => "date_user",
                           :name         => "Par date et utilisateur".trn
                         },
             :user_date => {
                           :model        => "select distinct audits.user_id,DATE_FORMAT(audits.created_at,'%d-%m-%Y') created_at  FROM audits JOIN es_users on es_users.id = audits.user_id",
-                          :sort         => "user_id, created_at desc",
+                          :sort         => "user_id, audits.created_at desc",
                           :subquery     => {:conditions => "DATE_FORMAT(created_at,'%d-%m-%Y') = ? AND user_id = ?", :include => [:es_user], :fields => ["created_at","user_id"], :sort => "audits.id DESC", :id_fields => "created_at,user_id", :remove_old_conditions => false},
                           :field_group  => "user_date",
                           :name         => "Par utilisateur et par date".trn
@@ -110,7 +110,6 @@ class AuditsController < ApplicationController
     end
     
     @detail_groups = Audit.find(:all, :conditions => conditions, :order => view[:sort], :include => view[:include])
-  
     respond_to do |format|
       format.js do
         @element_id, @partial = params[:id].gsub("group_by_","div_group_"), 'list_group'
@@ -147,8 +146,8 @@ class AuditsController < ApplicationController
       auditable_id                      => "UPPER(audits.auditable_label) LIKE ?",
       action                            => 'audits.action = ?'           ,
       ltype                             => "(audits.auditable_type_label = ? ) OR (audits.auditable_type_label IS NULL AND audits.auditable_type = ?)",
-      @from_date                        => 'audits.created_at >= ?',
-      (Date.parse(@to_date) + 1).to_s   => 'audits.created_at < ?',
+      (Date.parse(@from_date))          => 'audits.created_at >= ?',
+      (Date.parse(@to_date) + 1)        => 'audits.created_at < ?',
       entity_code                       => 'audits.auditable_id IN (select distinct aec.auditable_id from AUDITS aec where aec.changes like \'%entity_text:%\'||?||\'%\')'
     }.each_pair do |value, condition|
       unless value.blank? or value == 'All'

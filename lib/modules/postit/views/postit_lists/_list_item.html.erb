@@ -16,12 +16,12 @@
 	<%= list_item.postit_tasks.size %>  
   </td>
   <td>
-	<%= image_tag(list_item.sequential=='Y' ? "appli/ok_32.png" : "appli/cancel_32.png", 
+	<%= image_tag(list_item.sequential=='Y' ? "appli/32/ok.png" : "appli/32/nok.png", 
 						    {:alt => "", :align => "middle", :border => "0",
 						    :class => "app_tooltip", :title => list_item.sequential=='Y'  ? "Liste de tâches séquentielles".trn : "Liste de tâches parallèles".trn, "data-placement" => "left"}) %>  
   </td>
   <td>
-	<%= image_tag(list_item.checkable=='Y' ? "appli/ok_32.png" : "appli/cancel_32.png", 
+	<%= image_tag(list_item.checkable=='Y' ? "appli/32/ok.png" : "appli/32/nok.png", 
 						    {:alt => "", :align => "middle", :border => "0",
 						    :class => "app_tooltip", :title => list_item.checkable=='Y'  ? "liste de tâches avec coche".trn : "Liste de tâches sans coche".trn, "data-placement" => "left"}) %>  
   </td>

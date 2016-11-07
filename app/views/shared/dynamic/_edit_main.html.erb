@@ -7,9 +7,9 @@
 
 	<ul>
 		<%unless (@setup_controller[:readonly_exists] && @instance["read_only"]=='Y')%>
-			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/save_32.png", :action => "update", :id => @instance.id,  :form => "update_form", :remote => @type_request=='ajax'}%></li>
+			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/32/save_data.png", :action => "update", :id => @instance.id,  :form => "update_form", :remote => @type_request=='ajax'}%></li>
 		<%end%>
-		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:back => true, :text => "Retour".trn,:image => "appli/back_32.png", :action => "list", :param_goto => {:parent_id => (@parent.blank? ? "" : @parent.id)}, :html_option => {:remote => @type_request=='ajax'}}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:back => true, :text => "Retour".trn,:image => "appli/32/arrow_left.png", :action => "list", :param_goto => {:parent_id => (@parent.blank? ? "" : @parent.id)}, :html_option => {:remote => @type_request=='ajax'}}%></li>
 	</ul>
 	<!-- Error messages -->
 	<%= errors_for(@instance) %>

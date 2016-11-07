@@ -51,8 +51,8 @@ module FormHelper
         tab = easy_generate_tab(o)
         unless tab.blank?
           nbr_tab += 1
-          text_list += generate_tag(:li, generate_tag(:a, title, {:href => "#tab_#{i}","data-toggle".to_sym=>"tab"}), {:class => (i==0 ? "active" : "" )})
-          text_content += generate_tag(:div, tab, {:id => "tab_#{i}", :class => (i==0 ? "tab-pane fade in active" : "tab-pane fade" )})
+          text_list += generate_tag(:li, generate_tag(:a, title.humanize, {:href => "#tab_#{i}","data-toggle".to_sym=>"tab"}), {:class => (i==0 ? "active" : "" )})
+          text_content += generate_tag(:div, tab, {:id => "tab_#{i}", :class => (i==0 ? "tab-pane fade in active properties" : "tab-pane fade" )})
         end
       end
     end
@@ -82,9 +82,9 @@ module FormHelper
     
     if text_array.size > 0
       text_array.each_with_index do |tmp,i|
-        text += (title_group[i].blank? ? "" : generate_tag(:DIV, generate_tag(:H4, title_group[i]), {:class => "panel-heading"})) + generate_tag(:DIV, tmp, {:class => "panel-body bg-primary"})
+        text += (title_group[i].blank? ? "" : generate_tag(:DIV, title_group[i].humanize, {:class => "panel-heading"})) + generate_tag(:DIV, tmp, {:class => "panel-body"})
       end
-      text = generate_tag(:DIV, text, {:class => "panel panel-primary"})  
+      text = generate_tag(:DIV, text, {:class => "panel panel-primary properties"})  
     end
     
     return text.html_safe
@@ -105,7 +105,7 @@ module FormHelper
     if element.is_a?(Hash)
       name        = element[:name].presence        || ""
       unless name.blank?
-        description = element[:description].presence || ""
+        description = (element[:description].presence || "").humanize
         description += " : " unless description.blank?
         value       = element[:value].presence || ""
         length      = element[:length].presence || 50
@@ -115,7 +115,10 @@ module FormHelper
         value_list  = element[:value_list].presence || []
         value_list.reject!(&:empty?) unless value_list.blank?
         addon_param = element[:addon_params].presence || ""
-        span_size   = 8
+        
+        format = "multiple_list" if format=='list' && addon_param=='multiple_list'
+        
+        span_size   = 9
         case format
         when "get"
           tmp_list_value = nil
@@ -153,7 +156,7 @@ module FormHelper
         when "list"
           text = easy_tag('list',:instance => "generated", :field => name,:selected_value=> value, :read_only=> read_only,:value_list_array => value_list.uniq,:multiple => false)
         when "multiple_list"
-          text = easy_tag('list',:instance => "generated", :field => name,:selected_value=> value, :read_only=> read_only, :number_of_line => 5, :value_list_array => value_list,:multiple => true)
+          text = easy_tag('list',:instance => "generated", :field => name,:selected_value=> value, :read_only=> read_only, :number_of_line => 5, :value_list_array => value_list,:multiple => true, :include_blank => false)
         when "integer"
           text = easy_tag('integer',:instance => "generated", :field => name,:value=> value, :read_only=> read_only)
           span_size = 2
@@ -166,16 +169,17 @@ module FormHelper
         when "date"
           text = easy_tag('date',:instance => "generated", :field => name,:value=> value, :read_only=> read_only, :bootstrap_length => false)
           span_size = 3
-        when "date_time"
+        when "date_time", "datetime"
           text = easy_tag('date_time',:instance => "generated", :field => name,:value=> value, :read_only=> read_only, :bootstrap_length => false)
           span_size = 3
         when "boolean"
-          text = easy_tag('check_box',:instance => "generated", :field => name,:value=> value, :read_only=> read_only)
+          text = easy_tag('check_box',:instance => "generated", :field => name,:value=> value, :read_only=> read_only, :bootstrap_length => false)
           span_size = 1 
         when "radio_button"
           text = easy_tag('radio_button',:instance => "generated", :field => name,:value=> value, :read_only=> read_only,:labels => value_list)
         when "color"
-          text = easy_tag('color',:instance => "generated", :field => name,:value=> value, :read_only=> read_only)
+          text = easy_tag('color',:instance => "generated", :field => name,:value=> value, :read_only=> read_only, :bootstrap_length => false)
+          span_size = 2
         when "file"
           if addon_param.blank?
             text = easy_tag('text',:instance => "generated", :field => name,:value=> value, :read_only=> true)
@@ -194,7 +198,7 @@ module FormHelper
         end
         mandatory_text = mandatory ? (easy_tag('mandatory',:label => "") + " ") : ""
 
-        text=generate_tag(:div, generate_tag(:label, mandatory_text + description , {:class => "col-sm-4 control-label", :for => "generated_#{name}"}) + generate_tag(:div, text, {:class => "col-sm-#{span_size}"}), {:class => "form-group"})
+        text=generate_tag(:div, generate_tag(:label, mandatory_text + description , {:class => "col-sm-3 control-label", :for => "generated_#{name}"}) + generate_tag(:div, text, {:class => "col-sm-#{span_size}"}), {:class => "form-group"})
       end
     end
     return text.html_safe

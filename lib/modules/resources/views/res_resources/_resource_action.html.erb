@@ -1,3 +1,8 @@
+<%
+	no_move = !((@res_sort.values + @res_where.values).reject { |c| c.blank? }.blank?) || @user!=0
+	no_copy = !((@res_sort.values + @res_where.values).reject { |c| c.blank? }.blank?)
+%>
+
 
 <div class="alert alert-info">
 	<span class="toggle_by_ref" data-reference-class='ref_ressource_action_<%=category.id%>'>		  		
@@ -8,12 +13,14 @@
 
 <div class='ref_ressource_action_<%=category.id%>'>
 	<p><big><%="Actions".trn%></big><span style="float:right;">
-    	<%if EsUser.role?('admin') || (!current_user.blank? && (category.responsible_a_id = current_user.id || category.responsible_b_id = current_user.id))%>
+		<%if EsUser.role?('admin') || EsUser.role?('user')%>
+    	<!--if EsUser.role?('admin') || (!current_user.blank? && (category.responsible_a_id == current_user.id || category.responsible_b_id == current_user.id))-->
 			<%= link_to("<i class='glyphicon glyphicon-plus'></i>".html_safe, {:action => 'action_insert_end', :id => category.id},{:remote=>true, :title => "Ajouter à la fin".trn})%>
 		<%end%>
 	</span></p>
-	<table cellpadding="4" width="100%" class='table'>
+	<table cellpadding="4" width="100%" class='table toggle_action_<%=category.id%>'>
 	  <tr>
+	    <th width="1"><%= check_box_tag("toggle_it_a_#{category.id}", "", false, {:onclick => "checkAll_by_class('toggle_it_a_#{category.id}','toggle_action_#{category.id}');"}) %></th>
 	    <th><span title='<%="Priorité".trn%>'><%="Pr".trn%></span></th>
 	    <th><span title='<%="Statut".trn%>'><%="St".trn%></span></th>
 	    <th><%="Description".trn%></th>
@@ -21,34 +28,20 @@
 	    <th><%="Quand".trn%></th>
 	    <th><%="Pour quand".trn%></th>
 	    <th><%="Ressource(s)".trn%></th>
+	    <th><%="N°".trn%></th>
 	  </tr>
-	  <%tmp_actions = category.get_actions(@user)
-	    tmp_actions.each do |action|%>
-		  <tr class="row_action" data-id="a_<%=action.id%>">
-		    <td style="background-color:<%=action.res_priority.color%>;color:#000000;text-align:center;"><span title="<%=action.res_priority.description%>"><%=action.res_priority.code%></span></td>
-		    <td style="background-color:<%=action.res_status.color%>;color:#000000;text-align:center;"><span title="<%=action.res_status.description%>"><%=action.res_status.code%></span></td>
+	  <%tmp_actions = category.get_actions(@user,{:order => @resource_order,:include => @resource_include,:join => @resource_join,:where => @resource_where})
+	    tmp_actions.each_with_index do |action,i_action|%>
+		  <tr class="row_action_hide" data-id="a_<%=action.id%>">
+		    <td><%= check_box_tag("cid_a[]", action.id, false, { :id => "cb" + i_action.to_s, :class => "toggle_it" }) %></td>
+		    <td class="row_action" style="background-color:<%=action.res_priority.color%>;color:#000000;text-align:center;"><span title="<%=action.res_priority.description%>"><%=action.res_priority.code%></span></td>
+		    <td class="row_action" style="background-color:<%=action.res_status.color%>;color:#000000;text-align:center;"><span title="<%=action.res_status.description%>"><%=action.res_status.code%></span></td>
 		    <td>
-		    	<%=truncate(action.description,:length => 60)%>
-		    	<%if EsUser.role?('admin') || (!current_user.blank? && (category.responsible_a_id = current_user.id || category.responsible_b_id = current_user.id))%>
-			    	<div id="option_action_a_<%=action.id%>_pr" style="display:none;">
-				    	<small>
-							 <%= link_to("<i class='glyphicon glyphicon-minus'></i>".html_safe, {:action => 'action_priority_down', :id => action.id},{:remote=>true, :title => "Diminuer la priorité".trn}) unless action.res_priority.previous.blank?%>
-					    	<span style="background-color:<%=action.res_priority.color%>;color:#000000;text-align:center;" title="<%=action.res_priority.description%>"><%=action.res_priority.code%></span>
-							 <%= link_to("<i class='glyphicon glyphicon-plus'></i>".html_safe, {:action => 'action_priority_up', :id => action.id},{:remote=>true, :title => "Augmenter la priorité".trn}) unless action.res_priority.next.blank?%>
-				    	</small>
-			    	</div>
-		    	<%end%>
-		    	<%if EsUser.role?('admin') || (!current_user.blank? && (category.responsible_a_id = current_user.id || category.responsible_b_id = current_user.id))%>
-			    	<div id="option_action_a_<%=action.id%>_st" style="display:none;">
-				    	<small>
-				    		<%ResStatus.order('sequence asc').each do |st|%>								 
-				    			<%= link_to("<span class='btn' style='background-color:#{st.color};color:#000000;text-align:center;'>#{st.code}</span>".html_safe, {:action => 'action_change_status', :id => action.id, :status_id => st.id},{:remote=>true, :title => st.description}) unless st.id == action.res_status_id %>
-				    		<%end%>
-				    	</small>
-			    	</div>
-		    	<%end%>
+		    	<%descr = action.description.length>60 ? action.description.gsub('"',"'") : ''%>
+		    	<span title= "<%=descr%>"><%=truncate(action.description,:length => 60)%></span>		    	
 		    	<div id="option_action_a_<%=action.id%>" style="display:none;">
-		    	<%if EsUser.role?('admin') || (!current_user.blank? && (category.responsible_a_id = current_user.id || category.responsible_b_id = current_user.id))%>
+				<%if EsUser.role?('admin') || EsUser.role?('user')%>
+		    	<!--if EsUser.role?('admin') || (!current_user.blank? && (category.responsible_a_id == current_user.id || category.responsible_b_id == current_user.id))-->
 					 <%= link_to("<i class='glyphicon glyphicon-plus'></i>".html_safe, {:action => 'action_insert_before', :id => action.id},{:remote=>true, :title => "Insérer avant".trn})%>
 					 <%= link_to("<i class='glyphicon glyphicon-pencil'></i>".html_safe, {:action => 'action_edit', :id => action.id},{:remote=>true, :title => "Modifier l'action".trn})%>
 					 
@@ -59,44 +52,87 @@
 					 <%= link_to("<i class='glyphicon glyphicon-remove-circle'></i>".html_safe, {:action => 'action_delete_with_resource', :id => action.id},{:remote=>true, :confirm =>"Voulez vous vraiment supprimer l'action et ses ressources ?".trn, :title => "Supprimer l'action et ses ressources".trn})%>
 					<%end%> 
 	
-				    <%if action.sequence > 1%>
-						 <%= link_to("<i class='glyphicon glyphicon-arrow-up'></i>".html_safe, {:action => 'action_up', :id => action.id, :user => @user},{:remote=>true, :title => "Déplacer vers le haut".trn})%>
-					<%end
-					if action.sequence < tmp_actions.count%> 
-						 <%= link_to("<i class='glyphicon glyphicon-arrow-down'></i>".html_safe, {:action => 'action_down', :id => action.id, :user => @user},{:remote=>true, :title => "Déplacer vers le bas".trn})%>
+	
+					<%unless no_move%>
+					    <%if action.sequence > 1%>
+							 <%= link_to("<i class='glyphicon glyphicon-arrow-up'></i>".html_safe, {:action => 'action_up', :id => action.id, :user => @user},{:remote=>true, :title => "Déplacer vers le haut".trn})%>
+						<%end
+						if action.sequence < tmp_actions.count%> 
+							 <%= link_to("<i class='glyphicon glyphicon-arrow-down'></i>".html_safe, {:action => 'action_down', :id => action.id, :user => @user},{:remote=>true, :title => "Déplacer vers le bas".trn})%>
+						<%end%>
 					<%end%>
-					
-				    <%= link_to("<i class='glyphicon glyphicon-copyright-mark'></i>".html_safe, {:action => 'action_copy', :id => action.id, :user => @user},{:remote=>true, :title => "Couper".trn})%>
-
-					<%if !session[:copy_action].presence.blank? && action.res_category == session[:copy_action].res_category%> 
-					    <%= link_to("<i class='glyphicon glyphicon-ok'></i>".html_safe, {:action => 'action_paste', :id => action.id, :user => @user},{:remote=>true, :title => "Déplacer '%{elem}' au dessus".trn(:elem => truncate(session[:copy_action].description,:length => 60))})%>
+					<%unless no_copy%>						
+					    <%= link_to("<i class='glyphicon glyphicon-copyright-mark'></i>".html_safe, {:action => 'action_copy', :id => action.id, :user => @user},{:remote=>true, :title => "Couper".trn})%>
+	
+						<%if !session[:copy_action].presence.blank? && action.res_category == session[:copy_action].res_category%> 
+						    <%= link_to("<i class='glyphicon glyphicon-ok'></i>".html_safe, {:action => 'action_paste', :id => action.id, :user => @user},{:remote=>true, :title => "Déplacer '%{elem}' au dessus".trn(:elem => truncate(session[:copy_action].description,:length => 60))})%>
+						<%end%>
 					<%end%>
 
+
+			    	<span id="option_action_ressource_a_<%=action.id%>" style="display:none;">
+						<%= link_to("<i class='glyphicon glyphicon-cog'></i>".html_safe, {:action => 'action_insert_resource', :id => action.id},{:remote=>true, :title => "Créer une ressource attachée à cette action".trn})%>
+			    	</span>
+
+					<%= link_to("<i class='glyphicon glyphicon-info-sign'></i>".html_safe, {:action => 'resource_comment', :id => action.id, :obj_type => 'ResAction'},{:remote=>true, :title => "Attacher un commentaire à cette action".trn})%>
 					
 		    	<%end%>
 		    	</div>		    	
+				<%if EsUser.role?('admin') || EsUser.role?('user')%>		    	
+		    	<!--if EsUser.role?('admin') || (!current_user.blank? && (category.responsible_a_id == current_user.id || category.responsible_b_id == current_user.id))-->
+			    	<div id="option_action_a_<%=action.id%>_pr" style="display:none;">
+				    	<!--small-->
+							 <!--%= link_to("<i class='glyphicon glyphicon-minus'></i>".html_safe, {:action => 'action_priority_down', :id => action.id},{:remote=>true, :title => "Diminuer la priorité".trn}) unless action.res_priority.previous.blank?%-->
+					    	<!--span style="background-color:<!--%=action.res_priority.color%>;color:#000000;text-align:center;" title="<%=action.res_priority.description%>"><%=action.res_priority.code%></span-->
+							 <!--%= link_to("<i class='glyphicon glyphicon-plus'></i>".html_safe, {:action => 'action_priority_up', :id => action.id},{:remote=>true, :title => "Augmenter la priorité".trn}) unless action.res_priority.next.blank?%-->
+				    	<!--/small-->
+				    	<small>
+				    		<%ResPriority.where(:type_priority => action.res_priority.type_priority).order('sequence asc').each do |st|%>								 
+				    			<%= link_to("<span class='btn' style='background-color:#{st.color};color:#000000;text-align:center;'>#{st.code}</span>".html_safe, {:action => 'action_change_priority', :id => action.id, :status_id => st.id},{:remote=>true, :title => st.description}) unless st.id == action.res_priority_id %>
+				    		<%end%>
+				    	</small>
+			    	</div>
+		    	<%end%>
+				<%if EsUser.role?('admin') || EsUser.role?('user')%>
+		    	<!--if EsUser.role?('admin') || (!current_user.blank? && (category.responsible_a_id == current_user.id || category.responsible_b_id == current_user.id))-->
+			    	<div id="option_action_a_<%=action.id%>_st" style="display:none;">
+				    	<small>
+				    		<%ResStatus.order('sequence asc').each do |st|%>								 
+				    			<%= link_to("<span class='btn' style='background-color:#{st.color};color:#000000;text-align:center;'>#{st.code}</span>".html_safe, {:action => 'action_change_status', :id => action.id, :status_id => st.id},{:remote=>true, :title => st.description}) unless st.id == action.res_status_id %>
+				    		<%end%>
+				    	</small>
+			    	</div>
+		    	<%end%>
 		    </td>
 		    <td><%=action.es_user ? action.es_user.complete_name : '' %></td>
 		    <td><%=action.get_start_date%></td>
 		    <td><%=action.get_end_date%></td>
 		    <td>
-		    	<%if EsUser.role?('admin') || (!current_user.blank? && (category.responsible_a_id = current_user.id || category.responsible_b_id = current_user.id))%>
+				<%if EsUser.role?('admin') || EsUser.role?('user')%>
+		    	<!--if EsUser.role?('admin') || (!current_user.blank? && (category.responsible_a_id == current_user.id || category.responsible_b_id == current_user.id))-->
 			    	<UL>
 			    	<%action.res_resources.order("sequence").each do |r| %>
 			    		<li>
 							<%= link_to("<i class='glyphicon glyphicon-remove'></i>".html_safe, {:action => 'resource_delete', :id => r.id},{:remote=>true, :confirm =>"Voulez vous vraiment supprimer cette ressource ?".trn, :title => "Supprimer la ressource".trn})%>
+					    	<%descr = r.get_description.length>40 ? r.get_description.gsub('"',"'") : ''%>
+							<%=link_to( truncate("#{r.quantity} - #{r.get_description}", :length => 40), {:action => 'resource_edit', :id => r.id},{:remote=>true, :title => descr})%>
 							<%if r.es_user_id==@user%>
 								<span title= '<%="Ma ressource".trn%>'><%="<i class='glyphicon glyphicon-flag'></i>".html_safe %></span>
 							<%end%>
-							<%=link_to( truncate("#{r.quantity} - #{r.get_description}", :length => 40), {:action => 'resource_edit', :id => r.id},{:remote=>true, :title => "Modifier cette ressource".trn})%>
 			    		</li>
 			    	<%end%>
 			        </UL>
-			    	<span id="option_action_ressource_a_<%=action.id%>" style="display:none;">
-						<%= link_to("<i class='glyphicon glyphicon-cog'></i>".html_safe, {:action => 'action_insert_resource', :id => action.id},{:remote=>true, :title => "Créer une ressource attachée à cette action".trn})%>
-			    	</span>
 		    	<%else%>
 		    		<%=action.get_resources_text%>
+		    	<%end%>
+		    </td>
+		    <td><%=action.sequence.to_i%>
+				<%if (EsUser.role?('admin') || EsUser.role?('user')) && !(action.comment_text.blank?)%>
+					<i class='glyphicon glyphicon-info-sign row_action_comment' data-id="a_<%=action.id%>"></i>
+			    	<div id="option_action_a_<%=action.id%>_comment" style="display:none;position:absolute;background-color: white;border: 1px solid black;width:50%;right:10px;z-index: 9999;">
+			    		<%=action.comment_user_date%> : <%=action.comment_text%>
+			    	</div>
+
 		    	<%end%>
 		    </td>
 		  </tr>
@@ -106,36 +142,79 @@
 
 <div class='ref_ressource_action_<%=category.id%>'>
 	<p><big><%="Ressources".trn%></big><span style="float:right;">
-		<%if EsUser.role?('admin') || (!current_user.blank? && (category.responsible_a_id = current_user.id || category.responsible_b_id = current_user.id))%>
+		<%if EsUser.role?('admin') || EsUser.role?('user')%>
+		<!--if EsUser.role?('admin') || (!current_user.blank? && (category.responsible_a_id == current_user.id || category.responsible_b_id == current_user.id))-->
 			<%= link_to("<i class='glyphicon glyphicon-plus'></i>".html_safe, {:action => 'resource_insert_end', :id => category.id},{:remote=>true, :title => "Ajouter à la fin".trn})%>
     	<%end%>
 	</span></p>
-	<table cellpadding="4" width="100%" class='table'>
+	<table cellpadding="4" width="100%" class='table toggle_ressource_<%=category.id%>'>
 	  <tr>
+	    <th width="1"><%= check_box_tag("toggle_it_r_#{category.id}", "", false, {:onclick => "checkAll_by_class('toggle_it_r_#{category.id}','toggle_ressource_#{category.id}');"}) %></th>
 	    <th><span title='<%="Priorité".trn%>'><%="Pr".trn%></span></th>
 	    <th><span title='<%="Statut".trn%>'><%="St".trn%></span></th>
 	    <th><%="Description".trn%></th>
 	    <th><%="Besoin".trn%></th>
+	    <th><%="Info".trn%></th>
 	    <th><%="Qui".trn%></th>
 	    <th><%="Quand".trn%></th>
 	    <th><%="Pour quand".trn%></th>
+	    <th><%="N°".trn%></th>
 	  </tr>
-	  <%tmp_resources = category.get_resources(@user,true) 
-	    tmp_resources.each do |resource|%>
-		  <tr class="row_action" data-id="r_<%=resource.id%>">
-		    <td style="background-color:<%=resource.res_priority.color%>;color:#000000;text-align:center;"><span title="<%=resource.res_priority.description%>"><%=resource.res_priority.code%></span></td>
-		    <td style="background-color:<%=resource.res_status.color%>;color:#000000;text-align:center;"><span title="<%=resource.res_status.description%>"><%=resource.res_status.code%></span></td>
-		    <td><%=truncate(resource.get_description,:length => 60)%> - <%=truncate(resource.res_action.description,:length => 40)%>
-		    	<%if EsUser.role?('admin') || (!current_user.blank? && (category.responsible_a_id = current_user.id || category.responsible_b_id = current_user.id))%>
+	  <%tmp_resources = category.get_resources(@user,{:include_other_user=>true,:order => @resource_order,:include => @resource_include,:join => @resource_join,:where => @resource_where}) 
+	    tmp_resources.each_with_index do |resource,i_resource|%>
+		  <tr class="row_action_hide" data-id="r_<%=resource.id%>">
+		    <td><%= check_box_tag("cid_r[]", resource.id, false, { :id => "cb" + i_resource.to_s, :class => "toggle_it" }) %></td>
+		    <td class="row_action" style="background-color:<%=resource.res_priority.color%>;color:#000000;text-align:center;"><span title="<%=resource.res_priority.description%>"><%=resource.res_priority.code%></span></td>
+		    <td class="row_action" style="background-color:<%=resource.res_status.color%>;color:#000000;text-align:center;"><span title="<%=resource.res_status.description%>"><%=resource.res_status.code%></span></td>
+		    <td>
+		    	
+		    	<%  res_descr = resource.get_description
+		    		descr_a = resource.res_action.description.length > 40 ? resource.res_action.description.gsub('"',"'") : ''
+		    		descr_r = res_descr.length > 60 ? res_descr : ''
+		    	%>
+		    	<span title= "<%=descr_r%>"><%=truncate(res_descr,:length => 60)%></span> <span title= "<%=descr_a%>" style= "font-style: italic;font-size:0.9em;">[<%=truncate(resource.res_action.description,:length => 40)%>]</span>	    	
+		    	<div id="option_action_r_<%=resource.id%>" style="display:none;">
+				<%if EsUser.role?('admin') || EsUser.role?('user')%>
+		    	<!--if EsUser.role?('admin') || (!current_user.blank? && (category.responsible_a_id == current_user.id || category.responsible_b_id == current_user.id))-->
+					 <%= link_to("<i class='glyphicon glyphicon-plus'></i>".html_safe, {:action => 'resource_insert_before', :id => resource.id},{:remote=>true, :title => "Insérer avant".trn})%>
+					 <%= link_to("<i class='glyphicon glyphicon-pencil'></i>".html_safe, {:action => 'resource_edit', :id => resource.id},{:remote=>true, :title => "Modifier la ressource".trn})%>
+					 <%= link_to("<i class='glyphicon glyphicon-remove'></i>".html_safe, {:action => 'resource_delete', :id => resource.id},{:remote=>true, :confirm =>"Voulez vous vraiment supprimer cette ressource ?".trn, :title => "Supprimer la ressource".trn})%>
+
+					<%unless no_move%>
+					    <%if resource.sequence > 1%>
+							 <%= link_to("<i class='glyphicon glyphicon-arrow-up'></i>".html_safe, {:action => 'resource_up', :id => resource.id, :user => @user},{:remote=>true, :title => "Déplacer vers le haut".trn})%>
+						<%end
+						if resource.sequence < tmp_resources.count%> 
+							 <%= link_to("<i class='glyphicon glyphicon-arrow-down'></i>".html_safe, {:action => 'resource_down', :id => resource.id, :user => @user},{:remote=>true, :title => "Déplacer vers le bas".trn})%>
+						<%end%>
+					<%end%>
+					<%unless no_copy%>						
+					    <%= link_to("<i class='glyphicon glyphicon-copyright-mark'></i>".html_safe, {:action => 'resource_copy', :id => resource.id, :user => @user},{:remote=>true, :title => "Couper".trn})%>
+	
+						<%if !session[:copy_resource].presence.blank? && resource.res_category == session[:copy_resource].res_category%> 
+						    <%= link_to("<i class='glyphicon glyphicon-ok'></i>".html_safe, {:action => 'resource_paste', :id => resource.id, :user => @user},{:remote=>true, :title => "Déplacer '%{elem}' au dessus".trn(:elem => truncate(session[:copy_resource].get_description,:length => 60))})%>
+						<%end%>
+				   <%end%>
+					<%= link_to("<i class='glyphicon glyphicon-info-sign'></i>".html_safe, {:action => 'resource_comment', :id => resource.id, :obj_type => 'ResResource'},{:remote=>true, :title => "Attacher un commentaire à cette ressource".trn})%>
+			   <%end%>
+			   </div>
+				<%if EsUser.role?('admin') || EsUser.role?('user')%>
+		    	<!--if EsUser.role?('admin') || (!current_user.blank? && (category.responsible_a_id == current_user.id || category.responsible_b_id == current_user.id))-->
 			    	<div id="option_action_r_<%=resource.id%>_pr" style="display:none;">
+				    	<!--small-->
+							 <!--%= link_to("<i class='glyphicon glyphicon-minus'></i>".html_safe, {:action => 'resource_priority_down', :id => resource.id},{:remote=>true, :title => "Diminuer la priorité".trn}) unless resource.res_priority.previous.blank?%-->
+							 <!--span style="background-color:<!--%=resource.res_priority.color%>;color:#000000;text-align:center;" title="<%=resource.res_priority.description%>"><%=resource.res_priority.code%></span-->
+							 <!--%= link_to("<i class='glyphicon glyphicon-plus'></i>".html_safe, {:action => 'resource_priority_up', :id => resource.id},{:remote=>true, :title => "Augmenter la priorité".trn}) unless resource.res_priority.next.blank?%-->
+				    	<!--/small-->
 				    	<small>
-							 <%= link_to("<i class='glyphicon glyphicon-minus'></i>".html_safe, {:action => 'resource_priority_down', :id => resource.id},{:remote=>true, :title => "Diminuer la priorité".trn}) unless resource.res_priority.previous.blank?%>
-							 <span style="background-color:<%=resource.res_priority.color%>;color:#000000;text-align:center;" title="<%=resource.res_priority.description%>"><%=resource.res_priority.code%></span>
-							 <%= link_to("<i class='glyphicon glyphicon-plus'></i>".html_safe, {:action => 'resource_priority_up', :id => resource.id},{:remote=>true, :title => "Augmenter la priorité".trn}) unless resource.res_priority.next.blank?%>
+				    		<%ResPriority.where(:type_priority => resource.res_priority.type_priority).order('sequence asc').each do |st|%>								 
+				    			<%= link_to("<span class='btn' style='background-color:#{st.color};color:#000000;text-align:center;'>#{st.code}</span>".html_safe, {:action => 'ressource_change_priority', :id => resource.id, :status_id => st.id},{:remote=>true, :title => st.description}) unless st.id == resource.res_priority_id %>
+				    		<%end%>
 				    	</small>
 			    	</div>
 				<%end%>
-		    	<%if EsUser.role?('admin') || (!current_user.blank? && (category.responsible_a_id = current_user.id || category.responsible_b_id = current_user.id))%>
+				<%if EsUser.role?('admin') || EsUser.role?('user')%>
+		    	<!--if EsUser.role?('admin') || (!current_user.blank? && (category.responsible_a_id == current_user.id || category.responsible_b_id == current_user.id))-->
 			    	<div id="option_action_r_<%=resource.id%>_st" style="display:none;">
 				    	<small>
 				    		<%ResStatus.order('sequence asc').each do |st|%>								 
@@ -144,30 +223,20 @@
 				    	</small>
 			    	</div>
 				<%end%>
-		    	<div id="option_action_r_<%=resource.id%>" style="display:none;">
-		    	<%if EsUser.role?('admin') || (!current_user.blank? && (category.responsible_a_id = current_user.id || category.responsible_b_id = current_user.id))%>
-					 <%= link_to("<i class='glyphicon glyphicon-plus'></i>".html_safe, {:action => 'resource_insert_before', :id => resource.id},{:remote=>true, :title => "Insérer avant".trn})%>
-					 <%= link_to("<i class='glyphicon glyphicon-pencil'></i>".html_safe, {:action => 'resource_edit', :id => resource.id},{:remote=>true, :title => "Modifier la ressource".trn})%>
-					 <%= link_to("<i class='glyphicon glyphicon-remove'></i>".html_safe, {:action => 'resource_delete', :id => resource.id},{:remote=>true, :confirm =>"Voulez vous vraiment supprimer cette ressource ?".trn, :title => "Supprimer la ressource".trn})%>
-				    <%if resource.sequence > 1%>
-						 <%= link_to("<i class='glyphicon glyphicon-arrow-up'></i>".html_safe, {:action => 'resource_up', :id => resource.id, :user => @user},{:remote=>true, :title => "Déplacer vers le haut".trn})%>
-					<%end
-					if resource.sequence < tmp_resources.count%> 
-						 <%= link_to("<i class='glyphicon glyphicon-arrow-down'></i>".html_safe, {:action => 'resource_down', :id => resource.id, :user => @user},{:remote=>true, :title => "Déplacer vers le bas".trn})%>
-					<%end%>
-
-				    <%= link_to("<i class='glyphicon glyphicon-copyright-mark'></i>".html_safe, {:action => 'resource_copy', :id => resource.id, :user => @user},{:remote=>true, :title => "Couper".trn})%>
-
-					<%if !session[:copy_resource].presence.blank? && resource.res_category == session[:copy_resource].res_category%> 
-					    <%= link_to("<i class='glyphicon glyphicon-ok'></i>".html_safe, {:action => 'resource_paste', :id => resource.id, :user => @user},{:remote=>true, :title => "Déplacer '%{elem}' au dessus".trn(:elem => truncate(session[:copy_resource].get_description,:length => 60))})%>
-					<%end%>
-			   <%end%>
-			   </div>
 		    </td>
-		    <td><%=resource.quantity_text%></td>
+		    <td><%=resource.quantity%></td> 
+		    <td><%=resource.information%></td> 
 		    <td><%=resource.es_user ? resource.es_user.complete_name : '' %></td>
 		    <td><%=resource.get_start_date%></td>
 		    <td><%=resource.get_end_date%></td>
+		    <td><%=resource.sequence.to_i%>
+				<%if (EsUser.role?('admin') || EsUser.role?('user')) && !(resource.comment_text.blank?)%>
+					<i class='glyphicon glyphicon-info-sign row_action_comment' data-id="r_<%=resource.id%>"></i>
+			    	<div id="option_action_r_<%=resource.id%>_comment" style="display:none;position:absolute;background-color: white;border: 1px solid black;width:50%;right:10px;z-index: 9999;">
+			    		<%=resource.comment_user_date%> : <%=resource.comment_text%>
+			    	</div>
+		    	<%end%>
+		    </td>
 		  </tr>
 	  <%end%>
 	</table>
@@ -176,16 +245,32 @@
 
 <script>
 	$(document).ready(function() {
+		$('.row_action_comment').hover(	  	  
+		  function () {
+			temp_id = "#option_action_" + $(this).data("id") + "_comment";
+		    $(temp_id).show();
+		  }, 
+		  function () {
+		  }
+		);	
+		
 		$('.row_action').hover(	  	  
 		  function () {
-			temp_id = "#option_action_" + $(this).data("id");
+			temp_id = "#option_action_" + $(this).parent().data("id");
 		    $(temp_id).show();
-			temp_id = "#option_action_ressource_" + $(this).data("id");
+			temp_id = "#option_action_ressource_" + $(this).parent().data("id");
 		    $(temp_id).show();
-			temp_id = "#option_action_" + $(this).data("id") + "_pr";
+			temp_id = "#option_action_" + $(this).parent().data("id") + "_pr";
 		    $(temp_id).show();
-			temp_id = "#option_action_" + $(this).data("id") + "_st";
+			temp_id = "#option_action_" + $(this).parent().data("id") + "_st";
 		    $(temp_id).show();
+		  }, 
+		  function () {
+		  }
+		);	
+		
+		$('.row_action_hide').hover(	  	  
+		  function () {
 		  }, 
 		  function () {
 			temp_id = "#option_action_" + $(this).data("id");
@@ -195,6 +280,8 @@
 			temp_id = "#option_action_" + $(this).data("id") + "_pr";
 		    $(temp_id).hide();
 			temp_id = "#option_action_" + $(this).data("id") + "_st";
+		    $(temp_id).hide();
+			temp_id = "#option_action_" + $(this).data("id") + "_comment";
 		    $(temp_id).hide();
 		  }
 		);	

@@ -1,12 +1,12 @@
 <% @title = "Liaison d'actions à une tâche".trn %>
 
 <div class="center-menu">
-    <h2><%= image_tag("appli/setup_48.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
+    <h2><%= image_tag("appli/48/setup.png", {:alt => @title, :align => "middle"}) %><%= @title %></h2>
 	
 	<ul>
-		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Tâches".trn,:image => "appli/back_32.png", :action => "list"}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Tâches".trn,:image => "appli/32/arrow_left.png", :action => "list"}%></li>
 		<%if @postit_task.postit_list%>
-			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Liste attachée".trn,:image => "appli/back_32.png", :controller => "postit_lists", :action => "link_task", :id => @postit_task.postit_list_id}%></li>
+			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Liste attachée".trn,:image => "appli/32/arrow_left.png", :controller => "postit_lists", :action => "link_task", :id => @postit_task.postit_list_id}%></li>
 		<%end%>
 	</ul>
 	

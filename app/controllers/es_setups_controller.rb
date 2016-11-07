@@ -102,7 +102,7 @@ class EsSetupsController < ApplicationController
     csv_string = CSV.generate({:col_sep => ';', :encoding => "ISO-8859-15" }) do |csv|
        csv << ["Chemin".trn,"Nom".trn,"Valeur".trn,"Type".trn, "Lecture seule".trn]
        setups.each do |t|
-          csv << [t.path,t.name,t.value,t.type_data,(t.read_only ? 'V' : '')]
+          csv << [t.path,t.name,t.value,t.type_data,(t.read_only=='Y' ? 'V' : '')]
         end
     end
     send_data Iconv.conv('iso-8859-1//IGNORE', 'utf-8', csv_string), :filename => file_name, :disposition => 'attachment', :type => 'text/csv; charset=iso-8859-1; header=present'

@@ -105,6 +105,7 @@ private
   def get_image_list(options)
     image_list = EsMediaFile.find(:first,:conditions => ["name=? and media_type = 'image_list' and parent_id = 0",options['code_image_list'].presence||''])
     @image_list = (!image_list.blank? && image_list.children.size> 0) ? image_list.children : nil 
+    @image_list_options = options
     get_template_part("image_list","easy_generates",true)      
   end
 
@@ -133,6 +134,25 @@ private
       @js_file = file_name[public_dir.length..-1] if File.file?(file_name) && file_name.starts_with?(public_dir)
     end
     get_template_part("js_file","easy_generates",true)
+  end
+
+  def get_login_bar(options)
+    @option_subscribe       = options['option_subscribe'].presence||'N'
+    @option_lost_psw        = options['option_lost_psw'].presence||'N'
+    @option_connect         = options['option_connect'].presence||'N'
+    @option_update_profile  = options['option_update_profile'].presence||'N'
+    @option_update_psw      = options['option_update_psw'].presence||'N'
+    @option_update_mail     = options['option_update_mail'].presence||'N'
+    @option_disconnect      = options['option_disconnect'].presence||'N'
+    @option_who_is          = options['option_who_is'].presence||'N'
+    get_template_part("part_login","easy_generates",true)
+  end
+
+  def get_system_part(options)
+    @option_active_language = options['option_active_language'].presence||'N'
+    @option_active_site     = options['option_active_site'].presence||'N'
+    @option_active_version  = options['option_active_version'].presence||'N'
+    get_template_part("part_system","easy_generates",true)
   end
 
 end

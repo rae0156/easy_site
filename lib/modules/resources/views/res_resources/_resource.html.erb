@@ -1,5 +1,10 @@
-<% 
-	if @year.blank?
+<%
+
+	message_lock = ResResource.get_message_lock
+ 
+ 	if !message_lock.blank?
+		@title 		= message_lock
+	elsif @year.blank?
 		@title 		= "Veuillez choisir une année de ressources".trn
 	else
 		@title 		= "Ressources pour l'année %{year}".trn(:year => @year)
@@ -13,55 +18,68 @@
 	<div class="clearer"></div>
 </div>
 
-<!-- Error messages -->	
-<div id="message_ajax">
-	  <%= render :partial => 'layouts/part_message_ajax' %>
-</div>
-
-<%= form_tag({}, { :name => 'resource_form',:id => 'resource_form'}) do%>
+<%if message_lock.blank?%>
 
 
-	<div id="resource_filter_div">
-	  <%= render :partial => 'resource_filter', :locals => {:year_eval => @year} %>
+	<!-- Error messages -->	
+	<div id="message_ajax">
+		  <%= render :partial => 'layouts/part_message_ajax' %>
 	</div>
 	
-	<%@res_categories.each do |cat|
-		if @res_categories.size == 1%>
-			<div id="resource_desscription_div">
-			  <%= render :partial => 'resource_description', :locals => {:category => cat} %>
-			</div>
-		<%end%>
-
-		<%if @res_categories.size == 1%>
-			<div id="resource_eval_div">
-			  <%= render :partial => 'resource_eval', :locals => {:category => cat,:year_eval => @year} %>
-			</div>
-		<%end%>
-
-		<div id="resource_action_div">
-		  <%= render :partial => 'resource_action', :locals => {:category => cat} %>
-		</div>
-
-		<%if @res_categories.size == 1
-			cat.get_eval_years.each do |year|
-				if year != @year.to_i %>
-					<div id="resource_eval_div">
-					  <%= render :partial => 'resource_eval', :locals => {:category => cat,:year_eval => year} %>
-					</div>
-				<%end
-			end
-		end%>
-	<%end unless @res_categories.blank?%>
+	<%= form_tag({}, { :name => 'resource_form',:id => 'resource_form'}) do%>
 	
+	
+		<div id="resource_filter_div">
+		  <%= render :partial => 'resource_filter', :locals => {:year_eval => @year} %>
+		</div>
+		
+		<%if @category > -1%>
+			<div id="resource_tool_div">
+			  <%= render :partial => 'resource_tool' %>
+			</div>
+		<%end%>
+		
+		<%@res_categories.each do |cat|%>
+			
+			<%if @category == -1%>
+				<h4 class="bg-primary eval_title_div" style="text-align: center;"><%=cat.description%></h4>
+			<%end%>
 
-
-
+			<%if @res_categories.size == 1 || @category == -1%>
+				<div id="resource_description_div" class="resource_description_div">
+				  <%= render :partial => 'resource_description', :locals => {:category => cat} %>
+				</div>
+			<%end%>
+	
+			<%if @category > -1%>
+				<div id="resource_action_div" class="resource_action_div">
+				  <%= render :partial => 'resource_action', :locals => {:category => cat} %>
+				</div>
+			<%end%>	
+			<%if @res_categories.size == 1 || @category == -1%>
+				<div id="resource_eval_div" class="resource_eval_div">
+				  <%= render :partial => 'resource_eval', :locals => {:category => cat,:year_eval => @year} %>
+				</div>
+			<%end%>
+	
+			<%if @res_categories.size == 1 || @category == -1
+				cat.get_eval_years.each do |year|
+					if year != @year.to_i %>
+						<div id="resource_eval_div" class="resource_eval_div">
+						  <%= render :partial => 'resource_eval', :locals => {:category => cat,:year_eval => year} %>
+						</div>
+					<%end
+				end
+			end%>
+		<%end unless @res_categories.blank?%>
+		
+	<% end %>
 <% end %>
 
 <script>
 	init_toggle_by_ref();
-	$('[title]').tooltip({
-	    placement: "right"
+	$('#resource_form [title]').tooltip({
+	    placement: "top"
     });
 
 

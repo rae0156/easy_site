@@ -27,6 +27,7 @@
 //= require filepicker.js
 //= require linkpicker.js
 //= require postit
+//= require select2.min.js
 //= require_tree ./treeview
 // require_tree .
 
@@ -40,6 +41,12 @@ function checkAll(form_name) {
     cb.checked = c;
     i ++;
   }
+}
+
+function checkAll_by_class(toggle_name,class_name) {
+  $('.' + class_name + ' .toggle_it').each(function() {       		
+    $(this).prop('checked', $('#' + toggle_name).is(':checked'));
+  }); 
 }
 
 // Place your application-specific JavaScript functions and classes here
@@ -355,12 +362,22 @@ function init_inputmask() {
 }
 
 
+function init_autocompletion() {
+	$( document ).ready(function() {
+		$(".auto_completion").select2();
+	});
+}
+
 
 function init_tree_view_file() {
 	$(document).ready( function() {
-		$("#tree_view_file").hide();
-		$("#tree_view_file").treeview();
-		$("#tree_view_file").show();
+		tf = $("#tree_view_file");
+		tf.hide();
+    	if (tf.hasClass("collapsed_true"))
+			tf.treeview({collapsed: true});
+		else
+			tf.treeview();
+		tf.show();
 	} );
 }
 
@@ -382,6 +399,8 @@ function init_toggle_by_ref() {
         }); 
 		
         $(".init_hide").hide(); 
+		$(".init_close").trigger( "click" );
+
 	});
 };
 

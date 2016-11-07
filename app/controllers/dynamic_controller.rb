@@ -295,6 +295,70 @@ class DynamicController < ApplicationController
     render 'shared/dynamic/show_setup'
   end
 
+  def copy_item
+    cb_copy(params[:model_name],params[:id],params[:label])
+    respond_to do |format|
+      format.js do 
+        init_info_for_list(session[:parent_id])
+        conditions = DynamicSearch.new(@setup_controller[:model],session[:conditions]).build_conditions
+        @instances = conditions.includes(session[:sort][1]).order(session[:sort][0]).page(params[:page])
+        @element_id, @partial = 'dynamic_list_div', 'shared/dynamic/list'
+        render 'shared/replace_content'
+      end
+    end
+  end
+
+  def cancel_copy_item
+    cb_paste(params[:model_name])
+    respond_to do |format|
+      format.js do 
+        init_info_for_list(session[:parent_id])
+        conditions = DynamicSearch.new(@setup_controller[:model],session[:conditions]).build_conditions
+        @instances = conditions.includes(session[:sort][1]).order(session[:sort][0]).page(params[:page])
+        @element_id, @partial = 'dynamic_list_div', 'shared/dynamic/list'
+        render 'shared/replace_content'
+      end
+    end
+  end
+
+  def paste_item
+    
+    copy_from_id  = cb_get(params[:model_name])||0
+    copy_to_id    = params[:copy_to_id]||0
+    elem_from = @setup_controller[:model].find_by_id(copy_from_id)
+    elem_to   = @setup_controller[:model].find_by_id(copy_to_id)
+    
+    if elem_from && elem_to && @setup_controller[:parent_exists]
+      path_id_from = get_path_id(copy_from_id).join("/")
+      path_id_to   = get_path_id(copy_to_id).join("/")
+      if path_id_to.starts_with?(path_id_from)      
+        flash[:error] = "L'élément ne peut pas être coller à cet endroit.".trn
+      else
+        cb_paste(params[:model_name]) # pour le supprimer
+        elem_from.update_attribute('parent_id',copy_to_id)
+        if @setup_controller[:sequence_exists]
+          elem_from.update_attribute('sequence',999999999)
+          initial_sequence_for(copy_to_id) 
+          initial_sequence_for(copy_from_id)
+        end
+      end
+    else
+      flash[:error] = "Impossible de coller l'élément, car l'identification a échouée.".trn
+    end
+    
+    #redirect_to :action => "list",:page=> params[:page]
+    
+    respond_to do |format|
+      format.js do 
+        init_info_for_list(session[:parent_id])
+        conditions = DynamicSearch.new(@setup_controller[:model],session[:conditions]).build_conditions
+        @instances = conditions.includes(session[:sort][1]).order(session[:sort][0]).page(params[:page])
+        @element_id, @partial = ['dynamic_list_div', 'part_message_div'], ['shared/dynamic/list','layouts/part_message']
+        render 'shared/replace_content'
+      end
+    end
+  end
+
   #move down
   def down
     order = @instance.sequence
@@ -469,9 +533,9 @@ class DynamicController < ApplicationController
       back_to_parent = @setup_controller[:parent_exists] && tmp.ancestors.count > 0 ? (tmp.ancestors[0].children.count > 1 ? tmp.parent_id : tmp.ancestors[0].parent_id) : ""      
       
       if @setup_controller[:readonly_exists] && tmp["read_only"]=='Y'
-        tmp_element_error.errors.add(:base, "La suppresison de '%{element_dynamique}' ne peut être faite, cet élément est en lecture seule.".trn(:element_dynamique => @setup_controller[:model_name].singularize))
+        tmp_element_error.errors.add(:base, "La suppression de '%{element_dynamique}' ne peut être faite, cet élément est en lecture seule.".trn(:element_dynamique => @setup_controller[:model_name].singularize))
       elsif !@setup_controller[:delete_if_used] && !detect_association(@instance,['audits']).blank?
-        tmp_element_error.errors.add(:base, "La suppresison de '%{element_dynamique}' ne peut être faite, car une ou plusieurs liaisons existent.".trn(:element_dynamique => @setup_controller[:model_name].singularize))
+        tmp_element_error.errors.add(:base, "La suppression de '%{element_dynamique}' ne peut être faite, car une ou plusieurs liaisons existent.".trn(:element_dynamique => @setup_controller[:model_name].singularize))
       elsif check_children_before_delete(tmp) || !tmp.destroy
         tmp.errors.full_messages.each do |tmp_error| 
           tmp_element_error.errors.add(:base, "'#{@setup_controller[:instance_name]} - #{tmp.name}' : #{tmp_error}")
@@ -719,7 +783,6 @@ private
  
   end
     
-
   def init_model_level
     @current_level_model=[]
     @current_level=0
@@ -922,7 +985,7 @@ private
     session[:back_controller] = params[:controller]
     session[:back_action]     = params[:action]
     session[:back_id]         = params[:id]
-    session[:back_params]     = params.except(:controller, :action, :id)
+    session[:back_params]     = params.except(:controller, :action, :id,:authenticity_token,:utf8,:commit, :index_page)
   end
 
   def get_old_ancestor(parent_id)
@@ -951,6 +1014,18 @@ private
         @breadcrumb = nil
       end
     end
+  end  
+
+  def get_path_id(parent_id)
+    path = [0]
+    parent = @setup_controller[:model].find_by_id(parent_id)
+    if parent
+      parent.ancestors.reverse.each do |elem|
+        path << elem.id
+      end 
+      path << parent.id
+    end
+    return path
   end  
 
   

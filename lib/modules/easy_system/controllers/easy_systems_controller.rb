@@ -65,4 +65,11 @@ class EasySystemsController < ApplicationController
     redirect_to :controller => "es_users", :action => "new_user"
   end
 
+  def user_test_mail
+    redirect_to :controller => "es_users", :action => "test_mail"
+  end
+
+  def cancel_pub
+    redirect_to :controller => "admins", :action => "cancel_pub"
+  end
 end

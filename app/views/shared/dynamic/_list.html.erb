@@ -1,6 +1,13 @@
 <%if @setup_controller[:parent_exists] %>
 	<div>
-		<p><%=@parent_info%><p>
+		<p>
+			<%=@parent_info%>
+			<%tmp_parent_id = @parent ? @parent.id : 0%>
+			<%if label = cb_exist?(@setup_controller[:model].to_s)%>
+				<%= link_to "<i class='fa fa-paste'></i>".html_safe,  {:action => 'paste_item', :copy_to_id => tmp_parent_id, :model_name => @setup_controller[:model].to_s}, {:remote => true, :title => "Coller '%{name}' à cet endroit".trn(:name => label)} %>
+				<%= link_to "<i class='fa fa-close'></i>".html_safe,  {:action => 'cancel_copy_item', :model_name => @setup_controller[:model].to_s}, {:remote => true, :title => "Annuler la copie de '%{name}'".trn(:name => label)} %>
+			<%end%>
+		<p>
 		<%=generate_breadcrumb(*@breadcrumb).html_safe%>
 	</div>
 <%end%>

@@ -7,9 +7,14 @@
   </td>
   <td>
   	<%actif=EsModule.activated(list_item.module_name) %>
-	<%= image_tag(actif ? "appli/ok_32.png" : "appli/cancel_32.png",
+	<%= image_tag(actif ? "appli/32/ok.png" : "appli/32/nok.png",
 						    {:alt => "", :align => "middle", :border => "0",
 						    :class => "app_tooltip", :title => actif ? "Module actif".trn : "Module inactif".trn, "data-placement" => "left"}) %>  
   </td>
+  <td><%= link_to(image_tag("appli/32/execute.png",
+						    {:alt => "", :align => "middle", :border => "0",
+						    :class => "app_tooltip", :title => "Recharger le module '%{name}'".trn(:name => list_item.module_name), "data-placement" => "left"}), 
+							{:controller => "admins", :action => "reload_module", :name => list_item.module_name},
+							:confirm =>"Voulez vous vraiment recharger le module '%{name}' ?".trn(:name => list_item.module_name)) %></td>    
   
 </tr>

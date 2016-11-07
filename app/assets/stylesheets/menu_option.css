@@ -1,0 +1,22 @@
+/***************************/
+/* options du module Menus */
+/***************************/
+
+.menuround > .dropdown-menu, .nav-tabs.menuround {
+  -webkit-border-radius: 20px;
+     -moz-border-radius: 20px;
+          border-radius: 20px;
+}
+
+.menushadow > .dropdown-menu, .nav-tabs.menushadow {
+          box-shadow: 7px 10px 10px #555;
+}
+
+.menutextshadow > .dropdown-menu, .nav-tabs.menutextshadow {
+          text-shadow: 2px 2px 4px #000;
+}
+
+.menuborder > .dropdown-menu, .nav-tabs.menuborder {
+          border: 1px black solid;
+}
+

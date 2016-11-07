@@ -3,7 +3,7 @@
   	<%= link_to list_item.name, :controller => 'es_templates', :action => 'edit', :id => list_item.id%>
 	<%if list_item.name == Rails.application.config.current_template %>
 		&nbsp;
-		<%= image_tag("appli/ok_32.png",
+		<%= image_tag("appli/32/ok.png",
 							    {:alt => "", :align => "middle", :border => "0",
 							    :class => "app_tooltip", :title => "Template en cours d'utilisation".trn, "data-placement" => "left"}) %>  
 	<%end%>				
@@ -17,11 +17,11 @@
   <td>
 	
 	<%if list_item.name == Rails.application.config.current_template%>
-		<%= image_tag(list_item.validated == 'N' ? "appli/cancel_32.png" : "appli/ok_32.png",
+		<%= image_tag(list_item.validated == 'N' ? "appli/32/nok.png" : "appli/32/ok.png",
 							    {:alt => "", :align => "middle", :border => "0",
 							    :class => "app_tooltip", :title => list_item.validated == 'Y' ? "Template validé".trn : "Template non validé".trn, "data-placement" => "left"}) %>  
 	<%else%>
-		<%image = image_tag(list_item.validated == 'N' ? "appli/cancel_32.png" : "appli/ok_32.png",
+		<%image = image_tag(list_item.validated == 'N' ? "appli/32/nok.png" : "appli/32/ok.png",
 							    {:alt => "", :align => "middle", :border => "0",
 							    :class => "app_tooltip", :title => list_item.validated == 'N' ? "Cliquer pour valider".trn : "Cliquer pour dévalider".trn, "data-placement" => "left"}) %>  
 		<%= link_to(image.html_safe, 

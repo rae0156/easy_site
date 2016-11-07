@@ -11,10 +11,12 @@
 			</td>
 		<%end%>
 		<td rowspan="2">
-			<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-plus-sign'></i>", 
-																		:action => "add_line", :id => @template.id,
-																		:form => "template_form_line",
-																		:html_option => {:title =>"Ajouter cette ligne au template".trn}}%>
+		  	<div class='btn btn-default'>
+				<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-plus-sign'></i>", 
+																			:action => "add_line", :id => @template.id,
+																			:form => "template_form_line",
+																			:html_option => {:title =>"Ajouter cette ligne au template".trn}}%>
+			</div>
 		</td>
 	</tr>
 	<tr>

@@ -53,6 +53,8 @@ gem 'easy_site_tacti_log', '0.0.1'
 
 gem "nokogiri", '1.5.0'
 
+gem "mini_magick", '4.5.1'
+
 #gem "rails3-jquery-autocomplete"
 
 # To use ActiveModel has_secure_password

@@ -44,6 +44,15 @@ controllers:
           description: Menu vertical
           params:
             code_menu: <<get-Y-Code du menu verical-EsMenu,get_code_menu_vertical>>
+            class_menu_menuround: "<<boolean-Y-Option : Arrondir les angles>>"
+            class_menu_menushadow: "<<boolean-Y-Option : Ombre du menu>>"
+            class_menu_menutextshadow: "<<boolean-Y-Option : Ombre du texte>>"
+            class_menu_menuborder: "<<boolean-Y-Option : Bordure>>"
+            class_menu_menubordercolor:  <<color-Y-couleur de la bordure>>
+            class_menu_menubordersize:  <<integer-Y-taille de la bordure en px>>            
+            class_menu_menugradient:  <<list-Y-Mode de dégradé-,linear_top,linear_right,linear_top_right,radial_ellipse,radial_closest,opacity,color>>
+            class_menu_menugradientcolorfrom:  <<color-Y-couleur de dégradé 1>>
+            class_menu_menugradientcolorto:  <<color-Y-couleur de dégradé 2>>
         get_menu_sheet: 
           description: Menu feuille
           params:
@@ -52,3 +61,12 @@ controllers:
           description: Menu horizontal
           params:
             code_menu: <<get-Y-Code du menu horizontal-EsMenu,get_code_menu_horizontal>>
+            class_menu_menuround: "<<boolean-Y-Option : Arrondir les angles>>"
+            class_menu_menushadow: "<<boolean-Y-Option : Ombre du menu>>"
+            class_menu_menutextshadow: "<<boolean-Y-Option : Ombre du texte>>"
+            class_menu_menuborder: "<<boolean-Y-Option : Bordure>>"
+            class_menu_menubordercolor:  <<color-Y-couleur de la bordure>>
+            class_menu_menubordersize:  <<integer-Y-taille de la bordure en px>>            
+            class_menu_menugradient:  <<list-Y-Mode de dégradé-,linear_top,linear_right,linear_top_right,radial_ellipse,radial_closest,opacity,color>>
+            class_menu_menugradientcolorfrom:  <<color-Y-couleur de dégradé 1>>
+            class_menu_menugradientcolorto:  <<color-Y-couleur de dégradé 2>>

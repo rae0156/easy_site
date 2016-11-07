@@ -200,6 +200,7 @@ class EsUsersController < ApplicationController
 
   def logout
     self.current_user = nil
+    cb_clear
     reset_session
     flash[:notice] = "L'utilisateur a été déconnecté".trn "."
     redirect_to :controller => :sites, :action => :index
@@ -275,7 +276,7 @@ class EsUsersController < ApplicationController
       @user.update_attribute("activemail", generate_activation_code(16))
       begin 
         UserMailer.mail_change_instructions(@user, request.protocol + request.host_with_port).deliver
-        UserMailer.mail_change_instructions(@user).deliver
+        #UserMailer.mail_change_instructions(@user).deliver
         flash[:notice] = "La demande de changement de mail '%{mail}' est enregistrée. Un mail vous a été envoyé.".trn(:mail => @user.newmail)
       rescue Exception => e 
         flash[:error] = "Une erreur est apparue lors de l'envoie de mail.".trn
@@ -341,6 +342,22 @@ class EsUsersController < ApplicationController
       flash[:error] = "Aucun utilisateur ne correspond à ce mail.".trn
       render :action  => 'password_lost'
     end
+  end
+
+  def test_mail
+      user = current_user   
+      unless user.blank?
+        begin 
+          mail_from = "no-reply@" + EsSetup.get_setup("site_web")
+          UserMailer.send_message(mail_from, user.mail).deliver
+          flash[:notice] = "'%{mail_from}' a envoyé un mail de test à l'adresse '%{mail_to}'.".trn(:mail_from => mail_from, :mail_to => user.mail)
+        rescue Exception => e 
+          flash[:error] = "Une erreur est apparue lors de l'envoie de mail.".trn
+        end    
+      else
+        flash[:error] = "Aucun utilisateur n'est connecté.".trn
+      end
+      redirect_to :controller => :sites, :action => :index    
   end
 
 private

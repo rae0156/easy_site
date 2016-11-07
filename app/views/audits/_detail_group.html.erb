@@ -7,7 +7,7 @@
 	%>
 	<tr>  		
 	  <td><%= h(detail_group.created_at.strftime('%Y-%m-%d %H:%M:%S')) -%></td>
-	  <td><%= h(EsUser.find(detail_group.user_id).cleaned_long_name) if detail_group.es_user	-%></td>
+	  <td><%= h(EsUser.find(detail_group.user_id).complete_name) if detail_group.es_user	-%></td>
 	  <td><%= h(detail_group.action) 				-%></td>
 	  <td><%= h(audit_dev_type)					    -%></td>
 	  <td><%= h(audit_dev_obj)  					-%></td>

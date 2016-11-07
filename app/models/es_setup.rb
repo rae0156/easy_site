@@ -36,6 +36,15 @@ class EsSetup < ActiveRecord::Base
     return (tmp_setup.blank? || tmp_setup.value.nil?) ? default : tmp_setup.value
   end
 
+  def self.set_setup(setup_name,value="")
+    tmp_setup = self.find(:first, :conditions => ["name = ?", setup_name] )
+    unless tmp_setup
+      self.create(:value => value, :path => "resource/paramétrage", :name => setup_name, :type_data => "text", :read_only => "N")
+    else
+      tmp_setup.update_attribute("value",value)
+    end
+  end
+
   def validate
     tmp_err = false
     tmp_complement = ""

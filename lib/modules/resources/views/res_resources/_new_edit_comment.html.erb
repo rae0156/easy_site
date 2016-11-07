@@ -1,0 +1,42 @@
+<style type="text/css">
+	hr {  margin-top: 1px;  margin-bottom: 1px;}
+	.form-group {  margin-bottom: 2px;}
+</style>
+
+<div id='new_edit_comment' class="property_windows" style="width:75%;">
+	
+	<% 
+		@title 		= "Attacher un commentaire".trn 
+	%>
+	
+	<div class="center-menu">
+	    <h2><%= @title %></h2>
+		<ul>
+			<li class="btn btn-default btn_save"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/32/save_data.png", :action => "comment_save", :id => @object.id, :param_goto => {:year => @year,:obj_type => @object.class.name},  :form => "resource_comment", :remote => true}%></li>
+			<!--li class="btn btn-default"><!--%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour".trn,:image => "appli/32/arrow_left.png", :action => "show_resources", :html_option => {:remote => true}}%></li-->
+		</ul>
+		<div class="clearer"></div>
+	</div>
+	
+	<%= form_tag({}, { :name => 'resource_comment', :id => 'resource_comment', :class => 'form-horizontal' }) do%>
+		
+		<!-- Error messages -->
+		<%= errors_for(@object) %>
+		
+		<div>
+		  	<%= render :partial => "form_comment" %>
+		</div>
+	<% end %>
+
+</div>
+
+<script>
+	init_one_property('new_edit_comment');
+	
+	$(document).ready(function() {
+		$( ".btn_save" ).click(function() {
+			$('#new_edit_comment').hide();
+		});	
+	});
+</script>
+

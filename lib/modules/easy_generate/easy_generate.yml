@@ -4,7 +4,7 @@ interface:
     - EasyGeneratesController
   mailers: / 
 
-version: 0.0.0.11
+version: 0.0.0.13
 
 activated: Y<<boolean-N-Module actif>>
 
@@ -68,6 +68,14 @@ controllers:
           description: Liste d'images
           params:
             code_image_list: <<get-Y-Code de la liste d'images-EsMediaFile,get_code_imagelist>>
+            background_color: <<color-Y-Couleur de fond>>
+            link_available: "<<boolean-Y-Ouverture sur 'clique'>>"
+            name_available: "<<boolean-Y-Affichage du nom>>"
+            description_available: "<<boolean-Y-Affichage de la description>>"
+            border_available: "<<boolean-Y-Bordure>>"
+            border_color: <<color-Y-Couleur de bordure>>
+            image_size: <<get-Y-Taille de l'image-EsMediaFile,get_image_size>>
+            
         get_video: 
           description: Video
           params:
@@ -80,3 +88,20 @@ controllers:
           description: Fichier JavaScript
           params:
             file_name: <<get-Y-Code du fichier JavaScript-EsMediaFile,get_code_js>>
+        get_login_bar: 
+          description: Barre de connexion
+          params:
+            option_subscribe: "<<boolean-Y-Option : inscription>>"
+            option_lost_psw: "<<boolean-Y-Option : mot de passe oublié>>"
+            option_connect: "<<boolean-Y-Option : connexion>>"
+            option_update_profile: "<<boolean-Y-Option : modification du profile>>"
+            option_update_psw: "<<boolean-Y-Option : modification du mot de passe>>"
+            option_update_mail: "<<boolean-Y-Option : modification du mail>>"
+            option_disconnect: "<<boolean-Y-Option : déconnexion>>"
+            option_who_is: "<<boolean-Y-Option : qui est connecté>>"
+        get_system_part: 
+          description: Parties systèmes (version, language, site, etc..)
+          params:
+            option_active_language: "<<boolean-Y-Option : Gestion des langues>>"
+            option_active_site: "<<boolean-Y-Option : Gestion des sites>>"
+            option_active_version: "<<boolean-Y-Option : Afficher la version>>"

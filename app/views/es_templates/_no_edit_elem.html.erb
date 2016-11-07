@@ -1,13 +1,10 @@
-	  <p><%= "Il n'est pas possible de modifier la partie '%{name}', car il est protégé.".trn(:name => @part.name) %></p>
-	  <div class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour au dessin".trn,:image => "appli/back_32.png", :action => "#",:html_option => {:id => "back_design"}}%></div>
+	  <p><%= "Il n'est pas possible de modifier la partie '%{name}', car elle est protégée.".trn(:name => @part.name) %></p> 
+	  <!--div class="btn btn-default"><!--%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour au dessin".trn,:fa => "fa-long-arrow-left", :action => "#",:html_option => {:id => "back_design"}}%></div-->
 
 <script>
 
 	$(document).ready(function() {
 		$( "#back_design" ).click(function() {
-			//ne pas supprimer
-			tinyMCE.triggerSave();
-			
 			$.ajax({
 		        url: "/es_templates/refresh_design/<%=@template.id%>",
 		        dataType: 'script'

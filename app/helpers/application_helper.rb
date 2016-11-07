@@ -2,6 +2,8 @@
 
 module ApplicationHelper
 
+  include ClipboardController
+
   def generate_module_part(controller_name,part_name,content_detail_id)
     result = ""
     begin
@@ -133,25 +135,38 @@ module ApplicationHelper
     return html_text.html_safe
   end
 
-  def generate_image_list(collection)
-    tmp_list = generate_list(collection,{:UL => {:class => "thumbnails"},:LI => {:class => "col-md-2"}})
+  def generate_image_list(collection, options={})
+    tmp_list = generate_list(collection,{:UL => {:class => "thumbnails"},:LI => {:class => "col-md-#{(options['image_size'].presence||'0').to_i * 2}"}})
     html_text=tmp_list[0]
-    
     tmp_list[1..-1].each do |id_image|
       element = collection[0].class.find(id_image)
       
+      tmp_name_descr = ""
+      tmp_name_descr += generate_tag(:H3, "[title]")      if (options['name_available'].presence||'N') == 'Y'
+      tmp_name_descr += generate_tag(:P, "[description]") if (options['description_available'].presence||'N') == 'Y'
+      tmp_image_style = ""
+      tmp_image_style += ("border: 1px solid #{(options['border_color'].presence||'black')};") if (options['border_available'].presence||'N') == 'Y'
+      tmp_image_style += "background-color: #{options['background_color']};" unless (options['background_color'].presence||'').blank?
 
       if !element.path.blank?
         url = ((element.path.downcase.starts_with?('http://') || element.path.downcase.starts_with?('https://')) ? '' : "http://") + element.path.to_s
         if test_url(url)
-          element_html = substitute_string(generate_tag(:A, generate_tag(:IMG, "", {:src=>url}) + generate_tag(:H3, "[title]") + generate_tag(:P, "[description]"), {:href=>"#", :class=>"thumbnail"}),element,["title","description"])
+          element_html = generate_tag(:IMG, "", {:src=>url})
+          if (options['link_available'].presence||'N') == 'Y'
+            element_html=generate_tag(:A,element_html, {:href=>url, :target => "_blank"}) 
+          end
+          element_html=generate_tag(:DIV,element_html + substitute_string(tmp_name_descr,element,["title","description"]), {:class=>"thumbnail", :style => tmp_image_style}) 
         else
           element_html = generate_tag(:DIV, "Le lien image '%{url}' n'est pas correcte".trn(:url => url)) 
         end
       elsif !element.reference.blank?
         if File.file?(File.join(Rails.root,element.reference))
           tmp_file = element.reference.downcase.starts_with?('public/') ? element.reference[6..-1] : element.reference
-          element_html = substitute_string(generate_tag(:A, generate_tag(:IMG, "", {:src=>tmp_file}) + generate_tag(:H3, "[title]") + generate_tag(:P, "[description]"), {:href=>"#", :class=>"thumbnail"}),element,["title","description"])
+          element_html = generate_tag(:IMG, "", {:src=>tmp_file})
+          if (options['link_available'].presence||'N') == 'Y'
+            element_html=generate_tag(:A,element_html, {:href=>tmp_file, :target => "_blank"}) 
+          end
+          element_html=generate_tag(:DIV,element_html + substitute_string(tmp_name_descr,element,["title","description"]), {:class=>"thumbnail", :style => tmp_image_style}) 
         else
           element_html = generate_tag(:DIV, "Le fichier image '%{url}' n'est pas correcte".trn(:url => element.reference)).html_safe 
         end
@@ -163,7 +178,7 @@ module ApplicationHelper
       html_text.gsub!("[#{id_image}]",tmp_content)
     end
     
-    return html_text.html_safe
+    return (html_text + "<div style='clear:both;'></div>").html_safe
   end
 
   def generate_breadcrumb(*adrs)
@@ -202,14 +217,14 @@ module ApplicationHelper
   end
 
   def generate_video(video)
-    if !video.path.blank?
+    if video && !video.path.blank?
       url = ((video.path.downcase.starts_with?('http://') || video.path.downcase.starts_with?('https://')) ? '' : "http://") + video.path.to_s
       if test_url(url)
         return substitute_string(generate_tag(:DIV, "<iframe width='[width]' height='[height]' src='#{url}' frameborder='0' allowfullscreen></iframe>", {:class => 'flex-video widescreen'}) ,video).html_safe 
       else
         return generate_tag(:DIV, "Le lien vidéo '%{url}' n'est pas correcte".trn(:url => url)).html_safe 
       end
-    elsif !video.reference.blank?
+    elsif video && !video.reference.blank?
       if File.file?(File.join(Rails.root,video.reference))
         tmp_file = video.reference.downcase.starts_with?('public/') ? video.reference[6..-1] : video.reference
         text = "<embed src='#{tmp_file}' width='#{video.width}' height='#{video.height}'></embed>"        
@@ -251,17 +266,17 @@ module ApplicationHelper
     return "" if element.nil?  
     case element.link_type    
     when "horizontal"
-        return generate_horizontal(element).html_safe
+        return generate_horizontal(element,options).html_safe
     when "navigation"
-        return generate_navigation(element).html_safe
+        return generate_navigation(element,options).html_safe
     when "side"
-        return generate_side(element).html_safe
+        return generate_side(element,options).html_safe
     when "vertical_menu"
-        return generate_vertical_menu(element).html_safe
+        return generate_vertical_menu(element,options).html_safe
     when "dropdown"
-        return generate_dropdown(element).html_safe
+        return generate_dropdown(element,options).html_safe
     when "sheet"
-        return generate_sheet(element).html_safe
+        return generate_sheet(element,options).html_safe
     end    
   end
 
@@ -354,12 +369,14 @@ module ApplicationHelper
 
   def generate_vertical_menu(element,options={})
 
-    tmp_list = generate_list(element,{:UL_LEVEL_1 => {:class => "dropdown-menu", :role=>"menu", "aria-labelledby"=>"dropdownMenu"},
-                                      :UL_LEVEL_2 => {:class => "dropdown-menu"},
-                                      :UL_LEVEL_OTHER => {:class => "dropdown-menu"},
-                                      :LI_HAS_CHILDREN_LEVEL_1 => {:class => 'dropdown-submenu'},
-                                      :LI_HAS_CHILDREN_LEVEL_2 => {:class => 'dropdown-submenu'},
-                                      :LI_HAS_CHILDREN_LEVEL_OTHER => {:class => 'dropdown-submenu'}
+    class_menu,style_menu = manage_menu_options(options)
+
+    tmp_list = generate_list(element,{:UL_LEVEL_1 => {:class => "dropdown-menu", :role=>"menu", "aria-labelledby"=>"dropdownMenu", :style => style_menu},
+                                      :UL_LEVEL_2 => {:class => "dropdown-menu", :style => style_menu},
+                                      :UL_LEVEL_OTHER => {:class => "dropdown-menu", :style => style_menu},
+                                      :LI_HAS_CHILDREN_LEVEL_1 => {:class => 'dropdown-submenu ' + class_menu},
+                                      :LI_HAS_CHILDREN_LEVEL_2 => {:class => 'dropdown-submenu ' + class_menu},
+                                      :LI_HAS_CHILDREN_LEVEL_OTHER => {:class => 'dropdown-submenu ' + class_menu}
                                       })
     html_text = tmp_list[0]
 
@@ -387,7 +404,7 @@ module ApplicationHelper
 #      end
 #    end if tmp_list.count > 1 
 
-    html_text=generate_tag(:DIV, html_text, {:class => "dropdown menu"})    
+    html_text=generate_tag(:DIV, html_text, {:class => "dropdown menu " + class_menu})    
     return html_text
   end
 
@@ -443,12 +460,14 @@ module ApplicationHelper
 
   def generate_horizontal(element,options={})
 
-    tmp_list = generate_list(element,{:UL_LEVEL_1 => {:class => "nav navbar-default nav-tabs"}, #navbar-nav
-                                      :UL_LEVEL_2 => {:class => "dropdown-menu"},
-                                      :UL_LEVEL_OTHER => {:class => "dropdown-menu"},
-                                      :LI_HAS_CHILDREN_LEVEL_1 => {:class => 'dropdown'},
-                                      :LI_HAS_CHILDREN_LEVEL_2 => {:class => 'dropdown-submenu'},
-                                      :LI_HAS_CHILDREN_LEVEL_OTHER => {:class => 'dropdown-submenu'}
+    class_menu,style_menu = manage_menu_options(options)
+
+    tmp_list = generate_list(element,{:UL_LEVEL_1 => {:class => "nav navbar-default nav-tabs " + class_menu, :style => style_menu}, #navbar-nav
+                                      :UL_LEVEL_2 => {:class => "dropdown-menu", :style => style_menu},
+                                      :UL_LEVEL_OTHER => {:class => "dropdown-menu", :style => style_menu},
+                                      :LI_HAS_CHILDREN_LEVEL_1 => {:class => 'dropdown ' + class_menu},
+                                      :LI_HAS_CHILDREN_LEVEL_2 => {:class => 'dropdown-submenu ' + class_menu},
+                                      :LI_HAS_CHILDREN_LEVEL_OTHER => {:class => 'dropdown-submenu ' + class_menu}
                                       })
     html_text = tmp_list[0]
     tmp_tab_html = ""
@@ -633,8 +652,9 @@ module ApplicationHelper
     unless menu.blank?
       case menu.link_type
       when "link"
+          html_options = {:title => menu.description.trn}
           if menu.link_params=="[MENU]"
-            menu_param = menu.controller.blank? ? '' : EsModule.get_url_from_module_menu(menu.controller)
+            url_options = menu.controller.blank? ? '' : EsModule.get_url_from_module_menu(menu.controller)
           else
             menu_param = {}
             menu_param[:controller] = "/#{menu.controller}" unless menu.controller.blank?
@@ -648,9 +668,21 @@ module ApplicationHelper
                 end 
               end
             end
-            menu_param = "#" if menu_param.blank?
+            if menu_param.blank?
+              url_options = "#" 
+            else
+              url_options = {}
+              menu_param.each do |opt,val|
+                if [:target, :title].include?(opt)
+                  html_options[opt]=val
+                else
+                  url_options[opt]=val
+                end
+              end
+              url_options = url_options[:url] if url_options[:url].presence && !url_options[:controller].present? && !url_options[:action].present? #si param url présent et pas de controller/action, alors on ne prend aue l'url
+            end          
           end
-          tmp_link = link_to(menu.name.trn, menu_param, {:title => menu.description.trn})
+          tmp_link = link_to(menu.name.trn, url_options, html_options)
       when "link_sheet"
           tmp_link = generate_tag("a", menu.name.trn, {"data-toggle"=> "tab", "href"=> "#tab_#{menu.link_params}",:title => menu.description.trn})
       when "submenu" 
@@ -742,7 +774,7 @@ module ApplicationHelper
 
   # Generate the description with the styles for the form fields of the new and edit screens
   def field_description(text, mandatory = false, bootstrap = false)
-    ret = (mandatory ? "<span class=\"text-error\">*</span>" : "") + "<span class=\"text-error\">#{text}</span>"
+    ret = (mandatory ? "<span class=\"text-danger\">*</span>" : "") + "<span class=\"text-danger\">#{text}</span>"
     ret = "<div class='col-sm-1'>#{ret}</div>" if bootstrap
     return ret.html_safe
   end
@@ -752,7 +784,6 @@ module ApplicationHelper
     charset = %w{ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z}
     (0...size).map{ charset.to_a[rand(charset.size)] }.join
   end
-
 
   def page_entries_info(collection, options = {})
     entry_name = options[:model] || (collection.empty?? 'item' : collection.first.class.name.split('::').last.titleize).trn
@@ -768,5 +799,38 @@ module ApplicationHelper
     end
   
   end
+
+private
+  #detecter les class et les styles
+  def manage_menu_options(options)
+    class_menu = (options['menu']||[]).join(' ')
+
+    tmp_style_menu = []
+    style = (options['menu[option]']||{})
+    case style["menugradient"].presence
+      when "linear_top"
+        tmp_style_menu << "background: linear-gradient( to top, #{style["menugradientcolorfrom"].presence||"#000"}, #{style["menugradientcolorto"].presence||"#FFF"})"
+      when "linear_right"
+        tmp_style_menu << "background: linear-gradient( to right, #{style["menugradientcolorfrom"].presence||"#000"}, #{style["menugradientcolorto"].presence||"#FFF"})"
+      when "linear_top_right"
+        tmp_style_menu << "background: linear-gradient( to top right, #{style["menugradientcolorfrom"].presence||"#000"}, #{style["menugradientcolorto"].presence||"#FFF"})"
+      when "radial_ellipse"
+        tmp_style_menu << "background: radial-gradient( ellipse at top left, #{style["menugradientcolorfrom"].presence||"#000"}, #{style["menugradientcolorto"].presence||"#FFF"})"
+      when "radial_closest"
+        tmp_style_menu << "background: radial-gradient( closest-corner at center, #{style["menugradientcolorfrom"].presence||"#000"}, #{style["menugradientcolorto"].presence||"#FFF"})"
+      when "opacity"
+        tmp_style_menu << "background-color: #{color_hex_to_rgba(style["menugradientcolorfrom"].presence||"#000",0.85)}"        
+      when "color"
+        tmp_style_menu << "background-color: #{style["menugradientcolorfrom"].presence||"#000"}"
+    end
+    
+    tmp_style_menu << "border-width: #{style["menubordersize"].presence}px" if style["menubordersize"].present? 
+    tmp_style_menu << "border-color: #{style["menubordercolor"].presence}" if style["menubordercolor"].present? 
+    
+    style_menu = tmp_style_menu.join(';')
+    
+    return class_menu, style_menu
+  end
+
 
 end

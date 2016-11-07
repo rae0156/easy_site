@@ -51,18 +51,19 @@
 																									:html_option =>{ :remote => true, :title =>"Annuler la copie".trn}}%>						
 									</div>
 								<%end%>
-								<%if @dir_manager.action_available?('dir_create')%>
+								<%if @dir_manager.action_available?('dir_create') || @dir_manager.action_available?('file_rename')%>
 								  <div class="form-group">
 								    <label for="dir_manager_info_new_dir"><%="Nouveau".trn%> : </label>
 									<%= text_field "dir_manager_info", "new_dir", :size => 40, :maxlength => 200, :class => "form-control", :value => @new_dir %>
-						
-									<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-plus btn-lg'></i>", 
-																								:controller => "dir_managers", :action => "explorer_action", :id => @dir_manager.id,
-																								:no_div => true,
-																								:confirm => "Voulez vous créer ce répertoire ?".trn,
-																								:form => "form_explorer",
-																								:param_goto => {:action_type => 'new_dir'},
-																								:html_option =>{ :remote => true, :title =>"Créer un nouveau répertoire".trn}}%>						
+									<%if @dir_manager.action_available?('dir_create')%> 
+										<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-plus btn-lg'></i>", 
+																									:controller => "dir_managers", :action => "explorer_action", :id => @dir_manager.id,
+																									:no_div => true,
+																									:confirm => "Voulez vous créer ce répertoire ?".trn,
+																									:form => "form_explorer",
+																									:param_goto => {:action_type => 'new_dir'},
+																									:html_option =>{ :remote => true, :title =>"Créer un nouveau répertoire".trn}}%>						
+									<%end%>
 								  </div>
 								<%end%>
 								<%if @dir_manager.action_available?('file_upload')%>
@@ -71,12 +72,16 @@
 										    <%="Choisir un fichier".trn%> <input type="file" id="dir_manager_info_upload_file" name="dir_manager_info[upload_file]">
 									    </span>
 									    <input type="text" class="form-control" size='40' readonly>
-										<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-upload btn-lg'></i>", 
+										<!--%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-upload btn-lg'></i>", 
 																									:controller => "dir_managers", :action => "explorer_action", :id => @dir_manager.id,
 																									:no_div => true,
 																									:form => "form_explorer",
 																									:param_goto => {:action_type => 'upload_file'},
-																									:html_option =>{ :title =>"Charger un fichier".trn}}%>						
+																									:html_option =>{:title =>"Charger un fichier".trn}}%-->						
+										<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-upload btn-lg'></i>", 
+																									:action => "#",
+																									:no_div => true,
+																									:html_option =>{:title =>"Charger un fichier".trn, :id => "upload_file_ajax"}}%>						
 										<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='glyphicon glyphicon-remove btn-lg'></i>", 
 																									:controller => "dir_managers", :action => "explorer_action", :id => @dir_manager.id,
 																									:no_div => true,
@@ -220,5 +225,24 @@
 
 <script>
 	init_tree_view_file();
+	
+    $('#upload_file_ajax').on('click', function (e) {
+        e.preventDefault();
+ 
+        var $form = $("#form_explorer");
+        var formdata = (window.FormData) ? new FormData($form[0]) : null;
+        var data = (formdata !== null) ? formdata : $form.serialize();
+
+        $.ajax({
+            url: '<%=url_for(:controller => "dir_managers", :action => "explorer_action", :id => @dir_manager.id,:action_type => 'upload_file')%>',
+            type: 'POST',
+            contentType: false, // obligatoire pour de l'upload
+            processData: false, // obligatoire pour de l'upload
+            dataType: 'script',
+            data: data
+        });
+    });	
+	
+	
 </script>
 <%= javascript_include_tag "filestyle.js" %>

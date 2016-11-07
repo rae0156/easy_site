@@ -1,7 +1,10 @@
 
+<%year_eval = @year if year_eval.nil?%>
+
 <div class="alert alert-info">
 	<%if !@year.blank?%> 
-	<span style="float:right;">
+	<span style="float:right;" class="btn_filter_div">
+	<%if @category>-1%>	
 		<%if (@user.blank? || @user==0) && (@category.blank? || @category==0) && EsUser.role?('admin') %> 
 			<%unless ResStatus.get_default_status.blank?%> 
 				<%= link_to("<i class='glyphicon glyphicon-share'></i>".html_safe, {:action => 'create_other', :year => year_eval},{:remote=>true, :title => "Créer une autre année à partir de '%{year}'".trn(:year => @year)})%>
@@ -12,14 +15,17 @@
 				<%= link_to("<i class='glyphicon glyphicon-remove'></i>".html_safe, {:action => 'remove', :year => year_eval},{:remote=>true, :title => "Désactiver l'année '%{year}'".trn(:year => @year), :confirm =>"Voulez vous vraiment désactiver l'année '%{year}' ?".trn(:year => @year)})%>
 			<%end%> 
 		<%end%> 
-		<%if (@category.blank? || @category==0)%> 
-			<%if (EsUser.role?('user') && !@user.blank? && @user==EsUser.current_user.id) || EsUser.role?('admin')%> 
-				<%= link_to("<i class='glyphicon glyphicon-check'></i>".html_safe, {:action => 'show_need', :year => year_eval},{:remote=>true, :title => "Gérer le besoin de l'année '%{year}'".trn(:year => @year)})%>
-			<%end%> 
-			<%if EsUser.role?('admin') || (EsUser.role?('user') && !@user.blank? && @user==EsUser.current_user.id)%> 
+		<!--%if (@category.blank? || @category==0)%--> 
+			<%if EsUser.role?('user') || EsUser.role?('admin')%> 
+			<!--%if (EsUser.role?('user') && !@user.blank? && @user==EsUser.current_user.id) || EsUser.role?('admin')%--> 
+				<%= link_to("<i class='glyphicon glyphicon-check'></i>".html_safe, {:action => 'show_need', :year => year_eval},{:remote=>true, :title => "Gérer le stock après OP de l'année '%{year}'".trn(:year => @year)})%>
+			<!--%end%--> 
+			<!--%if EsUser.role?('admin') || (EsUser.role?('user') && !@user.blank? && @user==EsUser.current_user.id)%--> 
 				<%= link_to("<i class='glyphicon glyphicon-signal'></i>".html_safe, {:action => 'show_stock', :year => year_eval},{:remote=>true, :title => "Gérer le stock de l'année '%{year}'".trn(:year => @year)})%>
-			<%end%> 
-		<%end%> 
+			<!--%end%--> 
+			<%end%>
+		<!--%end%--> 
+	<%end%> 
 		
 		<%= link_to("<i class='glyphicon glyphicon-print'></i>".html_safe, {:action => 'print', :year => year_eval},{:title => "Imprimer l'année '%{year}'".trn(:year => @year)})%>
 	</span>
@@ -48,8 +54,34 @@
 																	:form => 'resource_form',
 																	:html_option => {:class => "btn-sm", :remote => true, :title =>"Filtrer".trn}}%>
 	</div>
+
 </div>
 
 	<script>
 		initajaxplus();			
+
+		$( document ).ready(function() {
+	        $('#filter_year,#filter_category,#filter_user,[id^="sort_field"],[id^="sort_order"],[id^="where_sign"],[id^="where_value"]').on('change', function(e) { 				
+				$(".btn_filter_div").hide();
+				$(".resource_description_div").hide();
+				$(".resource_action_div").hide();
+				$(".resource_eval_div").hide();
+				$(".eval_title_div").hide();
+	        });
+	        
+	        $('#btn_clean_tools').on('click', function(e) { 				
+				$(".btn_filter_div").hide();
+				$(".resource_description_div").hide();
+				$(".resource_action_div").hide();
+				$(".resource_eval_div").hide();
+				$(".eval_title_div").hide();
+	        });
+	        	        
+	         
+		});
+
+
+
+
+
 	</script>

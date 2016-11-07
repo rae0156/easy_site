@@ -1,20 +1,22 @@
 <% 
 	@title 		= "Stock des produits pour l'année '%{year}'".trn(:year => @year) 	
-	@title += " - " + "Utilisateur '%{user}'".trn(:user => EsUser.find_by_id(@user).complete_name) unless @user == 0
+	@title += " - " + "Se trouvant chez '%{user}'".trn(:user => EsUser.find_by_id(@user).complete_name) unless @user == 0
+	@subtitle = session[:res_category]==0 ? "" : ResCategory.find_by_id(session[:res_category]).description
 %>
 
 <div class="center-menu">
     <h2><%= @title %></h2>
+    <h5><%= @subtitle unless @subtitle.blank? %></h5>
 	<ul>		
-		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Ajouter un produit".trn,:image => "appli/add_32.png", :action => "product_new", :param_goto => {:needs => @needs}, :remote => true}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Ajouter un produit".trn,:image => "appli/32/add.png", :action => "product_new", :param_goto => {:needs => @needs}, :remote => true}%></li>
 		<%unless @needs%>
-			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Voir les utilisations".trn,:image => "appli/execute_32.png", :action => "show_needs", :param_goto => {:year => @year, :check => 'Y'},  :form => "stock_form", :remote => true}%></li>
+			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Voir les utilisations".trn,:image => "appli/32/execute.png", :action => "show_needs", :param_goto => {:year => @year, :check => 'Y'},  :form => "stock_form", :remote => true}%></li>
 		<%else%>
-			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Cacher les utilisations".trn,:image => "appli/execute_32.png", :action => "hide_needs", :param_goto => {:year => @year, :check => 'Y'},  :form => "stock_form", :remote => true}%></li>
+			<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Cacher les utilisations".trn,:image => "appli/32/execute.png", :action => "hide_needs", :param_goto => {:year => @year, :check => 'Y'},  :form => "stock_form", :remote => true}%></li>
 		<%end%>
-		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Vérifier".trn,:image => "appli/process_32.png", :action => "save_stock", :param_goto => {:year => @year, :check => 'Y', :needs => @needs},  :form => "stock_form", :remote => true}%></li>
-		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/save_32.png", :action => "save_stock", :param_goto => {:year => @year, :check => 'N', :needs => @needs},  :form => "stock_form", :remote => true}%></li>
-		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour".trn,:image => "appli/back_32.png", :action => "show_resources", :html_option => {:remote => true}}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Vérifier".trn,:image => "appli/32/ok.png", :action => "save_stock", :param_goto => {:year => @year, :check => 'Y', :needs => @needs},  :form => "stock_form", :remote => true}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Sauver".trn,:image => "appli/32/save_data.png", :action => "save_stock", :param_goto => {:year => @year, :check => 'N', :needs => @needs},  :form => "stock_form", :remote => true}%></li>
+		<li class="btn btn-default"><%= render :partial => 'shared/goto_menu_item', :locals => {:text => "Retour".trn,:image => "appli/32/arrow_left.png", :action => "show_resources", :html_option => {:remote => true}}%></li>
 	</ul>
 	<div class="clearer"></div>
 </div>
@@ -33,16 +35,44 @@
 	<table cellpadding="4" width="100%" class='table'>
 	  <tr>
 	    <th><%="Produit".trn%></th>
-	    <th><%="Responsable".trn%></th>
-	    <th><%="Stock avant OP".trn%></th>
+	    <th><%="Se trouve chez".trn%></th>
+	    <th><%="Stock avant OP".trn%>
+	    	<%if EsUser.role?('admin')%>
+				<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "",:image => "appli/32/database_repeat.png", :action => "init_stock_before_op", :confirm =>"Seul les stocks à zéro seront adaptés et ils ne seront pas sauvés. Voulez vous vraiment initialiser le stock avant OP avec les besoins ?".trn,:html_option => {:remote=>true, :title => "Initialiser le stock avant OP avec le besoin".trn},:param_goto => {:year => @year},:form => "stock_form"}%>
+	    	<%end%>
+	    </th>
 	    <th><%="Besoin".trn%></th>
 	    <th><%="Quantité à acheter".trn%></th>
 	    <th><%="Quantité achetée".trn%></th>
 	    <th><%="Stock réel".trn%></th>
-	    <th><%="Stock après OP".trn%></th>
+	    <th><%="Stock après OP".trn%>	    	
+	    	<%if EsUser.role?('admin')%>
+				<%= render :partial => 'shared/goto_menu_item', :locals => {:text => "",:image => "appli/32/database_repeat.png", :action => "init_stock_after_op", :confirm =>"Seul les stocks à zéro seront adaptés et ils ne seront pas sauvés. Voulez vous vraiment initialiser le stock après OP avec le stock restant ?".trn, :html_option => {:remote=>true, :title => "Initialiser le stock après OP avec le stock restant".trn},:param_goto => {:year => @year},:form => "stock_form"}%>
+	    	<%end%>
+	    </th>
 	    <th><%="Stock restant des ressources".trn%></th>
 	  </tr>
 	<%@object.res_stocks.where(["res_stocks.es_user_id = ? or 0= ?", @user, @user]).includes(:res_product).order("res_products.name").each do |st|	%>
+
+
+
+		<%stock_in_cat=false
+		  unless session[:res_category]==0
+	        st.res_category.children.each do |c|
+	          c.res_resources.each do |r|
+	            if r.res_product_id==st.res_product_id && session[:res_category]==c.id
+            	  stock_in_cat = true
+            	  break
+	            end
+	          end
+              break if stock_in_cat
+	        end
+		  end
+		  stock_in_cat=true if session[:res_category]==0 
+		%>
+
+
+	 <%if stock_in_cat%>
 	  <tr>
 	    <td style="background-color:<%=@stock_error.include?(st.id) ? '#FF0000' : ''%>">
 			<%=link_to( truncate(st.res_product.name,:length => 40), {:action => 'product_edit', :id => st.id, :needs => @needs},{:remote=>true, :title => "Modifier ce produit".trn})%>
@@ -51,21 +81,30 @@
 			<%end%>
 	    </td>				    
 	    <td>	
-			<%= easy_tag('list', :id => "stock_responsible[id_#{st.id}]", :selected_value => @stock_responsible["id_#{st.id}"], :value_list_array => EsUser.order("name asc, firstname asc").map{|u| [u.complete_name,u.id]}, :number_of_line=>1, :include_blank => false, :bootstrap_form => false, :read_only => !EsUser.role?('admin')) %>
+			<%= easy_tag('list', :id => "stock_responsible[id_#{st.id}]", :selected_value => @stock_responsible["id_#{st.id}"], :value_list_array => EsUser.order("name asc, firstname asc").map{|u| [u.complete_name,u.id]}, :number_of_line=>1, :include_blank => false, :bootstrap_form => false, :read_only => !(EsUser.role?('admin')||EsUser.role?('user'))) %>
 	    </td>
 	    <td width="100">
 			<%= easy_tag('decimal', :mandatory => false, :bootstrap_form => false, :bootstrap_length => false, :id => "stock[id_#{st.id}]", :value => @stock["id_#{st.id}"]) %>
 	    </td>
-	    <td width="100"><%=st.qty_need%></td>
-	    <td width="100"><%=st.qty_to_buy(@stock["id_#{st.id}"],st.qty_need)%></td>
-	    <td width="100">
+	    <td width="100" style="text-align: center;"><%=st.qty_need%></td>
+	    <td width="100" style="text-align: center;"><%=st.qty_to_buy(@stock["id_#{st.id}"],st.qty_need)%></td>
+	    <td width="100" style="<%=@stock_buy["id_#{st.id}"].to_i < st.qty_to_buy(@stock["id_#{st.id}"],st.qty_need) ? 'background-color:#FF0000;' : ''%>">
 			<%= easy_tag('decimal', :mandatory => false, :bootstrap_form => false, :bootstrap_length => false, :id => "stock_buy[id_#{st.id}]", :value => @stock_buy["id_#{st.id}"]) %>
 	    </td>
-	    <td><%=st.qty_real(@stock["id_#{st.id}"],@stock_buy["id_#{st.id}"])%></td>
-	    <td width="100">
+	    <td style="text-align: center;<%=st.qty_real(@stock["id_#{st.id}"],@stock_buy["id_#{st.id}"]) < st.qty_need ? 'color:#FF0000;' : ''%>"><%=st.qty_real(@stock["id_#{st.id}"],@stock_buy["id_#{st.id}"])%></td>
+	    
+	    <%
+	    unless @stock_after["id_#{st.id}"].to_i == st.qty_total_not_used
+			col_style=@stock_after["id_#{st.id}"].to_i==0 ? 'background-color:#FF0000;' : 'background-color:orange;'
+	    else
+	    	col_style=''
+	    end
+	    %>
+	    
+	    <td width="100" style="<%=col_style%>">
 			<%= easy_tag('decimal', :mandatory => false, :bootstrap_form => false, :bootstrap_length => false, :id => "stock_after[id_#{st.id}]", :value => @stock_after["id_#{st.id}"]) %>
 	    </td>
-	    <td width="100"><%=st.qty_total_not_used%></td>
+	    <td width="100" style="text-align: center;"><%=st.qty_total_not_used%></td>
 	  </tr>
 
 
@@ -78,18 +117,25 @@
 				    <td></td>				    
 				    <td><%=r.es_user ? r.es_user.complete_name : ''%></td>				    
 				    <td></td>				    
-				    <td><%=r.quantity||0%></td>				    
-				    <td colspan="5"><%=r.res_action.es_user ? r.res_action.es_user.complete_name : ''%> - <%=truncate(r.res_action.description,:length => 100)%></td>				    
+				    <td style="text-align: center;"><%=r.quantity||0%></td>				    
+				    <td colspan="4">
+				    	<%unless r.description.blank?%>
+					    	<%=truncate(st.res_product.name,:length => 40)%> - <%=truncate(r.description,:length => 60)%><br>
+				    	<%end%>
+				    	<%="Action".trn%> : <%=truncate(r.res_action.description,:length => 100)%><br>
+				    	<%if r.res_action.es_user%>
+					    	<%="Responsable action".trn%> : <%=r.res_action.es_user.complete_name%><br>
+				    	<%end%>
+				    	<%="Catégorie".trn%> : <%=truncate(c.description,:length => 100)%>
+				    </td>				    
+				    <td style="text-align: center;"><%=r.stockable=='Y' ? r.qty_not_used : "(#{r.quantity})"%></td>				    
 				  </tr>
 	          <%end
 	          end
 	        end
 		  end%>
 
-
-
-
-
+	  <%end%>
 	<%end unless @object.blank?%>
 
 	</table>

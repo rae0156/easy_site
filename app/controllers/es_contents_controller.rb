@@ -186,9 +186,10 @@ class EsContentsController < ApplicationController
     respond_to do |format|
       format.html {} # Do nothing, so Rails will render the view list.rhtml
       format.js do 
+        
         if params[:parts].present?
           flash[:message_ajax] = "La disposition des parties du contenu '%{name}' a été correctement sauvée.".trn(:name => @content_detail.name)
-          @element_id, @partial = 'message_ajax', 'layouts/part_message_ajax'
+          @element_id, @partial = ['dynamic_content','message_ajax'], ['dynamic_content','layouts/part_message_ajax']
         else
           @element_id, @partial = 'dynamic_content', 'dynamic_content'
         end
@@ -209,22 +210,27 @@ class EsContentsController < ApplicationController
   end
 
   def update_element_parts
-    @content_detail_element = EsContentDetailElement.find(params[:id])
+    @content_detail_element = EsContentDetailElement.find_by_id(params[:id])
     if @content_detail_element
       @content_detail = @content_detail_element.es_content_detail
       @content_detail_element.attributes = params[:content_detail_element]
       
       element = EsContent.save_properties("EsContentDetailElement"+@content_detail_element.element_type.classify, @content_detail_element.id, params["generated"])
-      if element.errors.empty? && @content_detail_element.valid? 
+      detail_element_valid = @content_detail_element.valid? #pour forcer la vérif de @content_detail_element
+      if element.errors.empty? && detail_element_valid 
         @content_detail_element.save
+        if params[:generated].present? && @content_detail_element.element_type=='module' && !@content_detail_element.es_content_detail_child_id.nil?
+          @content_detail_element.es_content_detail_child.save_module_params(params[:generated]) 
+        end
         flash[:message_ajax] = "Les propriétés de la partie '%{name}' ont été correctement sauvées.".trn(:name => @content_detail_element.name)
-         @content_detail_element = nil 
+        @content_detail_element = nil 
       else
+        @temp_attributes =params["generated"]
         element.errors.full_messages.each do |m|
           @content_detail_element.errors.add(:base, m) 
         end
       end
-
+    
     end
     respond_to do |format|
       format.html {} # Do nothing, so Rails will render the view list.rhtml
@@ -235,26 +241,48 @@ class EsContentsController < ApplicationController
     end    
   end
 
-  def delete_element_parts
-    tmp_element = EsContentDetailElement.find_by_id(params[:id])
-    @content_detail_element = ("EsContentDetailElement"+tmp_element.element_type.classify).constantize.find_by_id(params[:id])
-    if @content_detail_element
-      @content_detail = tmp_element.es_content_detail
-      name = @content_detail_element.name
+  def delete_element_parts(force_id=nil)
+    
+    if force_id.blank?
+      id_to_delete = params[:id]
+    else
+      id_to_delete = force_id
+    end
+    tmp_element = EsContentDetailElement.find_by_id(id_to_delete)
+    content_detail_element = ("EsContentDetailElement"+tmp_element.element_type.classify).constantize.find_by_id(id_to_delete)
+    if content_detail_element
+      if force_id.blank?
+        @content_detail = tmp_element.es_content_detail if content_detail_element
+      end
+
+      name = content_detail_element.name
       EsContentDetailElement.where(:parent_id => tmp_element.id).each do |e|
         e.update_attribute('parent_id',-1)
+        if e.element_type=='structured_child'
+          e.update_attribute('element_type',"parent")
+          delete_element_parts(e.id)
+        end           
       end
-      @content_detail_element.destroy 
-      @content_detail_element = nil
+      
+      tmp_element.es_content_detail_child.destroy if tmp_element.es_content_detail_child
+      
+      content_detail_element.destroy 
+      content_detail_element = nil
+      
       flash[:message_ajax] = "La partie '%{name}' a été correctement supprimée.".trn(:name => name) 
     end
-    respond_to do |format|
-      format.html {} # Do nothing, so Rails will render the view list.rhtml
-      format.js do 
-        @element_id, @partial = 'dynamic_content', 'dynamic_content'
-        render 'shared/replace_content'
-      end
-    end    
+    
+    if force_id.blank?
+      @content_detail_element = ("EsContentDetailElement"+tmp_element.element_type.classify).constantize.find_by_id(id_to_delete)
+      
+      respond_to do |format|
+        format.html {} # Do nothing, so Rails will render the view list.rhtml
+        format.js do 
+          @element_id, @partial = 'dynamic_content', 'dynamic_content'
+          render 'shared/replace_content'
+        end
+      end    
+    end
   end
 
   def edit_element_parts
@@ -324,9 +352,21 @@ class EsContentsController < ApplicationController
 
   def add_element
     id = params[:id]
-    element_type = params[:element_type]
+    element_type        = params[:element_type]
+    module_action_name  = params[:content_module_action_name]
+    strutured_parent    = params[:content_strutured_parent]
+    table_col           = params[:content_table_col]
+    table_lin           = params[:content_table_lin]
     @content_detail = EsContentDetail.find_by_id(id)
-    @content_detail.add_element(element_type)
+    if element_type=='module' && module_action_name.blank? 
+      flash[:error_message_ajax] = "Vous devez sélectionner un module.".trn 
+    elsif element_type=='structured' && strutured_parent.blank?
+      flash[:error_message_ajax] = "Vous devez sélectionner un structure de parent.".trn 
+    elsif element_type=='table' && (table_col.blank? || table_lin.blank?)
+      flash[:error_message_ajax] = "Vous devez sélectionner un nombre de colonnes et de lignes.".trn 
+    else
+      @content_detail.add_element(element_type,{:module_action_name => module_action_name, :strutured_parent => strutured_parent, :table_col => table_col, :table_lin => table_lin})
+    end
     respond_to do |format|
       format.html {} # Do nothing, so Rails will render the view list.rhtml
       format.js do 
@@ -335,6 +375,7 @@ class EsContentsController < ApplicationController
       end
     end    
   end
+
 
 private
 
@@ -364,7 +405,7 @@ private
 
   def create_conditions
 
-    conditions = []
+    conditions = ["es_content_id is not null"]
 
     unless params[:global_search].blank?
       conditions.empty? ? conditions = [''] : conditions[0] += ' and '   

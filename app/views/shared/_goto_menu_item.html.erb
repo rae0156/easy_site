@@ -29,6 +29,9 @@
 	param_goto = {} if param_goto.nil?
 	html_option = {} if html_option.nil?
 	no_div = false if no_div.nil?
+
+	fa = fa.nil? ? "" : "fa #{fa}"
+	
 	
 	if back
 		controller 	= session[:back_controller] 
@@ -53,11 +56,17 @@
 		option_hash[:remote], remote 	= false, false
 	end
 	
+	link="".html_safe
+	
+	link=content_tag("i","",{:class => fa}) + "&nbsp;".html_safe unless fa.blank?
+	
 	if image.blank?
-		link = text
+		link += text
 	else
-		link = image_tag(image, {:alt => text}) + "#{'<br />' + text}".html_safe
+		link += image_tag(image, {:alt => text}) + "#{'<br />' + text}".html_safe
 	end
+	
+	
 	
 	if !javascript_function.blank?
 		msg_confirm 	= option_hash[:confirm].presence || "Etes vous certain de vouloir exécuter cette action ?".trn

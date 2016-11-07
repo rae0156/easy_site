@@ -14,7 +14,7 @@
     cursor: move; 
     -webkit-transform: rotate(5deg); 
     -moz-transform: rotate(5deg);  
-    z-index: 100;
+    z-index: 802;
 
 } 
 .stickyNote.sticky-lg { 

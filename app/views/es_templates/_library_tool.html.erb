@@ -1,0 +1,38 @@
+<%unless @library_mode.blank?%>
+	<div id='library_tools'>
+		<div class='well'>
+			<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='fa fa-file-text'></i> #{"Gestion des fichiers".trn}",:image => "", :action => "#",:html_option=>{:id => "dir",:remote => true, :class => "btn btn-primary tools_to_hide"},:no_div=> true}%>
+			<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='fa fa-file-image-o'></i> #{"Gestion des images".trn}",:image => "", :action => "#",:html_option=>{:id => "image", :remote => true, :class => "btn btn-primary tools_to_hide"},:no_div=> true}%>
+			<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='fa fa-list-ol'></i> #{"Gestion des listes d'images".trn}",:image => "", :action => "#",:html_option=>{:id => "list_image", :remote => true, :class => "btn btn-primary tools_to_hide"},:no_div=> true}%>
+			<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='fa fa-file-video-o'></i> #{"Gestion des vidéos".trn}",:image => "", :action => "#",:html_option=>{:id => "video", :remote => true, :class => "btn btn-primary tools_to_hide"},:no_div=> true}%>
+			<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<i class='fa fa-play'></i> #{"Gestion des carousels".trn}",:image => "", :action => "#",:html_option=>{:id => "banner", :remote => true, :class => "btn btn-primary tools_to_hide"},:no_div=> true}%>
+		</div>
+		<div id='list_main_div'></div>
+		<div id='explorer'></div>
+		<div id='tool_image'></div>
+
+	</div>
+
+	<script>
+		init_one_property('library_tools');			
+
+		$( ".tools_to_hide" ).on('click',function() {			
+			$('#list_main_div').empty();
+			$('#explorer').empty();
+			$('#tool_image').empty();
+
+			element = $(this)
+
+			$.ajax({
+		        url: "/es_templates/get_library_tool/" + element.attr('id'),
+		        dataType: 'script'
+		    });	  
+
+		   	return false;  			
+		});		
+
+
+	</script>
+	
+<%end%>
+

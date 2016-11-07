@@ -12,11 +12,11 @@ class ApplicationController < ActionController::Base
   include Userstamp
   
   include AuthenticatedSystem
-
   authorize_resource :class => false #pour les controller sans model
 
+  include ClipboardController
+
   before_filter  :set_current_site,:set_current_user , :check_page, :set_language
-  
 
   rescue_from CanCan::AccessDenied do |exception|
     if Rails.env.downcase == 'development' 
@@ -38,7 +38,6 @@ class ApplicationController < ActionController::Base
   end
 
   def check_page
-
     page = EsPage.find_page(controller_name,action_name)
     if page
       Rails.application.config.current_theme    = page.es_theme.file if page.es_theme

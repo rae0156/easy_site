@@ -20,3 +20,19 @@
 <script>
 	init_toggle_by_ref();
 </script>
+
+<script> 
+
+	$(document).ready(function() {
+		$('.label-info-hiden').hover(	  	  
+		  function () {
+			$(this).children("span:first").show();
+			$(this).css("z-index", "501");
+		  }, 
+		  function () {
+			$(this).css("z-index", "0");
+			$(this).children("span:first").hide();
+		  }
+		);	
+	});
+</script>

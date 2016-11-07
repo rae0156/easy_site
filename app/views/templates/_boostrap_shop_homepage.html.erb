@@ -1,36 +1,39 @@
 
-    <!-- Navigation -->
-	<%= get_template_part("part_login")%>
-
     <!-- Page Content -->
-    <div class="container">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+			    <!-- Navigation -->
+				<%= get_template_file_part("part_login")%>
+            </div>
+        </div>
 
         <div class="row">
 
             <div class="col-md-3">
-				<%= get_template_part("sub_menu")%>
+				<%= get_template_file_part("sub_menu")%>
             </div>
 
             <div class="col-md-9">
 
-                <div class="row carousel-holder">
-					<%= get_template_part("carousel")%>
+                <div class="carousel-holder">
+					<%= get_template_file_part("carousel")%>
                 </div>
 
-                <div class="row">
-					<%= get_template_part("part_dynamic")%>
+                <div>
+					<%= get_template_file_part("part_dynamic")%>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="container">
+    <div class="container-fluid">
         <hr>
         <!-- Footer -->
         <footer>
             <div class="row">
                 <div class="col-lg-12">
-					<%= get_template_part("copyright")%>
+					<%= get_template_file_part("copyright")%>
                 </div>
             </div>
         </footer>

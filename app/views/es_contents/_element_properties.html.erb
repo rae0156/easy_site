@@ -1,14 +1,14 @@
 <%unless @content_detail_element.blank?%>
-	<br/>
-	<div class="alert alert-info" role="alert">
-        <button data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>
+
+	<div class="alert alert-info property_windows" role="alert" style="width:75%;">
+        <!--button data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button-->
 		<div>
-		    <%=
+		    <!--%=
 		    			link_to("<div class='btn btn-primary'><i class='glyphicon glyphicon-remove-sign'></i> #{"Supprimer ce contenu".trn}</div>".html_safe, 
 							url_for(:action => "delete_element_parts", :id => @content_detail_element.id), 
 							:confirm =>"Voulez vous vraiment supprimer ce contenu ?".trn,
 							:title =>"Supprimer ce contenu".trn, :remote => true)
-			%>
+			%-->
 			
 					<%= render :partial => 'shared/goto_menu_item', :locals => {:text_html => "<div class='btn btn-primary'><i class='glyphicon glyphicon-floppy-disk'></i> #{"Sauver ce contenu".trn}</div>", 
 																				:action => "#",
@@ -30,42 +30,60 @@
 		<%= form_tag({ :action => 'update_element_parts'}, { :name => 'properties_form', :id => 'properties_form', :class => 'form-horizontal' }) do%>
 
 
-				<div class="panel panel-primary">
+				<div class="panel panel-primary properties">
 					<div class="panel-heading"><%="Type".trn%> : <%=@content_detail_element.element_type%></div>
 					<div class="panel-body">	
 					  <div class="form-group">
-					    <label for="content_detail_element_name" class="col-sm-4 control-label"><%="Nom de la partie".trn%> : </label>
-						<div class="col-sm-8">
+					    <label for="content_detail_element_name" class="col-sm-3 control-label"><%="Nom de la partie".trn%> : </label>
+						<div class="col-sm-9">
 							<%= easy_tag('text',:instance => "content_detail_element", :field => "name") %>
 					    </div>
 					  </div>
 					  <div class="form-group">
-					    <label for="content_detail_element_description" class="col-sm-4 control-label"><%="Description".trn%> : </label>
-						<div class="col-sm-8">
+					    <label for="content_detail_element_description" class="col-sm-3 control-label"><%="Description".trn%> : </label>
+						<div class="col-sm-9">
 							<%= easy_tag('text',:instance => "content_detail_element", :field => "description") %>
 					    </div>
 					  </div>
 					</div>
 				</div>
 
+ 
+				<% 
+					cats = EsContentDetailElement.get_properties("EsContentDetailElement#{@content_detail_element.element_type.classify}", @content_detail_element.id,@temp_attributes||{})
+					if @content_detail_element.es_content_detail_child
+						module_prop = EsModule.get_module_params_from_content_detail(@content_detail_element.es_content_detail_child_id)[0]
+						module_prop[:title] = "Module".trn
+						cats.unshift(module_prop) 
+					end
+				%>
 
-			  <%=easy_generate_form(EsContentDetailElement.get_properties("EsContentDetailElement#{@content_detail_element.element_type.classify}", @content_detail_element.id,{}))%>
+				  <%=easy_generate_form(cats)%>
+ 
+			  <!--%=easy_generate_form(EsContentDetailElement.get_properties("EsContentDetailElement#{@content_detail_element.element_type.classify}", @content_detail_element.id,{}))%-->
+
+			  <!--%if @content_detail_element.es_content_detail_child%-->
+  				<!--%=easy_generate_form(EsModule.get_module_params_from_content_detail(@content_detail_element.es_content_detail_child_id))%-->
+  			  <!--%end%-->
+
 		
 		<% end %>
 	</div>
 <%end%>
 
+
 <script>
+
+
+    //ca ne fonctionne pas bien. pour tester il faut : 1) fermer puis reouvrir 2) ouvrir 2 fois de suite 3) ajouter une emoticon 
+
 	function save_properties(){
-	    // save TinyMCE instances before serialize
-		if ($(".tinymce").length) {
-	    	tinyMCE.triggerSave();
-		}	    
-		
 		var data = $("#properties_form").serialize();
 		$.ajax({
 	        url: '/es_contents/update_element_parts/<%=@content_detail_element.blank? ? 0 : @content_detail_element.id%>',
 	        data:       data,
+	        type: "POST",
+	        proccessData: false,
 	        dataType: 'script',
 	    });	    
 		return false;
@@ -77,5 +95,12 @@
 <script>
 	init_datepicker();	
 	init_inputmask();	
-	$('.filepicker').fileSelector(); /*uniquement si chargé après la page*/	
+	$('.linkpicker').linkPicker();
+	$('.filepicker').fileSelector(); /*uniquement si chargé après la page*/
+	$('.colorpicker').colorPicker();
+
+
+	initpostit();
+
 </script>
+

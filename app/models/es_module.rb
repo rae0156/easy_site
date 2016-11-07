@@ -46,7 +46,7 @@ class EsModule < ActiveRecord::Base
     end
     return [tab]
   end
-  
+    
   
   def self.get_module_action_list_choice(module_name='')
     action_list=[]

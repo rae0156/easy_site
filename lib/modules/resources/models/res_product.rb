@@ -6,6 +6,8 @@ class ResProduct < ActiveRecord::Base
   has_many :res_resources
   has_many :res_stocks
 
+  self.per_page = 100
+
   acts_as_dynamic_model([
                           {:name              => "name",
                            :label_name        => "Nom",

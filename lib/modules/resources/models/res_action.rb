@@ -11,7 +11,7 @@ class ResAction < ActiveRecord::Base
   belongs_to :res_when_end, :class_name => "ResWhen", :foreign_key => "res_when_end_id"
   has_many :res_resources
 
-  attr_accessible :name,:description,:res_category_id,:sequence,:resource_desc,:es_user_id,:start_date,:end_date,:res_status_id,:res_priority_id,:res_when_start_id,:res_when_end_id
+  attr_accessible :name,:description,:res_category_id,:sequence,:resource_desc,:es_user_id,:start_date,:end_date,:res_status_id,:res_priority_id,:res_when_start_id,:res_when_end_id, :comment_text, :comment_user_date
 
   validates_presence_of :res_priority_id, :message => '#' + "La priorité est obligatoire".trn
   validates_presence_of :res_status_id,   :message => '#' + "Le statut est obligatoire".trn

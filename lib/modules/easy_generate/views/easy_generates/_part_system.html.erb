@@ -1,0 +1,52 @@
+<%if @option_active_language == 'Y'%>
+	<%unless Rails.application.config.translation_mode.blank?%>
+	  	<div class="cadre bg-info pull-right">
+			<%
+			languages = EsSetup.get_setup("languages","fr")
+			languages.split(',').each do |l|%>
+				<%if Rails.application.config.default_locale_easysite.to_s == l%>
+					<span class=' lead'><%=l%></span>
+				<%else%>
+					<%=link_to l, {:language => l}, :class => 'lead' %>
+				<%end%>
+				&nbsp;
+			<%
+			end
+			%>			
+	    </div>
+	<%end%>
+<%end%>
+
+<%if @option_active_site == 'Y'%>	
+	<% return unless session[:flag_admin] %>
+	
+	    <div class="navbar navbar-default navbar-fluid-top">
+	        <div class="container pull-left form-horizontal">
+			  <%= label_tag('site_id', 'Sélectionner un site'.trn + ' : ',{:class=> "col-sm-2 control-label"}) %>
+			  	<div class="col-sm-3">
+	          		<%= collection_select(:site, :id, EsSite.order("code"), :id, "complete_name", {:selected => session[:current_site_id]},{:class => "form-control"}) %>
+		        </div>
+	        </div>
+	    </div>
+	
+	
+	<script>
+		$(document).ready(function() {
+			$('#site_id').on("change",function(e) {  
+			    var valuesToSubmit = $('#site_id').serialize();
+				$.ajax({
+		        url: '/es_sites/change_default_site',
+		        data: valuesToSubmit,
+		        dataType: 'script',
+			    });	    
+			    return false;
+			}
+			
+			);	
+		});
+	</script>
+<%end%>
+
+<%if (@option_active_version||'Y') == 'Y'%>	
+	<br><p class='navbar-default' style='text-align: center'><small> <%=APP_NAME%> : <%= APP_VERSION %></small></p>
+<%end%>	

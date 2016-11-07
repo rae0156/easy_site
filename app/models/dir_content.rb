@@ -9,20 +9,21 @@ class DirContent
 
   def get_dirs(path=".", with_detail=false)
     path = "" if path.nil?
-    @path = File.join(File.expand_path(@root), path)
+    tmp_root = File.expand_path(@root)
+    @path = File.join(tmp_root, path)
     @dirs = []
     if File.exists?(@path)
       if with_detail
         unless path.blank?
           stat = File.stat(@path)
           tmp_dir = @path.split('/')[0..-2].join('/')
-          @dirs << ['..',stat.mtime,tmp_dir[@root.size+1..-1]]
+          @dirs << ['..',stat.mtime,tmp_dir[tmp_root.size+1..-1]]
         end
         Dir.entries(@path).each do |dir|
           tmp_dir = File.join(@path,dir)
           if File.directory?(tmp_dir) && dir[0,1]!="." && (@typefile.split(',').include?('*') || @typefile.split(',').include?('[DIR]'))
             stat = File.stat(tmp_dir)
-            @dirs << [dir,stat.mtime,tmp_dir[@root.size+1..-1]]
+            @dirs << [dir,stat.mtime,tmp_dir[tmp_root.size+1..-1]]
           end
         end
       else
@@ -65,7 +66,7 @@ class DirContent
   end
 
   def get_content(path=".")
-    if File.expand_path(File.join(@root,path)).starts_with?(@root)
+    if File.expand_path(File.join(@root,path)).starts_with?(File.expand_path(@root))
       [get_dirs(path,true), get_files(path,true)]
     else
       [[],[]]
@@ -81,7 +82,7 @@ class DirContent
     txt =[]
     tmp_dirs=get_dirs(path,false)
     #return txt if tmp_dirs.blank?
-    txt << (first ? '<UL id="tree_view_file" class="filetree" style="display: none;">' : '<UL>')
+    txt << (first ? '<UL id="tree_view_file" class="filetree collapsed_true" style="display: none;">' : '<UL>')
     if first
       txt << "<LI><span class='folder'>"
       txt << ['..','']

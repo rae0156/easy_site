@@ -28,8 +28,12 @@ class ResStock < ActiveRecord::Base
     total = 0
     self.res_category.children.each do |c|
       c.res_resources.each do |r|
-        if r.stockable=='Y' && r.res_product_id==self.res_product_id
-          total += r.qty_not_used||0
+        if r.res_product_id==self.res_product_id
+          if r.stockable=='Y' 
+            total += r.qty_not_used||0
+          else
+            total += r.quantity||0
+          end
         end
       end
     end
